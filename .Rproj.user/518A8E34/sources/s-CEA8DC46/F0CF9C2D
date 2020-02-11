@@ -1,0 +1,28 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1581435655847.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F0CF9C2D",
+    "lastKnownWriteTime" : 1581435976,
+    "last_content_update" : 1581435983596,
+    "path" : "~/Documents/BMAT/MA2002-Bachelor/Bachelor.Rmd",
+    "project_path" : "Bachelor.Rmd",
+    "properties" : {
+        "cursorPosition" : "13,0",
+        "last_setup_crc32" : "CEA8DC46bb338d19",
+        "marks" : "<:10,0\n>:10,1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

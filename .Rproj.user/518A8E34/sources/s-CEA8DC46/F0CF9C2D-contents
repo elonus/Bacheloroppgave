@@ -1,0 +1,23 @@
+---
+title: "Bachelor"
+author: "Andreas Matre"
+date: "2/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(survey)
+library(ggplot2)
+```
+
+
+
+```{r}
+data <- read.csv("ncvs2000.csv")
+head(data)
+```
+
