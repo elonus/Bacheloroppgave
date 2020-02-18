@@ -1,0 +1,15 @@
+License Agreement for "Data Sets and Code for Sampling: Design and Analysis, 2nd edition" by Sharon L. Lohr (LICENSOR)
+
+BE SURE TO READ THE LICENSE AGREEMENT CAREFULLY, SINCE BY USING THE SOFTWARE YOU INDICATE YOU HAVE READ, UNDERSTOOD, AND ACCEPTED THE TERMS OF THIS AGREEMENT.
+
+1. You enjoy a non-exclusive license to use the enclosed materials on a single computer, subject to the terms of this license agreement.
+2. You acknowledge that you do not own the materials in this download. You also acknowledge that the materials are furnished "AS IS" and "AS AVAILABLE" without warranties of any kind.
+3. You may not sell, license, rent, loan, or otherwise distribute or network the programs or data.
+4. Nothing in this license constitutes or may be construed as permission to assert or imply that you are, or that your use of the licensed material is, sponsored or endorsed by the Licensor. 
+5. If you do not accept the terms of this license agreement you may not use the materials.
+
+
+Limited Warranty
+
+THESE ARE YOUR SOLE REMEDIES FOR ANY BREACH OF WARRANTY. EXCEPT AS SPECIFICALLY PROVIDED ABOVE, THE LICENSOR MAKES NO WARRANTY OR REPRESENTATION, EITHER EXPRESSED OR IMPLIED, WITH RESPECT TO THE PRODUCT, INCLUDING ITS QUALITY, PERFORMANCE, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.  The product is not a substitute for human judgment.  IN NO EVENT WILL THE LICENSOR OR ANY THIRD PARTY SUPPLIERS BE LIABLE FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PRODUCT OR DOCUMENTATION, even if advised of the possibility of such damages.  Specifically, the licensor is not responsible for any costs including, but not limited to, those incurred as a result of lost profits or revenue, loss of use of the computer program, loss of data, the costs of recovering such programs or data, the cost of any substitute program, claims by third parties, or for other similar costs.  THE WARRANTY AND REMEDIES SET FORTH ABOVE ARE EXCLUSIVE AND IN LIEU OF ALL OTHERS, ORAL OR WRITTEN, EXPRESS OR IMPLIED.  Some states do not allow the exclusion or limitation of implied warranties or limitation of liability for incidental or consequential damage, so that the above limitations or exclusion may not apply to you.
+

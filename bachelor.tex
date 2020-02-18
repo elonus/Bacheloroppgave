@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+\title{Bachelor}
+\author{Andreas Matre}
+\date{February 2020}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
+
+
+\subsection{Example}
+
+I will here show a simple example which illustrates what can happen if we do not take into account the sampling design when doing regression. In this example we have a dataset from a study which tried to show a relationship between the length of a persons left middle finger and their height. The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (inches) and the probability that they would be chosen for the sample.
+
+In this case the researcher wanted a bigger sample of shorter people than tall people so they sampled with probabilities proportional to: 24 for people with height < 65, 12 for people with height = 65, 2 for people with height = 66 or 67 and 1 for people with height > 67.
+
+
+This means that a disproportionately big part of the sample contains short people. 
+
+To illustrate the difference, this first plot shows a random sample where every person had an equal chance of being included. The next plot shows the sample where short people had a higher chance of being included than tall people. As you can see the second plot is much more concentrated in the bottom of the plot.
+
+% Plot of apiSRS
+
+% Plot of api unequal prob sample
+
+This means that if you try to fit a linear regression model to the unequal probabilities sample the slope will tend to be smaller than what it should be, since there are few observations in the top right of the plot.
+
+I will illustrate this now by fitting both a naive linear model and a model that takes into account the sampling probabilities.
+
+
+% Code and plot of regression lines
+
+We can see in the code that in the model which takes the unequal sampling probabilities into account we first define a design object which in addition to the covariates includes information about the probabilities of each observation being chosen. Here we use a value called the weight of the observation which is the inverse of the sampling probability. The weight can be interpreted as how many other possible observations this observation represent. A lower sampling probability means that there are probably fewer similar observations in the dataset, so each of these observations has to count more to account for this disrepancy.
+
+In this plot the points representing the observations have a radius proportional to the inverse of the sampling probability, so as you can see the observations in the top have a much smaller chance of being chosen that the ones in the bottom part. The red line is the regression line fitted by normal linear regression while the blue line is fitted by a model which takes the design into account. 
+
+As you can see, the blue line has a larger slope than the red line, indicating it gives the points in the top a bigger "weight" than the points in the bottom part to account for their lower sampling probabilities.
+
+
+I will start by giving an introduction to survey statistics, where I will give the necessary background theory needed to be able to talk about linear regression in this context.
+
+\section{Simple random sample}
+
+I will start by giving some definitions that we will need when talking about survey statistics.
+
+* A \emph{sampling unit} is one "element" we want to sample. In the case of a political survay for instance it would usually be one person.
+* The \emph{sampling population} is a set containing all the sampling units you are interested in. Continuing the example of political surveys the sampling population could be all people in the country eligible to vote in the next election.
+* The \emph{sampling frame} is the list of all sampling units you are going to sample from. Ideally the sampling frame and the sampling population would be the same, but that is not always to case. In some cases for example, you may not have a list of all the people who are eligible to vote, you may perhaps only have a list of the people who voted in the last election. This can cause a bias in the results.
+* A \emph{sample} is a subset of the sampling frame where we generally want to do some inference on information we get on the sampling units included in the sample.
+* A \emph{probability sample} is a sample where the elements sampling units included are chosen randomly.
+* The \emph{sampling probability} of a sampling unit is the probability that a specific sampling unit is included in the sample.
+
+\section{Stratification}
+
+\section{Clustering}
+
+\section{Complex surveys}
+
+\section{Variance estimation (?)}
+
+\section{Regression}
+
+
+
+
+
+
+\end{document}
