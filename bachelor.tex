@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{amsthm}
 
 \title{Bachelor}
 \author{Andreas Matre}
@@ -8,9 +9,16 @@
 
 \begin{document}
 
+\newtheorem{definition}{Definition}[subsection]
+\newtheorem{theorem}{Theorem}
+
+
 \maketitle
 
 \section{Introduction}
+\begin{definition}
+  blah
+  \end{definition}
 
 When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
 
@@ -50,12 +58,30 @@ I will start by giving an introduction to survey statistics, where I will give t
 
 I will start by giving some definitions that we will need when talking about survey statistics.
 
-* A \emph{sampling unit} is one "element" we want to sample. In the case of a political survay for instance it would usually be one person.
-* The \emph{sampling population} is a set containing all the sampling units you are interested in. Continuing the example of political surveys the sampling population could be all people in the country eligible to vote in the next election.
-* The \emph{sampling frame} is the list of all sampling units you are going to sample from. Ideally the sampling frame and the sampling population would be the same, but that is not always to case. In some cases for example, you may not have a list of all the people who are eligible to vote, you may perhaps only have a list of the people who voted in the last election. This can cause a bias in the results.
-* A \emph{sample} is a subset of the sampling frame where we generally want to do some inference on information we get on the sampling units included in the sample.
-* A \emph{probability sample} is a sample where the elements sampling units included are chosen randomly.
-* The \emph{sampling probability} of a sampling unit is the probability that a specific sampling unit is included in the sample.
+\begin{definition} \label{def:sampUnit}
+  A \textbf{sampling unit} is one "element" we want to sample. In the case of a political survay for instance it would usually be one person.
+\end{definition}
+
+\begin{definition} \label{def:sampPop}
+The \textbf{sampling population} is a set containing all the sampling units you are interested in. Continuing the example of political surveys the sampling population could be all people in the country eligible to vote in the next election.
+\end{definition}
+
+\begin{definition} \label{def:sampFrame}
+The \textbf{sampling frame} is the list of all sampling units you are going to sample from. Ideally the sampling frame and the sampling population would be the same, but that is not always to case. In some cases for example, you may not have a list of all the people who are eligible to vote, you may perhaps only have a list of the people who voted in the last election. This can cause a bias in the results.
+\end{definition}
+
+\begin{definition} \label{def:sample}
+A \textbf{sample} is a subset of the sampling frame where we generally want to do some inference on information we get on the sampling units included in the sample.
+\end{definition}
+
+\begin{definition} \label{def:probSample}
+A \textbf{probability sample} is a sample where the elements sampling units included are chosen randomly.
+\end{definition}
+
+\begin{definition} \label{def:sampProb}
+The \textbf{sampling probability} of a sampling unit is the probability that a specific sampling unit is included in the sample.
+\end{definition}
+
 
 \section{Stratification}
 
