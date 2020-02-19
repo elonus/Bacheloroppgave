@@ -63,6 +63,10 @@ survmod <- svyglm(height ~ finger, design = anthuneq.svy)
 normalcoef <- summary(normalmod)$coefficients
 survcoef <- summary(survmod)$coefficients
 
+x.vals = seq(from = 10, to = 12.5, by = 0.1)
+predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
+predict.int.normalmod$x.vals <- x.vals
+
 prop = 0.0001
 size <- ceiling(anthuneq$weights)
 size <- replace(size, size == 1384, prop * 1384)
@@ -73,7 +77,9 @@ size <- replace(size, size == 33223, prop * 33223)
 ggplot() +
   geom_point(data = anthuneq, aes(finger, height), size = size) +
   geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red") +
-  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue")
+  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "yellow") +
+  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "green")
+  #geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue")
 
 ```
 
