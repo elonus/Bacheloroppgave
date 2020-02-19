@@ -11,19 +11,19 @@
 
 \newtheorem{definition}{Definition}[subsection]
 \newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}[section]
 
 
 \maketitle
 
+\tableofcontents
+
 \section{Introduction}
-\begin{definition}
-  blah
-  \end{definition}
 
 When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
 
 
-\subsection{Example}
+\begin{example}
 
 I will here show a simple example which illustrates what can happen if we do not take into account the sampling design when doing regression. In this example we have a dataset from a study which tried to show a relationship between the length of a persons left middle finger and their height. The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (inches) and the probability that they would be chosen for the sample.
 
@@ -51,28 +51,83 @@ In this plot the points representing the observations have a radius proportional
 
 As you can see, the blue line has a larger slope than the red line, indicating it gives the points in the top a bigger "weight" than the points in the bottom part to account for their lower sampling probabilities.
 
+\end{example}
+
+\subsection{Data we are going to use}
+
+In this thesis I will mainly use one dataset to illustrate the concepts
+discussed. This is a dataset on the performance of students in schools in
+California. This dataset has data on all 6194 schools with more than 100
+students in California, with data collected
+including: API scores in 1999 and 2000, which level of school it is
+(elementary, middle, high), name of school, location of school, percentage of
+students tested at the school, API targets, economic factors for students at the
+school, class sizes, information of education of parents and qualification of teachers.
+
+API scores is a metric testing the academic performance of the students at the school.
+
+We will use this data as the population we will sample from, and we will take
+different kinds of samples to illustrate the concepts introduces in this thesis.
 
 I will start by giving an introduction to survey statistics, where I will give the necessary background theory needed to be able to talk about linear regression in this context.
 
-\section{Simple random sample}
+\section{Introduction survey statistics}
 
-I will start by giving some definitions that we will need when talking about survey statistics.
+There are two big differenses between ``normal'' statistics and Survey statistics.
+
+The first difference is that in Survey statistics you approach the ''randomness'' from a different angle.
+Usually in statistics you let individual values be stochastic variables
+with some distribution and one observation is a sample from that stochastic
+variable.
+
+In Survey statistics on the other hand you say that the individual values are
+fixed, i.e. my height is not random, every time you measure it you will get the
+exact same result, if you discount measurement errors. Instead what is random is
+who we sample. This leads us to a couple definitions:
 
 \begin{definition} \label{def:sampUnit}
-  A \textbf{sampling unit} is one "element" we want to sample. In the case of a political survay for instance it would usually be one person.
+  A \textbf{sampling unit} is one "element" we want to sample. In the case of
+  our API example this will be one school.
 \end{definition}
 
 \begin{definition} \label{def:sampPop}
-The \textbf{sampling population} is a set containing all the sampling units you are interested in. Continuing the example of political surveys the sampling population could be all people in the country eligible to vote in the next election.
+The \textbf{sampling population}, or universe, $U = \{1, 2, 3, ..., N\}$, is a
+finite set containing all the sampling units you are interested in. In our case
+it will be all the schools in California having 100 or more students.
 \end{definition}
+
+To represent the elements in $U$ by natural numbers we just let the elements
+have a arbitrary ordering and denote them by their indices. We do this for
+simplicity of notation as the order of the elements do not matter in the inference.
 
 \begin{definition} \label{def:sampFrame}
 The \textbf{sampling frame} is the list of all sampling units you are going to sample from. Ideally the sampling frame and the sampling population would be the same, but that is not always to case. In some cases for example, you may not have a list of all the people who are eligible to vote, you may perhaps only have a list of the people who voted in the last election. This can cause a bias in the results.
 \end{definition}
 
+In the API case, the sampling population and the sampling frame are equal, since
+we have a table of all the data and we will just choose rows from that table for
+our samples. But there are cases where this is not the case. An example of this
+could be if we were doing a political survey to try to predict who will win the
+next election.
+In that case our sampling population, who we are interested in information
+about, would be everyone who are going to vote in the next election. It is
+is impossible to get a list of them though, so we instead have to use choose
+some other part of the population we have information about. We might have a
+list of all who voted last election, which might be a good approximation of
+those who are going to vote this election, but then we would miss out on all the
+new eligible voters and people who might have decided to vote this election but
+didn't do it the last one.
+
+Choosing the correct sampling frame to match your target sampling population is
+difficult and getting it wrong can make your results wrong.
+
+
 \begin{definition} \label{def:sample}
-A \textbf{sample} is a subset of the sampling frame where we generally want to do some inference on information we get on the sampling units included in the sample.
+A \textbf{sample}, $S \subseteq U$, is a subset of the sampling frame. This is the data we will analyse to try to get information about the sampling population.
 \end{definition}
+
+We will denote the sampling units chosen in the sample by their indices in the
+sampling population.
 
 \begin{definition} \label{def:probSample}
 A \textbf{probability sample} is a sample where the elements sampling units included are chosen randomly.
@@ -82,6 +137,38 @@ A \textbf{probability sample} is a sample where the elements sampling units incl
 The \textbf{sampling probability} of a sampling unit is the probability that a specific sampling unit is included in the sample.
 \end{definition}
 
+So we have a probability sample, where every sampling unit has some probability to be included in the sample, called the sampling probability.
+
+
+The other big difference is that normally you assume that you sample from an
+infinity population which has some distribution. In Survey statistics however we
+have a finite distribution which means that it no longer makes sense thinking
+about it having a distribution. This means that we no longer need the assumption
+of which distribution the sampling units come from. This gives us more freedom,
+and less potential problems if our assumptions are wrong.
+
+\section{Simple random sample}
+
+The simplest possible probability sample is a Simple random sample (SRS). A
+sample of size $M \leq N$ is an SRS if every subset $S \subseteq U$ has the same
+probability of being chosen.
+
+Lets say for example that $U = \{1, 2, 3, 4\}$ and that we want a sample, $S$ of
+size $3$. Then there are $\binom{4}{3} = 4$  possible samples of size $3$:
+
+$$ S_1 = \{1, 2, 3\} $$
+$$ S_2 = \{1, 2, 4\} $$
+$$ S_3 = \{1, 3, 4\} $$
+$$ S_4 = \{2, 3, 4\} $$.
+
+For this to be a SRS each of these subsets need to have the same probability of
+being chosen, i.e. $P(S_1) = P(S_2) = P(S_3) = P(S_4) = 0.25$. A consequence of
+having a SRS is that all the sampling probabilities are all equal, $P(1 \in S) =
+P(2 \in S) = P(3 \in S) = P(4 \in S) = 0.75$. But having equal sampling
+probabilities is not sufficient for the sample to be an SRS.
+
+Look for example at this case:
+$P(S_1)$
 
 \section{Stratification}
 
