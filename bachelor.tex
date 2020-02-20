@@ -147,9 +147,20 @@ about it having a distribution. This means that we no longer need the assumption
 of which distribution the sampling units come from. This gives us more freedom,
 and less potential problems if our assumptions are wrong.
 
+
+The goal of Survey statistics is generally to estimate some statistic of the whole
+population from a sample. These statistics include the total of some value,
+f.eks. the total number of students in school, the mean of some value, f.eks.
+the mean number of students per teacher in school, or to estimate regression
+coefficients to either do inference or predict future values.
+
+I will first start by talking about different kinds of samples along with some
+inference on some statistics calculated from these samples and then finish with
+talk about regression.
+
 \section{Simple random sample}
 
-The simplest possible probability sample is a Simple random sample (SRS). A
+One of the simpler probability samples is a Simple Random Sample (SRS). A
 sample of size $M \leq N$ is an SRS if every subset $S \subseteq U$ has the same
 probability of being chosen.
 
@@ -168,7 +179,68 @@ P(2 \in S) = P(3 \in S) = P(4 \in S) = 0.75$. But having equal sampling
 probabilities is not sufficient for the sample to be an SRS.
 
 Look for example at this case:
-$P(S_1)$
+Assume we want a sample of size $2$ from a population of size $4$, and that
+$P(\{1, 3\}) = 0.5$ and $P(\{2, 4\}) = 0.5$ while the probabilities of all the
+other possible samples are $0$. Then $P(1 \in S) = P(2 \in S) = P(3 \in S) = P(4 \in S) = 0.5$
+but this is not a SRS since all possible subsets of size $2$ do not have equal
+probability of being chosen.
+
+
+\subsection{Estimation}
+
+One of the more common statistics we want to estimate is the total of some value
+for the whole population. We might for example want to estimate the total number
+of students enrolled in school, in our API example.
+
+We would then denote the value of interest in one school, i.e. the number of
+enrolled students by $y_i$ and let
+$$t = \sum_{i = 1}^{N}$$
+be the value we want to estimate.
+
+The natural estimate of this total, if we sample $n$ elements, would be
+$$ \hat{t}_S = \frac{N}{n}\sum_{y \in S} y $$
+where we take the average of the values in our sample and then scale it up to
+the whole population.
+
+To show that $\hat{t}_S$ is unbiased we rewrite the expression using the
+indicator function:
+$$ I(y \in S) =
+\begin{cases}
+  1 & , y \in S \\
+  0 & , y \notin S
+\end{cases} .$$
+
+Then $$ \hat{t}_S = \frac{N}{n} \sum_{y \in S} y = \frac{N}{n} \sum_{i = 1}^{N}
+I(y_i \in S) y_i ,$$
+which means that
+$$ E \left[ \hat{t}_S \right] = E \left[ \frac{N}{n} \sum_{i = 1}^{N}
+  I(y_i \in S) y_i \right] =
+\frac{N}{n} \sum_{i = 1}^{N}
+E\left[ I(y_i \in S) \right] y_i .$$
+
+We now only have to find the expected value of $I(y_i \in S)$.
+
+\begin{align}
+  E \left[ I(y_i \in S) \right]
+  &= 1 \cdot P(y_i \in S) + 0 \cdot P(y_i \in S)
+    = \frac{\binom{N - 1}{n - 1}}{\binom{N}{n}} \\
+  &= \frac{(N - 1)! n! (N - n)!}{N! (n - 1)! (N - n)!}
+    = \frac{n}{N}
+\end{align}
+
+which comes from the fact that this is a SRS and therefore all possible samples
+are equally likely.
+
+This finally gives us:
+$$
+E \left[ \hat{t}_S \right]
+= \frac{N}{n} \sum_{i = 1}^{N} E\left[ I(y_i \in S) \right] y_i
+= \frac{N}{n} \sum_{i = 1}^{N} \frac{n}{N} y_i
+= \sum_{i = 1}^{N} y_i
+= t
+$$
+which shows that $\hat{t}_S$ is an unbiased estimator of $t$.
+
 
 \section{Stratification}
 
