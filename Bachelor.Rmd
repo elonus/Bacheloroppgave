@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, include = FALSE}
 library(survey)
 library(ggplot2)
+library(ggfortify)
+library(cowplot)
 ```
 
 When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
@@ -67,6 +69,12 @@ x.vals = seq(from = 10, to = 12.5, by = 0.1)
 predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
 predict.int.normalmod$x.vals <- x.vals
 
+predict.survmod <- as.data.frame(predict(survmod, newdata = data.frame(finger = x.vals), se=TRUE))
+predict.int.survmod <- data.frame(lower = predict.survmod$link - qt(0.975, df = nrow(anthuneq)))
+predict.int.survmod$upper <- predict.survmod$link + qt(0.975, df = nrow(anthuneq))
+predict.int.survmod$x.vals <- x.vals
+predict.int.survmod$fit <- predict.survmod$link
+
 prop = 0.0001
 size <- ceiling(anthuneq$weights)
 size <- replace(size, size == 1384, prop * 1384)
@@ -74,14 +82,33 @@ size <- replace(size, size == 2767, prop * 2767)
 size <- replace(size, size == 16584, prop * 16584)
 size <- replace(size, size == 33223, prop * 33223)
 
-ggplot() +
+uneq.surv.plot <- ggplot() +
+  geom_point(data = anthuneq, aes(finger, height), size = size) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue") +
+  geom_point(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "yellow") +
+  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green")
+
+uneq.normal.plot <- ggplot() +
   geom_point(data = anthuneq, aes(finger, height), size = size) +
   geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red") +
   geom_point(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "yellow") +
   geom_point(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "green")
-  #geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue")
 
+srs.surv.plot <- ggplot() +
+  geom_point(data = anthsrs, aes(finger, height)) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue") +
+  geom_point(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "yellow") +
+  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green")
+
+srs.normal.plot <- ggplot() +
+  geom_point(data = anthsrs, aes(finger, height)) +
+  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red") +
+  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "yellow") +
+  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "green")
+
+plot_grid(uneq.normal.plot, uneq.surv.plot, srs.normal.plot, srs.surv.plot, ncol = 2, labels = "AUTO")
 ```
+
 
 We can see in the code that in the model which takes the unequal sampling probabilities into account we first define a design object which in addition to the covariates includes information about the probabilities of each observation being chosen. Here we use a value called the weight of the observation which is the inverse of the sampling probability. The weight can be interpreted as how many other possible observations this observation represent. A lower sampling probability means that there are probably fewer similar observations in the dataset, so each of these observations has to count more to account for this disrepancy.
 
