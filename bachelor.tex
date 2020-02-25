@@ -202,44 +202,8 @@ $$ \hat{t}_S = \frac{N}{n}\sum_{y \in S} y $$
 where we take the average of the values in our sample and then scale it up to
 the whole population.
 
-To show that $\hat{t}_S$ is unbiased we rewrite the expression using the
-indicator function:
-$$ I(y \in S) =
-\begin{cases}
-  1 & , y \in S \\
-  0 & , y \notin S
-\end{cases} .$$
-
-Then $$ \hat{t}_S = \frac{N}{n} \sum_{y \in S} y = \frac{N}{n} \sum_{i = 1}^{N}
-I(y_i \in S) y_i ,$$
-which means that
-$$ E \left[ \hat{t}_S \right] = E \left[ \frac{N}{n} \sum_{i = 1}^{N}
-  I(y_i \in S) y_i \right] =
-\frac{N}{n} \sum_{i = 1}^{N}
-E\left[ I(y_i \in S) \right] y_i .$$
-
-We now only have to find the expected value of $I(y_i \in S)$.
-
-\begin{align*}
-  E \left[ I(y_i \in S) \right]
-  &= 1 \cdot P(y_i \in S) + 0 \cdot P(y_i \in S)
-    = \frac{\binom{N - 1}{n - 1}}{\binom{N}{n}} \\
-  &= \frac{(N - 1)! n! (N - n)!}{N! (n - 1)! (N - n)!}
-    = \frac{n}{N}
-\end{align*}
-
-which comes from the fact that this is a SRS and therefore all possible samples
-are equally likely.
-
-This finally gives us:
-$$
-E \left[ \hat{t}_S \right]
-= \frac{N}{n} \sum_{i = 1}^{N} E\left[ I(y_i \in S) \right] y_i
-= \frac{N}{n} \sum_{i = 1}^{N} \frac{n}{N} y_i
-= \sum_{i = 1}^{N} y_i
-= t
-$$
-which shows that $\hat{t}_S$ is an unbiased estimator of $t$.
+It can be shown using indicator variables and sampling probabilities that
+$\hat{t}_S$ is an unbiased estimator for $t$.
 
 
 A statistic related to the total is the mean of some value. We denote the true
@@ -252,72 +216,12 @@ which we use as our estimator.
 Then we can rewrite the estimate for $t$ as:
 $$ \hat{t}_S = \frac{N}{n} \sum_{y \in S} y = N\bar{y}_S $$
 
-\begin{align*}
-E \left[ \bar{y}_S \right]
-&= E \left[ \frac{1}{n} \sum_{y \in S} y \right]
-= E \left[ \frac{1}{n} \sum_{i = 1}^N I(y_i \in S) y_i \right] \\
-&= \frac{1}{n} \sum_{i = 1}^N E \left[ I(y_i \in S) \right] y_i
-= \frac{1}{n} \sum_{i = 1}^N \frac{n}{N} y_i \\
-&= \frac{1}{N} \sum_{i = 1}^N y_i
-= \bar{y}_U
-\end{align*}
+Using the fact that $\hat{t}_S$ is unbiased it is trivial to show that
+$\bar{y}_S$ is an unbiased estimator for $\bar{y}_U$.
 
-So $\bar{y}_S$ is an unbiased estimator for $\bar{y}_U$.
-
-To calculate the variance we need a couple of results first:
-\begin{align*}
-  Var \left[ I(y_i \in S) \right]
-  &= E \left[ I(y_i \in S)^2 \right] - E \left[
-  I(y_i \in S) \right]^2 \\
-  &= P(y_i \in S) - P(y_i \in S)^2
-  = \frac{n}{N}(1 - \frac{n}{N})
-\end{align*}
-
-\begin{align*}
-  E\left[ I(y_i \in S)I(y_j \in S) \right]
-  &= P(y_i \in S, y_j \in S) \\
-  &= P(y_i \in S) P(y_j \in S | y_i \in S) \\
-  &= \frac{n}{N} \frac{n - 1}{N - 1}
-    ,
-\end{align*}
-where $i \neq j$.
-
-Now we can find $Var(\bar{y}_S)$:
-\begin{align*}
- Var \left[ \bar{y}_S \right] 
-  &= Var \left[ \frac{1}{n} \sum_{i = 1}^N I(y_i \in S) y_i \right] \\
-  &= \frac{1}{n^2} \left( \sum_{i = 1}^N  Var \left[ I(y_i \in S) y_i \right] + \sum_{i = 1}^{N}\sum_{j \neq i}^{N} Cov \left[ I(y_i \in S) y_i, I(y_j \in S) y_j \right] \right) \\
-  &= \frac{1}{n^2} \left( \sum_{i = 1}^N y_i^2 Var \left[ I(y_i \in S) y_i \right] + \sum_{i = 1}^{N}\sum_{j \neq i}^{N} y_i y_j Cov \left[ I(y_i \in S), I(y_j \in S) \right] \right) \\
-  &= \frac{1}{n^2} \left( \sum_{i = 1}^N y_i^2 Var \left[ I(y_i \in S) y_i \right] \\
-  &\ \ \ \ + \sum_{i = 1}^{N}\sum_{j \neq i}^{N} y_i y_j \left( E \left[ I(y_i \in S) I(y_j \in S) \right] - E \left[ I(y_i \in S) \right] E \left[ I(y_j \in S) \right] \right) \right) \\
-  &= \frac{1}{n^2} \left( \sum_{i = 1}^N y_i^2 \frac{n}{N}(1 - \frac{n}{N}) + \sum_{i = 1}^{N}\sum_{j \neq i}^{N} y_i y_j \left( \frac{n}{N} \frac{n - 1}{N - 1} - \frac{n^2}{N^2} \right) \right) \\
-\end{align*}
-
-To do the next step we need to do a couple of small calculations:
-
-\begin{align*}
-  \left( \frac{n}{N} \frac{n - 1}{N - 1} - \frac{n^2}{N^2} \right) 
-  &= \frac{n}{N} \frac{N(n - 1) - n(N - 1)}{N(N - 1)} \\
-  &= \frac{n}{N} \frac{n - N}{N(N - 1)} \\
-  &= - \frac{n}{N} \frac{1}{N - 1} \left( 1 - \frac{n}{N} \right)
-\end{align*}
-
-Additionally:
-\begin{align*}
-  \sum_{i = 1}^{N}\sum_{j \neq i}^{N} y_i y_j
-  &= \sum_{i = 1}^{N}\sum_{j = 1}^{N} y_i y_j - \sum_{i = 1}^{N} y_i^2
-\end{align*}
-
-which gives us:
-\begin{align*}
-  Var(\bar{y}_S)
-  &= \frac{1}{n^2} \left( \sum_{i = 1}^N y_i^2 \frac{n}{N}(1 - \frac{n}{N}) + \sum_{i = 1}^{N}\sum_{j \neq i}^{N} y_i y_j \left( \frac{n}{N} \frac{n - 1}{N - 1} - \frac{n^2}{N^2} \right) \right) \\
-  &= \frac{1}{n^2} \frac{n}{N} \left( 1 - \frac{n}{N} \right) \left( \sum_{i = 1}^{N} y_i^2 - \frac{1}{N - 1} \sum_{i = 1}^{N}\sum_{j = 1}^{N} y_i y_j + \frac{1}{N- 1} \sum_{i = 1}^{N} y_i^2 \right) \\
-  &= \frac{1}{nN} \left( 1 - \frac{n}{N} \right) \left( \frac{N}{N - 1} \sum_{i = 1}^{N} y_i^2 - \frac{N^2}{N - 1} \bar{y}_U^2  \right)
-  = \frac{N}{nN(N - 1)} \left( 1 - \frac{n}{N} \right) \left( \sum_{i = 1}^{N} y_i^2 -  N \bar{y}_U^2  \right) \\
-  &= \frac{1}{n(N - 1)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^{N} \left( y_i - \bar{y}_U \right)^2 
-  = \frac{1}{n} \left( 1 - \frac{n}{N} \right) S^2 \\
-\end{align*}
+It can be shown that the variance of the estimator is of the form:
+$$ Var \left( \bar{y}_S \right) = \frac{S^2}{n} \left( 1 - \frac{n}{N}
+\right) $$
 
 where
 
@@ -328,7 +232,7 @@ $$
 is the variance of the whole population.
 
 We do not, however, know $S^2$ as that would require us to know to $y$ values
-for the whole population $U$. Instead we will have to estimate the variance by:
+for the whole population $U$. Instead we estimate $S^2$ by:
 
 \begin{align*}
   s^2
@@ -341,32 +245,11 @@ which gives us the estimate of $Var(\bar{y}_U)$:
   &= \frac{1}{n} \left( 1 - \frac{n}{N} \right) s^2
 \end{align*}
 
-Now, if we can show that $s^2$ is an unbiased estimator for $S^2$ we have an
-unbiased estimator for $\widehat{Var(\bar{y}_U)}$.
+Since $s^2$ is unbiased we have that $\frac{S^2}{n} \left( 1 - \frac{n}{N}
+\right)$ is an unbiased estimator of the variance of $\bar{y}_S$.
 
-\begin{align*}
-  E \left[ \sum_{y \in S} \left( y - \bar{y}_S \right) \right]
-  &= E \left[ \sum_{y \in S} \left( y^2 - 2y\bar{y}_S + \bar{y}_S^2 \right) \right] \\
-  &= E \left[ \sum_{i = 1}^{N} I(y_i \in S) y_i^2 - n \bar{y}_S^2 \right] \\
-  &= \sum_{i = 1}^{N} \frac{n}{N} y_i^2 - n E \left[ \bar{y}_S \right]^2 - n Var \left[ \bar{y}_S \right] \\
-  &= \frac{n}{N} \left( \sum_{i = 1}^{N} y_i^2 - \sum_{i = 1}^{N} 2y_i \bar{y}_U + \sum_{i = 1}^{N} \bar{y}_U^2  \right)- n \frac{1}{n} \left( 1 - \frac{n}{N} \right) S^2 \\
-  &= \frac{n}{N} \sum_{i = 1}^{N} \left( y_i - \bar{y}_U \right)^2 - \left( 1 - \frac{n}{N} \right) S^2 \\
-  &= \frac{n}{N} \left( N - 1 \right) S^2 - \left( 1 - \frac{n}{N} \right) S^2 \\
-  &= \left( n - 1 \right) S^2
-\end{align*}
-
-This means that
-\begin{align*}
- E \left[ s^2 \right] 
-  &= S^2
-\end{align*}
-
-Which then gives us:
-\begin{align*}
-  E \left( \widehat{Var \left( \bar{y}_S \right)} \right)
-  &= E \left( \frac{1}{n} \left( 1 - \frac{n}{N} \right) s^2 \right) \\
-  &= Var \left( \bar{y}_S \right)
-\end{align*}
+From this it follows that the variance of $\hat{t}_S$ has the unbiased estimator
+$\frac{N^2}{n} s^2 \left( 1 - \frac{n}{N} \right)$.
 
 \section{Stratification}
 
