@@ -1,7 +1,10 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+
 \usepackage{amsmath}
-\usepackage{amsthm}
+\usepackage{amsthm} % theorems, definitions etc.
+
+\usepackage{hyperref} % hyperlinks and pdf contents
 
 \title{Bachelor}
 \author{Andreas Matre}
@@ -20,14 +23,23 @@
 
 \section{Introduction}
 
-When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
+When you want to model some relationship between a response and predictors you
+first need to collect data to fit that model. This data can be collected in many
+different ways and it is very important to take into account the methods used in
+the information gathering when fitting models. This thesis will show how to fit
+a linear regression model when data is collected through a complex survey, i.e.
+a survey including unequal sampling probabilities, stratification and
+clustering. Definitions and more details comes later in the thesis. We start
+with an example illustrating what can go wrong if the methods used in the
+information gathering is not taken into account.
 
 
 \begin{example}
 
-I will here show a simple example which illustrates what can happen if we do not take into account the sampling design when doing regression. In this example we have a dataset from a study which tried to show a relationship between the length of a persons left middle finger and their height. The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (inches) and the probability that they would be chosen for the sample.
+This example will show what can happen if sampling design is not taken
+into account when doing regression. We will illustrate this using a dataset from a study which tried to show a relationship between the length of a persons left middle finger and their height. The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (inches) and the probability that they would be chosen for the sample.
 
-In this case the researcher wanted a bigger sample of shorter people than tall people so they sampled with probabilities proportional to: 24 for people with height < 65, 12 for people with height = 65, 2 for people with height = 66 or 67 and 1 for people with height > 67.
+The researcher wanted a bigger sample of shorter people than tall people so they sampled with probabilities proportional to: 24 for people with height < 65, 12 for people with height = 65, 2 for people with height = 66 or 67 and 1 for people with height > 67.
 
 
 This means that a disproportionately big part of the sample contains short people. 
@@ -158,7 +170,138 @@ I will first start by talking about different kinds of samples along with some
 inference on some statistics calculated from these samples and then finish with
 talk about regression.
 
-\section{Simple random sample}
+\section{Model based simple linear regression} \label{sec:modLinReg}
+
+We will first give a short summary of normal simple linear regression, in a
+model based context. We have a response variable, $y$, and a predictor, $x$. The
+relationship between $y$ and $x$ is assumed to be:
+
+\begin{equation*}
+Y = \beta_0 + \beta_1 x + \epsilon,
+\end{equation*}
+where $\epsilon$ is an error term.
+
+I.e. we assume there exists $\beta_0$ and $\beta_1$ that describes this
+relationship perfectly.
+We do not know these values however, so we instead have to estimate them given
+independent observed data points. We call these data points $(x_1, y_1), (x_2, y_2)
+... (x_n, y_n)$. To do
+this we want to find $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the
+Residual Sum of Squared (RSS). The RSS is defined by:
+
+\begin{align*}
+  RSS &= \frac{1}{n} \sum_{i = 1}^N \left( y_i - \hat{y}_i \right)^2 \\
+  &= \frac{1}{n} \sum_{i = 1}^N \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2
+\end{align*}
+
+The $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimizes the RSS are:
+%$$
+%\hat{\beta}_1 = \frac{\sum_{i = 1}^N\left( x_i - \bar{x} \right) \left( y_i -
+    %\bar{y} \right)} {\sum_{i = 1}^N \left( x_i - \bar{x} \right)}
+%$$
+%and
+%$$
+%\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+%$$
+
+\begin{equation*}
+\hat{\beta}_1 = \frac{\sum_{i = 1}^n y_i x_i - \frac{1}{n} \left( \sum_{i = 1}^n
+    y_i \right)  \left( \sum_{j = 1}^n x_j \right)}
+  {\sum_{j = 1}^n x_j^2 - \frac{1}{n} \left( \sum_{j = 1}^n x_j \right)^2}
+\end{equation*}
+
+\begin{equation*}
+\hat{\beta}_0 = \frac{1}{n} \left( \sum_{i = 1}^n y_i -
+  \frac{\left( \sum_{i = 1}^n y_i x_i  \right) \left( \sum_{j = 1}^n
+    x_j  \right) - \frac{1}{n} \left( \sum_{i = 1}^n y_i \ \right) \left( \sum_{j = 1}^n x_j \right)^2}
+  {\sum_{j = 1}^n x_j^2 - \frac{1}{n} \left( \sum_{j = 1}^n x_j \right)^2}
+\right)
+\end{equation*}
+
+
+Under some conditions it's shown that these estimates are the best estimates
+you can get for $\beta_0$ and $\beta_1$. These conditions are:
+
+\begin{enumerate}
+\item $E \left( \epsilon_i \right) = 0\ \forall \ i = 1, 2, ..., n$
+\item $Var \left( \epsilon_i \right) = \sigma^2\ \forall \ i = 1, 2, ..., n$
+\item All the $\epsilon$ are independent of any predictor or observation number.
+\item All $\epsilon_1$, $\epsilon_2$, ..., $\epsilon_n$ are independent of each other.
+\item All $\epsilon$ are normally distributed.
+\end{enumerate}
+
+If all these assumption are followed get that the estimates are unbiased and:
+\begin{equation*}
+  Var \left( \hat{\beta}_0 \right) = \sigma^2 \frac{\sum_{i = 1}^N x_i^2}{n
+    \sum_{i = 1}^N \left( x_i - \bar{x} \right)^2}
+\end{equation*}
+  
+
+\begin{equation*}
+  Var \left( \hat{\beta}_1 \right) = \frac{\sigma^2}{
+    \sum_{i = 1}^N \left( x_i - \bar{x} \right)^2}
+\end{equation*}
+
+\section{Regression in the context of finite populations}
+
+In the case of finite populations things change a bit. We still want to find the
+coefficients that minimize the RSS, but since the population is finite our goal
+is to find the line that minimizes the RSS for the whole population, i.e. find
+$B_0$ and $B_1$ such that $\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)$ is as small as
+possible.
+
+If we know the whole population we can just compute them using the same formulas
+as in Section \ref{sec:modLinReg}, which if we rewrite them we get:
+
+\begin{equation*}
+B_1 = \frac{\sum_{i = 1}^N y_i x_i - \frac{1}{N} \left( \sum_{i = 1}^N
+    y_i \right)  \left( \sum_{j = 1}^N x_j \right)}
+  {\sum_{j = 1}^N x_j^2 - \frac{1}{N} \left( \sum_{j = 1}^N x_j \right)^2}
+\end{equation*}
+
+\begin{equation*}
+B_0 = \frac{1}{N} \left( \sum_{i = 1}^N y_i -
+  \frac{\left( \sum_{i = 1}^N y_i x_i  \right) \left( \sum_{j = 1}^N
+      x_j  \right) - \frac{1}{N} \left( \sum_{i = 1}^N y_i \ \right) \left( \sum_{j = 1}^N x_j \right)^2}
+  {\sum_{j = 1}^N x_j^2 - \frac{1}{N} \left( \sum_{j = 1}^N x_j \right)^2}
+\right)
+\end{equation*}
+
+If we let $t_x = \sum_{i = 1}^N x_i$, $t_y = \sum_{i = 1}^N y_i, t_{x^2} =
+\sum_{i = 1}^N x_i^2$ and $t_{xy} =
+\sum_{i = 1}^N x_i y_i$, we instead get:
+
+\begin{equation*}
+  B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
+    {t_{x^2} - \frac{1}{N} t_x^2}
+   \right)
+\end{equation*}
+
+\begin{equation*}
+  B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
+    {t_{x^2} - \frac{1}{N} t_x^2}
+\end{equation*}
+
+The case where we know the whole population however is not relevant for this
+thesis, we are instead interested in the case where we have to sample from the
+population to estimate such statistics.
+
+If we then let $\hat{t}_x, \hat{t}_y, \hat{t}_{x^2}, \hat{t}_{xy}, \hat{N}$ be estimators
+for $t_x, t_y, t_{x^2},
+t_{xy}, N$ respectively we get the estimators for $B_0$ and $B_1$:
+
+\begin{equation*}
+  \hat{B}_0 = \frac{1}{\widehat{N}} \left( \hat{t}_y - \frac{\hat{t}_{xy} \hat{t}_x - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x^2}
+    {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
+    \right)
+\end{equation*}
+
+\begin{equation*}
+  \hat{B}_1 = \frac{\hat{t}_{xy} - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x}
+    {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
+\end{equation*}
+
+\subsection{Simple random sample}
 
 One of the simpler probability samples is a Simple Random Sample (SRS). A
 sample of size $M \leq N$ is an SRS if every subset $S \subseteq U$ has the same
@@ -167,10 +310,10 @@ probability of being chosen.
 Lets say for example that $U = \{1, 2, 3, 4\}$ and that we want a sample, $S$ of
 size $3$. Then there are $\binom{4}{3} = 4$  possible samples of size $3$:
 
-$$ S_1 = \{1, 2, 3\} $$
-$$ S_2 = \{1, 2, 4\} $$
-$$ S_3 = \{1, 3, 4\} $$
-$$ S_4 = \{2, 3, 4\} $$.
+\begin{equation*} S_1 = \{1, 2, 3\} \end{equation*}
+\begin{equation*} S_2 = \{1, 2, 4\} \end{equation*}
+\begin{equation*} S_3 = \{1, 3, 4\} \end{equation*}
+\begin{equation*} S_4 = \{2, 3, 4\} \end{equation*}.
 
 For this to be a SRS each of these subsets need to have the same probability of
 being chosen, i.e. $P(S_1) = P(S_2) = P(S_3) = P(S_4) = 0.25$. A consequence of
@@ -194,40 +337,52 @@ of students enrolled in school, in our API example.
 
 We would then denote the value of interest in one school, i.e. the number of
 enrolled students by $y_i$ and let
-$$t = \sum_{i = 1}^{N}$$
+\begin{equation*}
+  t_y = \sum_{i = 1}^{N} y_i
+\end{equation*}
 be the value we want to estimate.
 
 The natural estimate of this total, if we sample $n$ elements, would be
-$$ \hat{t}_S = \frac{N}{n}\sum_{y \in S} y $$
+\begin{equation*}
+\hat{t}_y = \frac{N}{n}\sum_{i \in S} y_i
+\end{equation*}
 where we take the average of the values in our sample and then scale it up to
 the whole population.
 
 It can be shown using indicator variables and sampling probabilities that
-$\hat{t}_S$ is an unbiased estimator for $t$.
+$\hat{t}_y$ is an unbiased estimator for $t_y$.
 
 
 A statistic related to the total is the mean of some value. We denote the true
 mean in the population
-$$\bar{y}_U = \frac{1}{N} \sum_{i = 1}^{N} y_i$$
+\begin{equation*}
+\bar{y}_U = \frac{1}{N} \sum_{i = 1}^{N} y_i
+\end{equation*}
 and the sample mean
-$$\bar{y}_S = \frac{1}{n} \sum_{y \in S} y ,$$
+\begin{equation*}
+\bar{y}_S = \frac{1}{n} \sum_{i \in S} y_i ,
+\end{equation*}
 which we use as our estimator.
 
 Then we can rewrite the estimate for $t$ as:
-$$ \hat{t}_S = \frac{N}{n} \sum_{y \in S} y = N\bar{y}_S $$
+\begin{equation*}
+\hat{t}_y = \frac{N}{n} \sum_{i \in S} y_i = N\bar{y}_S
+\end{equation*}
 
-Using the fact that $\hat{t}_S$ is unbiased it is trivial to show that
+Using the fact that $\hat{t}_y$ is unbiased it is trivial to show that
 $\bar{y}_S$ is an unbiased estimator for $\bar{y}_U$.
 
 It can be shown that the variance of the estimator is of the form:
-$$ Var \left( \bar{y}_S \right) = \frac{S^2}{n} \left( 1 - \frac{n}{N}
-\right) $$
+\begin{equation*}
+Var \left( \bar{y}_S \right) = \frac{S^2}{n} \left( 1 - \frac{n}{N}
+\right)
+\end{equation*}
 
 where
 
-$$
+\begin{equation*}
 S^2 = \frac{1}{N - 1} \sum_{i = 1}^N (y_i - \bar{y}_U)^2
-$$
+\end{equation*}
 
 is the variance of the whole population.
 
@@ -236,7 +391,7 @@ for the whole population $U$. Instead we estimate $S^2$ by:
 
 \begin{align*}
   s^2
-  &= \frac{1}{n - 1} \sum_{y \in S} \left( y - \bar{y}_S \right)^2
+  &= \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \bar{y}_S \right)^2
 \end{align*}
 
 which gives us the estimate of $Var(\bar{y}_U)$:
@@ -245,23 +400,30 @@ which gives us the estimate of $Var(\bar{y}_U)$:
   &= \frac{1}{n} \left( 1 - \frac{n}{N} \right) s^2
 \end{align*}
 
-Since $s^2$ is unbiased we have that $\frac{S^2}{n} \left( 1 - \frac{n}{N}
+Since $s^2$ is unbiased we have that $\frac{s^2}{n} \left( 1 - \frac{n}{N}
 \right)$ is an unbiased estimator of the variance of $\bar{y}_S$.
 
 From this it follows that the variance of $\hat{t}_S$ has the unbiased estimator
 $\frac{N^2}{n} s^2 \left( 1 - \frac{n}{N} \right)$.
 
-\section{Stratification}
+The factor $\left( 1 - \frac{n}{N} \right)$ in the variances is what differs in
+these variance estimates compared to the ``normal'' ones. It is called the
+\textbf{finite population coefficient (fpc)} and comes from the fact that we are
+sampling without replacement from a finite population.
 
-\section{Clustering}
-
-\section{Complex surveys}
-
-\section{Variance estimation (?)}
-
-\section{Regression}
+When we sample a larger and larger portion on the population we will get more
+and more information and therefore the variance will decrease towards zero. This
+means that if we sample half the population the variance estimate will be half
+of the variance estimate in model based statistics.
 
 
+\subsection{Stratification}
+
+\subsection{Clustering}
+
+\subsection{Complex surveys}
+
+\subsection{Variance estimation (?)}
 
 
 
