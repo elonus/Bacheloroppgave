@@ -44,11 +44,15 @@ To illustrate the difference, this first plot shows a random sample where every 
 
 
 ```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthsrs, aes(finger, height)) + ylim(60, 70)
+ggplot() + geom_point(data = anthsrs, aes(finger, height)) + ylim(60, 70) +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 14))
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthuneq, aes(finger, height)) + ylim(60, 70)
+ggplot() + geom_point(data = anthuneq, aes(finger, height)) + ylim(60, 70) +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 14))
 ```
 
 This means that if you try to fit a linear regression model to the unequal probabilities sample the slope will tend to be smaller than what it should be, since there are few observations in the top right of the plot.
@@ -64,17 +68,43 @@ survmod <- svyglm(height ~ finger, design = anthuneq.svy)
 
 normalcoef <- summary(normalmod)$coefficients
 survcoef <- summary(survmod)$coefficients
+```
 
+```{r}
+# Bootstrap
+B = 1000
+
+coefs <- sapply(1:B, function(x) {
+  indeces <- sample(1:nrow(anthuneq), size = nrow(anthuneq), replace = TRUE)
+  s <- anthuneq[indeces,]
+  s.svy <- svydesign(ids = ~0, weights = ~weights, data = s)
+  mod <- svyglm(height ~ finger, design = s.svy)
+  return(summary(mod)$coefficients[,1])
+})
+
+intercept.var <- var(coefs[1,])
+finger.var <- var(coefs[2,])
+intercept.finger.cov <- cov(coefs[1,], coefs[2,])
+
+```
+
+```{r}
 x.vals = seq(from = 10, to = 12.5, by = 0.1)
 predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
 predict.int.normalmod$x.vals <- x.vals
 
-predict.survmod <- as.data.frame(predict(survmod, newdata = data.frame(finger = x.vals), se=TRUE))
-predict.int.survmod <- data.frame(lower = predict.survmod$link - qt(0.975, df = nrow(anthuneq)))
-predict.int.survmod$upper <- predict.survmod$link + qt(0.975, df = nrow(anthuneq))
-predict.int.survmod$x.vals <- x.vals
-predict.int.survmod$fit <- predict.survmod$link
+cov.matrix <- vcov(survmod)
 
+predict.survmod <- as.data.frame(predict(survmod, newdata = data.frame(finger = x.vals), se=TRUE))
+predict.int.survmod <- data.frame(fit = predict.survmod$link)
+predict.int.survmod$x.vals <- x.vals
+predict.int.survmod$se <- sqrt(cov.matrix[1, 1] + predict.int.survmod$x.vals^2 * cov.matrix[2, 2] + 2*predict.int.survmod$x.vals * cov.matrix[1, 2])
+predict.int.survmod$lower <- predict.int.survmod$fit - predict.int.survmod$se * qt(0.975, df = nrow(anthuneq))
+predict.int.survmod$upper <- predict.int.survmod$fit + predict.int.survmod$se * qt(0.975, df = nrow(anthuneq))
+```
+
+
+```{r}
 prop = 0.0001
 size <- ceiling(anthuneq$weights)
 size <- replace(size, size == 1384, prop * 1384)
@@ -86,7 +116,8 @@ uneq.surv.plot <- ggplot() +
   geom_point(data = anthuneq, aes(finger, height), size = size) +
   geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue") +
   geom_point(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "yellow") +
-  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green")
+  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green") +
+  theme(axis.title.x = element_text(size = 20))
 
 uneq.normal.plot <- ggplot() +
   geom_point(data = anthuneq, aes(finger, height), size = size) +
