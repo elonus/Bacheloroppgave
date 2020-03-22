@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+*.html
+*.aur
+*.log
+*.pdf
+*.aux
+*.out
+*.toc
+*.zip
