@@ -11,14 +11,13 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-```{r, include = FALSE}
 library(survey)
 library(ggplot2)
 library(ggfortify)
 library(cowplot)
 ```
+
 
 When you want to make a model of some relationship between a response and predictors you generally first need to collect data to fit that model. This data can be collected in many different ways and it is very important to take into account the methods used in the information gathering when fitting models. In this paper I will show how to fit a linear regression model when your data is collected through a complex survey, a survey including unequal sampling probabilities, stratification and clustering. Definitions and details regarding what this means will come later in the paper. I will first start with a example illustrating what can go wrong if you do not take the methods used in the information gathering into account.
 
@@ -72,7 +71,7 @@ survcoef <- summary(survmod)$coefficients
 
 ```{r}
 # Bootstrap
-B = 1000
+B = 10000
 
 coefs <- sapply(1:B, function(x) {
   indeces <- sample(1:nrow(anthuneq), size = nrow(anthuneq), replace = TRUE)
@@ -89,55 +88,104 @@ intercept.finger.cov <- cov(coefs[1,], coefs[2,])
 ```
 
 ```{r}
-x.vals = seq(from = 10, to = 12.5, by = 0.1)
-predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
+x.vals = seq(from = 10, to = 13, by = 0.1)
+#predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
+#predict.int.normalmod$x.vals <- x.vals
+
+normal.cov <- vcov(normalmod)
+predict.normalmod <- predict(normalmod, newdata = data.frame(finger = x.vals))
+predict.int.normalmod <- data.frame(fit = predict.normalmod)
 predict.int.normalmod$x.vals <- x.vals
+#predict.int.normalmod$se <- sqrt(intercept.var + predict.int.normalmod$x.vals^2 * finger.var + 2*predict.int.normalmod$x.vals * intercept.finger.cov)
+predict.int.normalmod$se <- sqrt(summary(normalmod)$sigma^2 + cov.matrix[1, 1] + predict.int.normalmod$x.vals^2 * cov.matrix[2, 2] + 2*predict.int.normalmod$x.vals * cov.matrix[1, 2])
+predict.int.normalmod$lwr <- predict.int.normalmod$fit - predict.int.normalmod$se * qt(0.975, df = nrow(anthuneq))
+predict.int.normalmod$upr <- predict.int.normalmod$fit + predict.int.normalmod$se * qt(0.975, df = nrow(anthuneq))
 
 cov.matrix <- vcov(survmod)
 
 predict.survmod <- as.data.frame(predict(survmod, newdata = data.frame(finger = x.vals), se=TRUE))
 predict.int.survmod <- data.frame(fit = predict.survmod$link)
 predict.int.survmod$x.vals <- x.vals
-predict.int.survmod$se <- sqrt(cov.matrix[1, 1] + predict.int.survmod$x.vals^2 * cov.matrix[2, 2] + 2*predict.int.survmod$x.vals * cov.matrix[1, 2])
+#predict.int.survmod$se <- sqrt(intercept.var + predict.int.survmod$x.vals^2 * finger.var + 2*predict.int.survmod$x.vals * intercept.finger.cov)
+predict.int.survmod$se <- sqrt(var(survmod$residuals) + cov.matrix[1, 1] + predict.int.survmod$x.vals^2 * cov.matrix[2, 2] + 2*predict.int.survmod$x.vals * cov.matrix[1, 2])
 predict.int.survmod$lower <- predict.int.survmod$fit - predict.int.survmod$se * qt(0.975, df = nrow(anthuneq))
 predict.int.survmod$upper <- predict.int.survmod$fit + predict.int.survmod$se * qt(0.975, df = nrow(anthuneq))
 ```
 
 
 ```{r}
-prop = 0.0001
-size <- ceiling(anthuneq$weights)
-size <- replace(size, size == 1384, prop * 1384)
-size <- replace(size, size == 2767, prop * 2767)
-size <- replace(size, size == 16584, prop * 16584)
-size <- replace(size, size == 33223, prop * 33223)
+#prop = 0.0001
+#size.uneq <- ceiling(anthuneq$weights)
+#size.uneq <- replace(size.uneq, size.uneq == 1384, prop * 1384)
+#size.uneq <- replace(size.uneq, size.uneq == 2767, prop * 2767)
+#size.uneq <- replace(size.uneq, size.uneq == 16584, prop * 16584)
+#size.uneq <- replace(size.uneq, size.uneq == 33223, prop * 33223)
 
-uneq.surv.plot <- ggplot() +
-  geom_point(data = anthuneq, aes(finger, height), size = size) +
-  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue") +
-  geom_point(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "yellow") +
-  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green") +
+size.uneq <- rep(0.8, length(nrow(anthuneq)))
+size.srs <- rep(0.8, length(nrow(anthuneq)))
+
+base <- ggplot() + xlim(10, 13) + ylim(58, 72)
+
+uneq.surv.plot <- base +
+  geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
   theme(axis.title.x = element_text(size = 20))
 
-uneq.normal.plot <- ggplot() +
-  geom_point(data = anthuneq, aes(finger, height), size = size) +
-  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red") +
-  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "yellow") +
-  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "green")
+uneq.normal.plot <- base +
+  geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
+  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
+  theme(axis.title.x = element_text(size = 20))
 
-srs.surv.plot <- ggplot() +
-  geom_point(data = anthsrs, aes(finger, height)) +
-  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue") +
-  geom_point(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "yellow") +
-  geom_point(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "green")
+srs.surv.plot <- base +
+  geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  theme(axis.title.x = element_text(size = 20))
 
-srs.normal.plot <- ggplot() +
-  geom_point(data = anthsrs, aes(finger, height)) +
-  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red") +
-  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "yellow") +
-  geom_point(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "green")
+srs.normal.plot <- base +
+  geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
+  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
+  theme(axis.title.x = element_text(size = 20))
 
 plot_grid(uneq.normal.plot, uneq.surv.plot, srs.normal.plot, srs.surv.plot, ncol = 2, labels = "AUTO")
+```
+
+
+```{r}
+size.uneq <- rep(0.8, length(nrow(anthuneq)))
+size.srs <- rep(0.8, length(nrow(anthuneq)))
+
+base <- ggplot() + xlim(10, 13) + ylim(58, 72)
+
+uneq.plot <- base +
+  geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
+  theme(axis.title.x = element_text(size = 20))
+
+srs.plot <- base +
+  geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
+  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
+  theme(axis.title.x = element_text(size = 20))
+
+
+plot_grid(uneq.plot, srs.plot, nrow = 2, labels = "AUTO")
 ```
 
 
