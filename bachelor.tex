@@ -25,7 +25,9 @@
 
 \maketitle
 
-\section*{Abstract}
+\begin{abstract}
+ test 
+\end{abstract}
 
 \tableofcontents
 
@@ -95,19 +97,9 @@ information gathering is not taken into account.
 \begin{example}
 
 We will use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
-The researcher wanted a larger sample of shorter people than tall people so they
-split the population into a partition, one subset having all the people with
-height less than \(65\), one subset with people having height equal to \(65\), one subset
-with people having height equal to \(66\) or \(67\) and one subset with people
-having height larger than \(67\).
-
-When sampling, the people in the first group had a \(24\) times larger chance to
-be included than the people in the last group, the people in the second group
-had a \(12\) times larger chance to be included than the people in the last
-group and the third group had a \(2\) times larger chance to be included than
-the people in the last group.
-This means the short people are oversampled and tall people are undersampled.
-The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (inches) and the probability that they would be chosen for the sample.
+The researcher oversampled people having short fingers and undersampled people
+having long fingers.
+The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (cm) and the probability that they would be chosen for the sample.
 
 To illustrate the difference, the left panel in Figure \ref{fig:anthSamples} shows a random sample where every
 person had an equal chance of being included. While the right panel in Figure \ref{fig:anthSamples} shows a sample
@@ -286,7 +278,7 @@ who we sample. This leads us to a couple definitions:
   The \textbf{sampling frame} is the list of all sampling units you are going to sample from. 
 \end{definition}
 
-In the case of our API example, our sampling units will be one school, while
+In the case of our API example, our sampling units are schools, while
 the sampling population is all the schools in California having more than 100 students.
 The sampling frame would be all schools in California that the researchers know
 about and that the researchers think have more the 100 students.
@@ -346,14 +338,23 @@ talk about regression.
 
 
 \section{Regression in the context of finite populations}
+Now consider the case where the population is finite, i.e. we have \((x_1, y_1),
+(x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
+predict \(y_i\) and \(N\) is the size of the population.
+
+Our goal in linear regression in this case is that we want to find the linear
+line, \(y = B_0 + B_1x\), that best approximates this population. We define the best line as the one
+that minimizes \(\mathrm{RSS} = \sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\).
+Minimizing the RSS means that we minimize the the squared distance of each point
+in the population from the line.
 
 In the case of finite populations, things change a bit. We still want to find the
 coefficients that minimize the RSS, but since the population is finite our goal
 is to estimate the line that minimizes the RSS for the whole population, i.e. find
-\(B_0\) and \(B_1\) such that \(\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)\) is as small as
+\(B_0\) and \(B_1\) such that \(\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\) is as small as
 possible.
 
-If we know the whole population we can just compute them using the same formulas
+If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
 as in Section \ref{sec:modLinReg}, which after rewriting them become:
 
 \begin{equation*}
@@ -390,6 +391,8 @@ t_{xy}, N\) respectively, we get the estimators for \(B_0\) and \(B_1\):
   \right)
   = \frac{\hat{t}_y}{\hat{N}} - \hat{B}_1\frac{\hat{t}_x}{\hat{N}}
 \end{equation*}
+
+To do this however we need to introduce some terminology:
 
 Since \(\hat{B}_0\) and \(\hat{B}_1\) are non linear expressions of dependent
 statistics, calculating exact variances can get very complicated. We therefore
