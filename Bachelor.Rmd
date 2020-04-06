@@ -26,16 +26,18 @@ library(dplyr)
 anthsrs <- SDaA::anthsrs
 anthuneq <- SDaA::anthuneq
 anthuneq$weights <- 1/anthuneq$prob
+anthuneq$height = anthuneq$height*2.54
+anthsrs$height = anthsrs$height*2.54
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthsrs, aes(finger, height)) + ylim(60, 70) +
+ggplot() + geom_point(data = anthsrs, aes(finger, height)) + ylim(60, 70) + xlim(10, 13) +
   theme(axis.title = element_text(size = 20),
         axis.text = element_text(size = 14))
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthuneq, aes(finger, height)) + ylim(60, 70) +
+ggplot() + geom_point(data = anthuneq, aes(finger, height)) + ylim(60, 70) + xlim(10, 13) +
   theme(axis.title = element_text(size = 20),
         axis.text = element_text(size = 14))
 ```
@@ -52,25 +54,25 @@ survcoef <- summary(survmod)$coefficients
 ```
 
 ```{r}
-# Bootstrap
-B = 10000
-
-coefs <- sapply(1:B, function(x) {
-  indeces <- sample(1:nrow(anthuneq), size = nrow(anthuneq), replace = TRUE)
-  s <- anthuneq[indeces,]
-  s.svy <- svydesign(ids = ~0, weights = ~weights, data = s)
-  mod <- svyglm(height ~ finger, design = s.svy)
-  return(summary(mod)$coefficients[,1])
-})
-
-intercept.var <- var(coefs[1,])
-finger.var <- var(coefs[2,])
-intercept.finger.cov <- cov(coefs[1,], coefs[2,])
+## Bootstrap
+#B = 10000
+#
+#coefs <- sapply(1:B, function(x) {
+#  indeces <- sample(1:nrow(anthuneq), size = nrow(anthuneq), replace = TRUE)
+#  s <- anthuneq[indeces,]
+#  s.svy <- svydesign(ids = ~0, weights = ~weights, data = s)
+#  mod <- svyglm(height ~ finger, design = s.svy)
+#  return(summary(mod)$coefficients[,1])
+#})
+#
+#intercept.var <- var(coefs[1,])
+#finger.var <- var(coefs[2,])
+#intercept.finger.cov <- cov(coefs[1,], coefs[2,])
 
 ```
 
 ```{r}
-x.vals = seq(from = 10, to = 13, by = 0.1)
+x.vals = seq(from = 9.5, to = 13.5, by = 0.1)
 #predict.int.normalmod <- as.data.frame(predict(normalmod, newdata = data.frame(finger = x.vals), interval = "pred"))
 #predict.int.normalmod$x.vals <- x.vals
 
@@ -106,7 +108,7 @@ predict.int.survmod$upper <- predict.int.survmod$fit + predict.int.survmod$se * 
 size.uneq <- rep(0.8, length(nrow(anthuneq)))
 size.srs <- rep(0.8, length(nrow(anthuneq)))
 
-base <- ggplot() + xlim(10, 13) + ylim(58, 72)
+base <- ggplot() + xlim(10, 13) + ylim(147, 183)
 
 uneq.surv.plot <- base +
   geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
@@ -144,9 +146,11 @@ plot_grid(uneq.normal.plot, uneq.surv.plot, srs.normal.plot, srs.surv.plot, ncol
 size.uneq <- rep(0.8, length(nrow(anthuneq)))
 size.srs <- rep(0.8, length(nrow(anthuneq)))
 
-base <- ggplot() + xlim(10, 13) + ylim(58, 72)
+base <- ggplot() + xlim(10, 13) + ylim(145, 191)
 
 uneq.plot <- base +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.survmod, fill = "blue", alpha = 0.5) +
+  geom_ribbon(aes(x = x.vals, ymin = lwr, ymax = upr), data = predict.int.normalmod, fill = "red", alpha = 0.5) +
   geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
   geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
   geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
