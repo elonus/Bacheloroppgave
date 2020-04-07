@@ -198,5 +198,41 @@ svymean(~api00, svy.strat)
 ```{r}
 apipop %>% filter(hsg > 30) %>% transmute(mean = mean(api00))
 foo <- apipop %>% filter(hsg > 30) %>% select(api00) %>% mean
+mean((apipop %>% filter(hsg < 40) %>% filter(hsg > 30))$api00)
+mean((apipop %>% filter(hsg > 70))$api00)
+mean((apipop %>% filter(col.grad < 20))$api00)
+mean((apipop %>% filter(col.grad > 20) %>% filter(col.grad < 40))$api00)
+mean((apipop %>% filter(col.grad > 40))$api00)
+
+length((apipop %>% filter(col.grad < 20))$api00)
+length((apipop %>% filter(col.grad > 20) %>% filter(col.grad < 40))$api00)
+length((apipop %>% filter(col.grad > 40))$api00)
 ```
 
+```{r}
+api.less.than.20 <- apipop %>% filter(col.grad < 20)
+api.less.than.20$pw <- nrow(api.less.than.20)/100
+api.less.than.20$fpc <- 1 - 1/api.less.than.20$pw
+
+api.between.20.40 <- apipop %>% filter(col.grad > 20) %>% filter(col.grad < 40)
+api.between.20.40$pw <- nrow(api.between.20.40)/100
+api.between.20.40$fpc <- 1 - 1/api.between.20.40$pw
+
+api.more.than.40 <- apipop %>% filter(col.grad > 40)
+api.more.than.40$pw <- nrow(api.more.than.40)/100
+api.more.than.40$fpc <- 1 - 1/api.more.than.40$pw
+
+apistratcol <- api.less.than.20[sample(1:nrow(api.less.than.20), 100, replace = F),]
+apistratcol <- rbind(apistratcol, api.between.20.40[sample(1:nrow(api.between.20.40), 100, replace = F),])
+apistratcol <- rbind(apistratcol, api.more.than.40[sample(1:nrow(api.more.than.40), 100, replace = F),])
+
+```
+
+
+```{r}
+svy.srs <- svydesign(id = ~1, weights = ~pw, data = apisrs, fpc = ~fpc)
+svy.strat <- svydesign(id=~1,strata=~stype, weights=~pw, data=apistratcol, fpc=~fpc)
+
+svymean(~api00, svy.srs)
+svymean(~api00, svy.strat)
+```
