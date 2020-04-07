@@ -42,19 +42,20 @@ between income and age of death.
 When fitting a model, data is needed. It is very important to take into account the methods used in
 the information gathering when fitting models.
 
-One needs some kind of ``randomness'' to do statistics. There are different
-approaches to get this.
-One of them is that one assumes that the population sampled from is part of a ``superpopulation'', i.e. an
+When doing statistics there is always some uncertainty. There are different
+approaches to handling this uncertainty. One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e. an
 infinite population, that has some distribution. This could for example be a
-normal distribution with some mean and variance.  This distribution is where the
-``randomness'' comes from. In this case the way the data
+normal distribution with some mean and variance. We model the uncertainty by using the
+fact that we know how this distribution behaves.
+In this case the way the data
 is collected is not that important. This is called a model based approach.
+
 
 An other approach is to not assume that the population you sample is part of a
 superpopulation, and therefore does not have a distribution either.
-One instead samples from a finite population and the ``randomness'' comes from
-considering the probability of each individual in the population being included
-in the sample. This is a design based approach and is what survey statistics is about. Here it's more important how
+One instead samples from a finite population, and we use the probabilities that
+each individual in the population being included in the sample to model the uncertainty.
+This is a design based approach and is what survey statistics is about. Here it's more important how
 you collect the data.
 The goal of survey statistics is to be able to do statistical analysis without
 making assumptions with regards to the distribution of the data. The advantage
@@ -64,30 +65,58 @@ making these assumptions allows us to decrease the variance as the assumptions
 gives the data some structure. By making as few assumptions as possible we
 therefore get larger variances and more uncertainty.
 
-This thesis shows how to fit
-a linear regression model when data is collected through a complex survey design, i.e,
-a survey including unequal sampling probabilities, stratification, which is when we
-create a partition of the population and then sample from each subset, and
-clustering, where we again create a partition of the population but here, which
-of these subsets we sample from is also random.
-To do analysis in these cases weights are used. Each observation gets a weight
-value which can be interpreted as the number of individuals in the population
-that observation represents. So an observation with a small chance of being
-included in the sample would have a larger weight than one with a high chance of
-being included.
-In normal regression each individual in the population has the same chance of
-being included so each observation therefore has the same weight.
+The population we are sampling from could be very heterogenuous, i.e. different
+parts of the population are very different each other. Say for example we want
+to find the mean income of residents of Oslo. When sampling we could risk
+getting only people living in the west part of Oslo, which is the most wealthy
+area of Oslo. This would give a very wrong estimate. To fix this we could split
+the city population into subsets, one for each city district. We can then sample
+from each of these districts indepentently. Doing that we are guaranteed to get
+a sample including people from different parts of the city and therefore
+more likely to get a representative sample. Doing this also allows us to make
+separate estimates of the statistic of interest for different parts of the
+population, i.e. we could make a separate estimate of the income for each city
+district in addition to the estimate for the city as a whole. This method is
+called stratification.
 
-One of the big problems of doing analysis on data collected through complex
-survey designs is the fact that calculating variances can be extremely
-difficult. One therefore often end up having to estimate the variance through
-various techniques instead of calculating it exactly.
+An other potensial problem when sampling randomly is that the researchers are
+often on a limited budget, and it can be very expensive to sample randomly if
+each individual requires an interviewer to show personally up to each individual
+in the sample if the sample is spread randomly in the country. One often solves
+this by splitting the country into geographic parts, for example counties, and
+then randomly choose some counties to sample people from. One then pick
+independent samples from the chosen counties. This has the advantage that it
+saves a lot of travel time, and therefore makes it a lot cheaper to conduct the
+survey. The problem with this approach however is that the samples become
+dependent, since we sample from only some counties. This results in larger
+variances. This can however be remedied by the fact that we can for the same
+cost sample a lot more individuals inside just some counties than from the whole
+population. This is called clustering.
+
+We often combine stratification and clustering, which results in complicated
+sampling schemes where we for example first cluster on counties, then within
+each county we may for example split the population by age and sample from all
+the age groups. Because this gets so complicated it is often very difficult to
+find explicit formulas for the variance, and we usually have to estimate it
+instead. 
 The fact that we have a finite population also influences the variance, since we
 get something called the finite population coefficient. This is a factor \(1 -
 \frac{n}{N}\), where \(n\) is the size of the sample and \(N\) is the size of
 the population. This factor takes into account the fact that as we get a larger
 and larger sample we can learn everything about the population, and therefore
 the variance goes to zero.
+
+
+This thesis shows how to fit
+a linear regression model when data is collected through a complex survey design, i.e,
+a survey including unequal sampling probabilities, stratification and
+clustering. To do analysis in these cases weights are used. Each observation gets a weight
+value which can be interpreted as the number of individuals in the population
+that observation represents. So an observation with a small chance of being
+included in the sample would have a larger weight than one with a high chance of
+being included.
+In normal regression each individual in the population has the same chance of
+being included so each observation therefore has the same weight.
 
 We start
 with an example illustrating what can go wrong if the methods used in the
