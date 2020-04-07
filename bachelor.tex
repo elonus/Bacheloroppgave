@@ -51,46 +51,50 @@ In this case the way the data
 is collected is not that important. This is called a model based approach.
 
 
-An other approach is to not assume that the population you sample is part of a
-superpopulation, and therefore does not have a distribution either.
+An other approach is to not assume that the population sampled from is part of a
+superpopulation, and therefore does not have a distribution.
 One instead samples from a finite population, and we use the probabilities that
 each individual in the population being included in the sample to model the uncertainty.
-This is a design based approach and is what survey statistics is about. Here it's more important how
-you collect the data.
+This is a design based approach and the idea that survey statistics is based on. Here it's more important how
+the data is collected.
 The goal of survey statistics is to be able to do statistical analysis without
 making assumptions with regards to the distribution of the data. The advantage
 of not making these assumptions is that we don't risk them being wrong, which
 would weaken the confidence in the results. On the other hand,
 making these assumptions allows us to decrease the variance as the assumptions
-gives the data some structure. By making as few assumptions as possible we
+gives the data some structure. By making fewer assumptions we
 therefore get larger variances and more uncertainty.
 
 The population we are sampling from could be very heterogenuous, i.e. different
 parts of the population are very different each other. Say for example we want
 to find the mean income of residents of Oslo. When sampling we could risk
 getting only people living in the west part of Oslo, which is the most wealthy
-area of Oslo. This would give a very wrong estimate. To fix this we could split
+area of city. This would give a very wrong estimate. To fix this we could split
 the city population into subsets, one for each city district. We can then sample
-from each of these districts indepentently. Doing that we are guaranteed to get
-a sample including people from different parts of the city and therefore
-more likely to get a representative sample. Doing this also allows us to make
+from each of these districts independently. Doing that, we are guaranteed to get
+a sample including people from different parts of the city, and therefore
+more likely to get a representative sample. This can dramatically decrease the
+variance of statistics if the subsets are chosen smartly. Doing this also allows us to make
 separate estimates of the statistic of interest for different parts of the
-population, i.e. we could make a separate estimate of the income for each city
+population, i.e. we could make a separate estimate of the mean income for each city
 district in addition to the estimate for the city as a whole. This method is
 called stratification.
 
 An other potensial problem when sampling randomly is that the researchers are
-often on a limited budget, and it can be very expensive to sample randomly if
-each individual requires an interviewer to show personally up to each individual
-in the sample if the sample is spread randomly in the country. One often solves
+often on a limited budget, and it can be very expensive to sample randomly. Say
+for example that 
+each individual requires an interviewer to show up personally to each individual
+in the sample. If the sample is spread randomly in the country this can get very
+expensive as the interviewers would need to use a lot of time to travel. One often solves
 this by splitting the country into geographic parts, for example counties, and
 then randomly choose some counties to sample people from. One then pick
 independent samples from the chosen counties. This has the advantage that it
 saves a lot of travel time, and therefore makes it a lot cheaper to conduct the
 survey. The problem with this approach however is that the samples become
 dependent, since we sample from only some counties. This results in larger
-variances. This can however be remedied by the fact that we can for the same
-cost sample a lot more individuals inside just some counties than from the whole
+variances. This can be remedied by the fact that we can sample a lot more
+individuals inside just some counties for the same
+cost as having a smaller sample from the whole
 population. This is called clustering.
 
 We often combine stratification and clustering, which results in complicated
@@ -202,6 +206,17 @@ API scores is a metric testing the academic performance of the students at the s
 We will use this data as the population we will sample from, and we will take
 different kinds of samples to illustrate the concepts introduces in this thesis.
 
+Section \ref{sec:modLinReg} will give a overview of model based simple
+linear regression, this assumed knows so it will only be a brief repetition.
+Section 3 will explain how to to linear regression in the context of finite
+population using survey statistics. Section 3.1 will show how to do linear
+regression when we have a Simple Random Sample. Section 3.2 will go through
+linear regression when we have sample using stratification. Section 3.3 will
+explain linear regression when having a sample using clustering and Section 3.4
+will show how to do linear regression when you have surveys combining
+stratification and clustering into a complex survey.
+
+
 %The thesis will start by giving an introduction to survey statistics, where giving the necessary background theory needed to be able to talk about linear regression in this context.
 
 \section{Model based simple linear regression} \label{sec:modLinReg}
@@ -227,6 +242,11 @@ Residual Sum of Squared (RSS). The RSS is defined by:
   RSS &= \frac{1}{N} \sum_{i = 1}^N \left( y_i - \hat{y}_i \right)^2 
   = \frac{1}{N} \sum_{i = 1}^N \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2
 \end{align*}
+
+The RSS can be geometrically thought of as the sum of the squared distances of
+the data points in the sample from the regression line. Our goal is to find a
+line that is as close as possible to the observed sample, and minimizing the RSS
+is therefore one way to find a close line.
 
 The \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimizes the RSS are:
 %$$
@@ -280,25 +300,46 @@ the sample are not independent of each other?
 
 This is what survey statistics tells us.
 
-\section{Introduction survey statistics}
 
-\textbf{Slik som denne seksjonen er nå repeterer jeg litt det jeg skrev i
-  introduksjonen om forskjellene mellom survey statistics og ``normal''
-  statistikk. Burde jeg fjerne det jeg repeterer her eller er det greit å gjøre
-  det?
-Har ikke gått så nøye gjennom denne seksjonen ettersom jeg er usikker på hvor
-mye som skal være med.}
-There are two big differenses between ``normal'' statistics and Survey statistics.
 
-The first difference is that in Survey statistics you approach the ''randomness'' from a different angle.
-Usually in statistics you let individual values be stochastic variables
-with some distribution and one observation is a sample from that stochastic
-variable.
+\section{Regression in the context of finite populations}
+Now consider the case where the population is finite, i.e. we have \((x_1, y_1),
+(x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
+predict \(y_i\) and \(N\) is the size of the population.
 
-In Survey statistics on the other hand you say that the individual values are
-fixed, i.e. my height is not random, every time you measure it you will get the
-exact same result, if you discount measurement errors. Instead what is random is
-who we sample. This leads us to a couple definitions:
+Our goal in linear regression in this case is that we want to find the linear
+line, \(y = B_0 + B_1x\), that best approximates this population. We define the best line as the one
+that minimizes \(\mathrm{RSS} = \sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\).
+Minimizing the RSS means that we minimize the the squared distance of each point
+in the population from the line.
+
+In the case of finite populations, things change a bit. We still want to find the
+coefficients that minimize the RSS, but since the population is finite our goal
+is to estimate the line that minimizes the RSS for the whole population, i.e. find
+\(B_0\) and \(B_1\) such that \(\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\) is as small as
+possible.
+
+If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
+as in Section \ref{sec:modLinReg}, which after rewriting them become:
+
+\begin{equation*}
+  B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
+    {t_{x^2} - \frac{1}{N} t_x^2}
+   \right)
+\end{equation*}
+
+\begin{equation*}
+  B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
+    {t_{x^2} - \frac{1}{N} t_x^2}
+\end{equation*}
+
+where \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
+\sum_{i = 1}^N x_i^2\) and \(t_{xy} =
+\sum_{i = 1}^N x_i y_i\).
+
+
+The case where we know the whole population however is not that interesting, we are instead interested in the case where we have to sample from the
+population to estimate such statistics. To do that we have to introduce some terms:
 
 \begin{definition} \label{def:sampUnitPopFrame}
   A \textbf{sampling unit} is one "element" we want to sample.
@@ -345,66 +386,6 @@ sampling population.
 
 So we have a probability sample, where every sampling unit has some probability to be included in the sample, called the sampling probability.
 
-\vspace{5mm}
-
-The second big difference is that normally you assume that you sample from an
-infinity population which has some distribution. In Survey statistics however we
-have a finite distribution which means that it no longer makes sense thinking
-about it having a distribution. This means that we no longer need the assumption
-of which distribution the sampling units come from. This gives us more freedom,
-and less potential problems if our assumptions are wrong.
-
-
-The goal of Survey statistics is generally to estimate some statistic of the whole
-population from a sample. These statistics include the total of some value,
-f.eks. the total number of students in school, the mean of some value, f.eks.
-the mean number of students per teacher in school, or to estimate regression
-coefficients to either do inference or predict future values.
-
-I will first start by talking about different kinds of samples along with some
-inference on some statistics calculated from these samples and then finish with
-talk about regression.
-
-
-\section{Regression in the context of finite populations}
-Now consider the case where the population is finite, i.e. we have \((x_1, y_1),
-(x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
-predict \(y_i\) and \(N\) is the size of the population.
-
-Our goal in linear regression in this case is that we want to find the linear
-line, \(y = B_0 + B_1x\), that best approximates this population. We define the best line as the one
-that minimizes \(\mathrm{RSS} = \sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\).
-Minimizing the RSS means that we minimize the the squared distance of each point
-in the population from the line.
-
-In the case of finite populations, things change a bit. We still want to find the
-coefficients that minimize the RSS, but since the population is finite our goal
-is to estimate the line that minimizes the RSS for the whole population, i.e. find
-\(B_0\) and \(B_1\) such that \(\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\) is as small as
-possible.
-
-If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
-as in Section \ref{sec:modLinReg}, which after rewriting them become:
-
-\begin{equation*}
-  B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
-    {t_{x^2} - \frac{1}{N} t_x^2}
-   \right)
-\end{equation*}
-
-\begin{equation*}
-  B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
-    {t_{x^2} - \frac{1}{N} t_x^2}
-\end{equation*}
-
-where \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
-\sum_{i = 1}^N x_i^2\) and \(t_{xy} =
-\sum_{i = 1}^N x_i y_i\).
-
-
-The case where we know the whole population however is not that interesting, we are instead interested in the case where we have to sample from the
-population to estimate such statistics.
-
 If we then let \(\hat{t}_x, \hat{t}_y, \hat{t}_{x^2}, \hat{t}_{xy}, \hat{N}\) be estimators
 for \(t_x, t_y, t_{x^2},
 t_{xy}, N\) respectively, we get the estimators for \(B_0\) and \(B_1\):
@@ -443,7 +424,7 @@ We then get:
 
 where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
 
-\subsection{Simple random sample}
+\subsection{Simple random sample} \label{sec:SRS}
 
 One of the simpler probability samples is a Simple Random Sample (SRS). A
 sample of size \(M \leq N\) is an SRS if every subset \(S \subseteq U\) has the same
@@ -475,7 +456,7 @@ but this is not a SRS since all possible subsets of size \(2\) do not have equal
 probability of being chosen.
 
 
-\subsection{Estimation}
+\subsubsection{Estimation}
 
 One of the more common statistics we want to estimate is the total of some value
 for the whole population. We might for example want to estimate the total number
@@ -567,21 +548,44 @@ the model based case:
 \end{equation*}
 
 
-\subsection{Stratification}
+\subsection{Stratification} \label{sec:strat}
 
-In stratification our goal is to reduce variance by partitioning the sampling
-frame before sampling and then sampling from each of the subsets created by the
-partitioning. For this to be effective we want to partition such that the
-sampling units inside a subset are similar but sampling units in different
-subsets are different. This makes sure that you capture more variance in the
-sample compared to a SRS.
+In stratification we split the sampling frame into a partition, i.e. \(H\) non
+overlapping subsets that together comprise the whole sampling frame. These
+subsets are called \textbf{strata}. We let each stratum have \(N_i, i = 1, \dots
+, H\) elements, and \(N_1 + N_2 + \dots + N_H = N\). When sampling we
+indepentently make a samples, \(S_1, S_2, \dots, S_H\), with \(n_i, i = 1, \dots
+, H\) elements from each stratum. When
+estimating a total we can therefore first estimate the total of each stratum and
+then add these totals to get an estimate of the population total.
+If we let \(t_{y,h}\) we the total in stratum \(h\) we get \(\hat{t}_y =
+\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i = \sum_{h = 1}^H \hat{t}_{y,h}\). Since the estimate for each
+stratum is unbiased, following from Section \ref{sec:SRS}, the estimate from the
+total is unbiased.
+Since the samples from the different strate are independent the variance is also
+easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
+    1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right) = \sum_{h =
+    1}^H\mathrm{Var}\left(\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right)\). This
+means that to minimize the variance of \(\hat{t}\) we should choose the strata
+such that the internal variance is as small as possible.
 
-Suppose that we want to sample schools in the API dataset to learn more about
-how students perform at all levels of schools and that we want to be sure to
-have both elementary schools, middle schools and high schools represented. We
-might then partition the schools into three subsets, one for each level of
-school. We can then sample from each of these subsets and we sure to have all
-school levels represented.
+Suppose we want to sample schools in the API dataset to learn about the student
+performance throught the API metric. We might reasonably assume that students
+having parents with higher education will get more help at home for schoolwork
+and therefore perform better in school. It might therefore be reasonable to
+create strate that splits the population by the percentage of parents with a
+college degree. If we take an SRS of size \(300\) of all the schools we get an API mean of
+\(659.37\) with a variance \(56.36\). However if we take a stratified sample,
+where the strate are the schools with less than \(20\%\) of parents having
+college degrees, schools with between \(20\%\) and \(40\%\) of parents having
+college degrees and schools with more than \(40\%\) of parents with college
+degrees, and we take a sample of 100 schools from each stratum, we get an API
+mean of \(668.33\) and variance \(43.37\). Since we have the full dataset we can
+find the true mean, which is \(664.7\), so both methods were roughtly the same
+distance from the correct value. However the variance from the stratified sample
+is smaller. In addition we have the option of finding the mean of each of the
+strata separately without taking new samples.
+
 
 \subsection{Clustering}
 
