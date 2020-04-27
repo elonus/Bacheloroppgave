@@ -26,7 +26,7 @@
 \maketitle
 
 \begin{abstract}
- test 
+  % 200 ord
 \end{abstract}
 
 \tableofcontents
@@ -34,63 +34,71 @@
 \section{Introduction}
 
 Linear regression is a useful tool to describe relationships between variables.
-When we want to investigate possible accosiations, linear regression
+When we want to investigate possible associations, linear regression
 is one of the most common tools we could use. It can be used to show show correlation between
 variables, and in some cases where experiments are designed very carefully, it can even suggest causation.
-It can for example be used in the social sciences to try to show a relationship
+It can,, for example,, be used in the social sciences to try to show a relationship
 between income and age of death.
 When fitting a model, data is needed. It is very important to take into account the methods used in
-the information gathering when fitting models.
+the information gathering when fitting models. What is the probability of each
+individual being included in the sample? Are they sampled independently? Is the
+sampling done in such a way that we are guaranteed to have individuals from
+several different parts of the population?
 
-When doing statistics there is always some uncertainty. There are different
-approaches to handling this uncertainty. One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e. an
-infinite population, that has some distribution. This could for example be a
+When considering observed data there is always uncertainty. There are different
+approaches to handling this uncertainty. One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
+infinite population, that is described by some distribution. This could,, for example,, be a
 normal distribution with some mean and variance. We model the uncertainty by using the
 fact that we know how this distribution behaves.
-In this case the way the data
-is collected is not that important. This is called a model based approach.
+In this case, the only requirement of the data collection is that the
+individuals in the sample are sampled independently. This is called a model based approach.
 
 
-An other approach is to not assume that the population sampled from is part of a
-superpopulation, and therefore does not have a distribution.
-One instead samples from a finite population, and we use the probabilities that
-each individual in the population being included in the sample to model the uncertainty.
-This is a design based approach and the idea that survey statistics is based on. Here it's more important how
-the data is collected.
+An other approach is to assume that one instead samples from a finite
+population. Instead of looking at the measured values of the individuals sampled and
+possible probability distribution to describe them, which no longer make sense
+in a finite population, we look at the probabilities that
+each individual in the population being included in the sample to model the uncertainty. This is now the
+``random'' part.
+The fact that we consider the probabilities of indivduals being included in the
+sample instead of the values we measure is called a design based approach and is
+the idea that survey statistics is based on. Here we need more details regarding
+how how the data is collected is collected than in the model based approach.
 The goal of survey statistics is to be able to do statistical analysis without
 making assumptions with regards to the distribution of the data. The advantage
-of not making these assumptions is that we don't risk them being wrong, which
+of not making these assumptions is that we do not risk them being wrong, which
 would weaken the confidence in the results. On the other hand,
-making these assumptions allows us to decrease the variance as the assumptions
+making assumptions about the distribution describing the data allows us to decrease the variance, as the assumptions
 gives the data some structure. By making fewer assumptions we
 therefore get larger variances and more uncertainty.
 
-The population we are sampling from could be very heterogenuous, i.e. different
-parts of the population are very different each other. Say for example we want
-to find the mean income of residents of Oslo. When sampling we could risk
+The population we are sampling from could be very heterogenuous, i.e, different
+parts of the population have very different measured values. Say, for example, we want
+to find the mean income of residents of Oslo. When sampling, we could risk
 getting only people living in the west part of Oslo, which is the most wealthy
-area of city. This would give a very wrong estimate. To fix this we could split
-the city population into subsets, one for each city district. We can then sample
+area of city. This would result in the estimate being much higher than the true
+mean income of the residents of Oslo. To fix this we could split
+the city population into subsets; one for each city district. We can then sample
 from each of these districts independently. Doing that, we are guaranteed to get
 a sample including people from different parts of the city, and therefore
-more likely to get a representative sample. This can dramatically decrease the
-variance of statistics if the subsets are chosen smartly. Doing this also allows us to make
+more likely to get a representative sample ( TODO: Skriv om ``representative
+sample'' ). This can dramatically decrease the
+variance of values we estimate, if the subsets are chosen smartly. Doing this also allows us to make
 separate estimates of the statistic of interest for different parts of the
-population, i.e. we could make a separate estimate of the mean income for each city
+population, i.e, we could make a separate estimate of the mean income for each city
 district in addition to the estimate for the city as a whole. This method is
 called stratification.
 
-An other potensial problem when sampling randomly is that the researchers are
-often on a limited budget, and it can be very expensive to sample randomly. Say
+Another potential problem is that researchers are often on a limited budget, and
+it can be very expensive to sample randomly from the whole population. Say
 for example that 
-each individual requires an interviewer to show up personally to each individual
-in the sample. If the sample is spread randomly in the country this can get very
+each sampled individual requires an interviewer to show up personally. If the sample is spread randomly in the country, this can get very
 expensive as the interviewers would need to use a lot of time to travel. One often solves
-this by splitting the country into geographic parts, for example counties, and
+this by splitting the country into geographic parts,, for example, counties, and
 then randomly choose some counties to sample people from. One then pick
 independent samples from the chosen counties. This has the advantage that it
-saves a lot of travel time, and therefore makes it a lot cheaper to conduct the
-survey. The problem with this approach however is that the samples become
+saves a lot of travel time, and, therefore, makes it a lot cheaper to conduct the
+survey. The problem with this approach, however, is that the samples become
 dependent, since we sample from only some counties. This results in larger
 variances. This can be remedied by the fact that we can sample a lot more
 individuals inside just some counties for the same
@@ -98,8 +106,8 @@ cost as having a smaller sample from the whole
 population. This is called clustering.
 
 We often combine stratification and clustering, which results in complicated
-sampling schemes where we for example first cluster on counties, then within
-each county we may for example split the population by age and sample from all
+sampling schemes where we, for example, first cluster on counties, then within
+each county we may, for example, split the population by age and sample from all
 the age groups. Because this gets so complicated it is often very difficult to
 find explicit formulas for the variance, and we usually have to estimate it
 instead. 
@@ -129,73 +137,94 @@ information gathering is not taken into account.
 
 \begin{example}
 
-We will use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
+We use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
 The researcher oversampled people having short fingers and undersampled people
 having long fingers.
 The dataset contains 200 samples, each containing the length of the persons left middle finger (cm), their height (cm) and the probability that they would be chosen for the sample.
 
-To illustrate the difference, the left panel in Figure \ref{fig:anthSamples} shows a random sample where every
-person had an equal chance of being included. While the right panel in Figure \ref{fig:anthSamples} shows a sample
+To illustrate the difference, the top left plot in Figure \ref{fig:ex1} shows a random sample where every
+person had an equal chance of being included. While the top right in Figure \ref{fig:ex1} a sample
 where short people had a higher chance of being included than tall people. The
 observations in the right panel is much more concentrated in the bottom.
-
-\begin{figure}
-  \label{fig:anthSamples}
-  \includegraphics[scale = 0.4]{example1_SRS.png}
-  \includegraphics[scale = 0.4]{example1_UNEQ.png}
-  \caption{Two samples of finger length versus height. Left: Every person has the same
-    probability of being included in the sample. Right: The probability of being
-  included in the sample depends on height.}
-\end{figure}
-
-
 This means that fitting a linear regression model to the unequal probabilities
-sample will result in the slope tending to be smaller than what it should be, since there are few observations in the top right of the plot.
-
-This will be illustrated now by fitting both a naive linear model and a model that takes into account the sampling probabilities.
-
-% Code and plot of regression lines
-%\includegraphics[scale = 0.5]{example1.png}
+sample will result in the slope tending to be smaller than what it should be.
 
 \begin{figure}
   \centering
   
-  \includegraphics[scale = 0.5]{ex1Pred}
-  \includegraphics[scale = 0.5]{ex1Pred2}
-  \caption{Plots showing regression lines for equalprobability and
-    unequalprobability samples and linear regression with and without taking the
-    sampling probabilities into account. Top plots are the unequal probability
-    sample where short people are oversampled. Bottom plots are the equal
-    probability sample where every person has the same chance of being included
-    in the sample. Solid lines are the prediction lines which the dashed lines
-    represent the
-    95\% prediction interval. Red lines are for normal regression which blue
-       lines are for regression taking sampling probabilities into account.}
-  \label{fig:ex1Pred}
+  \includegraphics[scale = 0.5]{ex1}
+
+  \caption{The top row shows the two samples from the finger length versus
+    height dataset. The top left plot shows the sample where everyone has the
+    same chance of being included in the sample.
+    The top right plot shows the sample where people with short fingers are
+    oversampled. The bottom row shows regression lines on the samples. Each plot has
+    regressions on the sample illustrated in the plot above. The red lines are
+    regression lines from classical regression while the blue lines are from
+    regression lines taking the probabilities of being included in the sample
+    into account. The shaded areas represent the 95\% prediction intervals.
+    Observe that in the bottom left plot the regression lines are exactly equal.}
+
+  \label{fig:ex1}
+
+  %\caption{Plots showing regression lines for equalprobability and
+  %  unequalprobability samples and linear regression with and without taking the
+  %  sampling probabilities into account. Top plots are the unequal probability
+  %  sample where short people are oversampled. Bottom plots are the equal
+  %  probability sample where every person has the same chance of being included
+  %  in the sample. Solid lines are the prediction lines which the dashed lines
+  %  represent the
+  %  95\% prediction interval. Red lines are for normal regression which blue
+  %     lines are for regression taking sampling probabilities into account.}
+
 \end{figure}
 
-\textbf{I Figur \ref{fig:ex1Pred} synes jeg plottet med både blå og røde linjer i samme plott virker litt
-  uoversiktlig, så burde kanskje gå for det med alle fire plottene?}
+%\begin{figure}
+%  \label{fig:anthSamples}
+%  \includegraphics[scale = 0.4]{example1_SRS.png}
+%  \includegraphics[scale = 0.4]{example1_UNEQ.png}
+%  \caption{Two samples of finger length versus height. Left: Every person has the same
+%    probability of being included in the sample. Right: The probability of being
+%  included in the sample depends on height.}
+%\end{figure}
 
-Figure \ref{fig:ex1Pred} shows the difference between taking into account the
-sampling probabilities or not.
-In the top plots, where the regression lines are plotted on top of the unequal
-probability sample we can see that the line from normal linear regression, which
-is the red line, fits very well with the sample. While the line from linear
-regression taking into account the unequal sampling probabilities, the blue line, seems to be a
-bit too steep.
+The bottom row of figure \ref{fig:ex1} illustrate the difference between
+classical regression and regression taking the probabilities of being included
+in the sample into account. The bottom left plot shows regressions based on a
+sample where every person has the same probability of being included. We can see
+only one regression line is this plot, this is because both regression lines are
+exactly equal in this case. In the bottom right plot of figure \ref{fig:ex1} we
+see there are two different lines, the red one is the regression line from
+classical regression while the blue line is from regression taking probabilities
+for being included in the sample into account. The shaded areas represent 95\%
+prediction intervals. We can see that the red line seems to fit the sample much
+better than the blue one. The blue line seems too steep. This is because the
+blue line takes into account the fact that the reason there are so few samples
+in the top right of the plot is the fact that the people with long fingers had a
+smaller chance of being included in the sample. When we look at the prediction
+intervals we can see that the blue prediction interval seems to be ``correct''
+by the metric that about 95\% of the dots are inside it, but the red one is far
+from having that many dots.
 
-When we look at the bottom plots however which show the regression lines on top
-of a sample where every one has equal sampling probabilities however we see that
-the line using normal linear regression, red line, is way too flat, while the
-one taking into account the sampling probabilities fits much better.
-By looking at the dashed lines which is a 95\% prediction interval we see that
-the prediction interval from the normal linear regression does not seem to
-include 95\% of the observations, while the one from the linear regression
-taking into account the sampling probabilities does.
+% The bottom row of figure \ref{fig:ex1} shows the difference between taking into account the
+% sampling probabilities or not.
+% In the top plots, where the regression lines are plotted on top of the unequal
+% probability sample we can see that the line from normal linear regression, which
+% is the red line, fits very well with the sample. While the line from linear
+% regression taking into account the unequal sampling probabilities, the blue line, seems to be a
+% bit too steep.
+
+% When we look at the bottom plots however which show the regression lines on top
+% of a sample where every one has equal sampling probabilities however we see that
+% the line using normal linear regression, red line, is way too flat, while the
+% one taking into account the sampling probabilities fits much better.
+% By looking at the dashed lines which is a 95\% prediction interval we see that
+% the prediction interval from the normal linear regression does not seem to
+% include 95\% of the observations, while the one from the linear regression
+% taking into account the sampling probabilities does.
 \end{example}
 
-The examples illustrating the theory are focused on one dataset. This is a dataset on the performance of students in schools in
+The rest of the thesis focus's on a dataset on the performance of students in schools in
 California. The dataset has data on all 6194 schools having more than 100
 students in California, with data collected
 including: API scores in 1999 and 2000, which level of school it is
@@ -207,8 +236,8 @@ We will use this data as the population we will sample from, and we will take
 different kinds of samples to illustrate the concepts introduces in this thesis.
 
 Section \ref{sec:modLinReg} will give a overview of model based simple
-linear regression, this assumed knows so it will only be a brief repetition.
-Section 3 will explain how to to linear regression in the context of finite
+linear regression, this is assumed known and only a brief repetition will be given.
+Section 3 will explain how to do linear regression in the context of finite
 population using survey statistics. Section 3.1 will show how to do linear
 regression when we have a Simple Random Sample. Section 3.2 will go through
 linear regression when we have sample using stratification. Section 3.3 will
@@ -221,37 +250,35 @@ stratification and clustering into a complex survey.
 
 \section{Model based simple linear regression} \label{sec:modLinReg}
 
-We first give a short summary of classical simple linear regression. We have a response variable, \(y_i\), and a predictor,
-\(x_i\) where \(i = 1, ..., N\), where \(N\) is the number of observations. The
-relationship between the response and the covariates is assumed to be:
-
+In classical simple linear regression, each observation \(i\) consists of a
+response variable, \(y_i\), and a predictor, \(x_i\) for \(i = 1, ..., n\), where \(n\) is the number of observations. The
+relationship between the response and the covariates is assumed to be
 \begin{equation*}
-Y_i = \beta_0 + \beta_1 x_i + \epsilon_i,\ i = 1, \dots, N
+Y_i = \beta_0 + \beta_1 x_i + \epsilon_i,\ i = 1, \dots, n,
 \end{equation*}
-where \(\epsilon_i\) is a stochastic error term with some distribution. We
-assume \(\beta_0\) and \(\beta_1\) are constants.
+where \(\epsilon_1, \epsilon_2, \dots, \epsilon_n\) are stochastic variables
+describing the error and the intercept, \(\beta_0\), and the slope ,\(\beta_1\),
+are constants that describe the deterministic part of this relationship.
+We do not know the values of \(\beta_0\) and \(\beta_1\), so we have to estimate
+them from observed data points.
 
-I.e, we assume there exists \(\beta_0\) and \(\beta_1\) that describes the
-deterministic part of this relationship.
-We do not know the values of \(\beta_0\) and \(\beta_1\), so we have to estimate them from observed data points. We call these data points \((x_1, y_1), (x_2, y_2)
-... (x_N, y_N)\). To do
-this we want to find \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimize the
-Residual Sum of Squared (RSS). The RSS is defined by:
-
+We call these data points \((x_1, y_1), (x_2, y_2)
+... (x_n, y_n)\). To estimate the deterministic part of the relationship we want
+to find estimators \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimize the
+Residual Sum of Squared (RSS). The RSS is defined by
 \begin{align*}
-  RSS &= \frac{1}{N} \sum_{i = 1}^N \left( y_i - \hat{y}_i \right)^2 
-  = \frac{1}{N} \sum_{i = 1}^N \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2
+  \mathrm{RSS} &= \frac{1}{n} \sum_{i = 1}^n \left( y_i - \hat{y}_i \right)^2 
+  = \frac{1}{n} \sum_{i = 1}^n \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2.
 \end{align*}
-
-The RSS can be geometrically thought of as the sum of the squared distances of
+RSS can be geometrically thought of as the sum of the squared distances of
 the data points in the sample from the regression line. Our goal is to find a
 line that is as close as possible to the observed sample, and minimizing the RSS
 is therefore one way to find a close line.
 
-The \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimizes the RSS are:
+The estimators \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimizes the RSS are
 %$$
-%\hat{\beta}_1 = \frac{\sum_{i = 1}^N\left( x_i - \bar{x} \right) \left( y_i -
-    %\bar{y} \right)} {\sum_{i = 1}^N \left( x_i - \bar{x} \right)}
+%\hat{\beta}_1 = \frac{\sum_{i = 1}^n\left( x_i - \bar{x} \right) \left( y_i -
+    %\bar{y} \right)} {\sum_{i = 1}^n \left( x_i - \bar{x} \right)}
 %$$
 %and
 %$$
@@ -259,12 +286,13 @@ The \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimizes the RSS are:
 %$$
 
 \begin{equation*}
- \hat{\beta}_1 = \frac{\sum_{i = 1}^N\left( x_i - \bar{x} \right) y_i}{\sum_{i = 1}^N\left( x_i - \bar{x} \right)} 
+ \hat{\beta}_1 = \frac{\sum_{i = 1}^n\left( x_i - \bar{x} \right) Y_i}{\sum_{i = 1}^n\left( x_i - \bar{x} \right)^2} ,
 \end{equation*}
 
 \begin{equation*}
- \hat{\beta}_0 = \bar{y} - \hat{\beta_1}\bar{x} 
+ \hat{\beta}_0 = \bar{Y} - \hat{\beta_1}\bar{x},
 \end{equation*}
+where \(\bar{x} = \frac{1}{n} \sum_{i = 1}^n x_i\) and \(\bar{y} = \frac{1}{n} \sum_{i = 1}^n y_i\).
 
 Under the following conditions:
 
@@ -276,24 +304,31 @@ Under the following conditions:
 \end{enumerate}
 
 we get some useful properties, among which are these unbiased estimates for the
-variance of \(\hat{\beta}_0\) and \(\hat{\beta}_1\):
+variance of the estimators \(\hat{\beta}_0\) and \(\hat{\beta}_1\)
+\begin{equation*}
+ \widehat{\mathrm{Var}} \left( \hat{\beta}_0 \right) = s^2 \frac{\sum_{i = 1}^n x_i^2}{n
+   \sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}
+\end{equation*}
+ 
 
 \begin{equation*}
-  \widehat{\mathrm{Var}} \left( \hat{\beta}_0 \right) = s^2 \frac{\sum_{i = 1}^N x_i^2}{n
-    \sum_{i = 1}^N \left( x_i - \bar{x} \right)^2}
-\end{equation*}
-  
-
-\begin{equation*}
-  \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{s^2}{
-    \sum_{i = 1}^N \left( x_i - \bar{x} \right)^2}.
+ \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{s^2}{
+   \sum_{i = 1}^n \left( x_i - \bar{x} \right)^2},
 \end{equation*}
 
-Where \(s^2 = \frac{1}{N - 2} \sum_{i = 1}^N\left( y_i - \hat{\beta}_0 -
-  \hat{\beta}_1 x_i \right)^2\) is an
+where \(s^2 = \frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
+ \hat{\beta}_1 x_i \right)^2\) is an
 unbiased estimator for the unknown \(\sigma^2\).
 
-This is all based on the fact that the response has a distribution, which again
+New: This is based on the fact that we assume the response is random, i.e, that
+it is possible to get a different response if we measure again. This means we
+can think of the residuals as coming from some stochastic distribution. What
+happens, then, if we instead assume that the responses are fixed and are the
+same if we measure them again?
+
+This is the idea that survey statistics is based on.
+
+Old: This is all based on the fact that the response has a distribution, which again
 is based on the assumption that we have an infinite population to sample from.
 What happens then, if we have a finite population? And what if the elements in
 the sample are not independent of each other?
@@ -303,57 +338,55 @@ This is what survey statistics tells us.
 
 
 \section{Regression in the context of finite populations}
-Now consider the case where the population is finite, i.e. we have \((x_1, y_1),
+Now consider the case where the population is finite, i.e, the population
+consists of \((x_1, y_1),
 (x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
 predict \(y_i\) and \(N\) is the size of the population.
 
-Our goal in linear regression in this case is that we want to find the linear
-line, \(y = B_0 + B_1x\), that best approximates this population. We define the best line as the one
+The goal of linear regression in this case is that we want to find the linear
+line, \(y = B_0 + B_1x\), that best describes the relationship between \(x_i\)
+and \(y_i\) in this population. We define the best line as the one
 that minimizes \(\mathrm{RSS} = \sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\).
-Minimizing the RSS means that we minimize the the squared distance of each point
+Minimizing the RSS means that we minimize the the squared Euclidian distance of each point
 in the population from the line.
 
-In the case of finite populations, things change a bit. We still want to find the
-coefficients that minimize the RSS, but since the population is finite our goal
-is to estimate the line that minimizes the RSS for the whole population, i.e. find
-\(B_0\) and \(B_1\) such that \(\sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\) is as small as
-possible.
+This differs from model based linear regression where we want to estimate the
+deterministic part of the relationship between \(x_i\) and \(y_i\), but we can
+never get an exact answer as the estimates will differ when they are based on
+different samples, no matter how large. Here, however, we can find \(B_0\) and
+\(B_1\), since we can sample the whole population if we want.
 
 If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
-as in Section \ref{sec:modLinReg}, which after rewriting them become:
-
+as in Section \ref{sec:modLinReg}, which after rewriting them become
 \begin{equation*}
-  B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
-    {t_{x^2} - \frac{1}{N} t_x^2}
-   \right)
+ B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
+   {t_{x^2} - \frac{1}{N} t_x^2},
+  \right)
 \end{equation*}
 
 \begin{equation*}
-  B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
-    {t_{x^2} - \frac{1}{N} t_x^2}
+ B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
+   {t_{x^2} - \frac{1}{N} t_x^2},
 \end{equation*}
-
 where \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
 \sum_{i = 1}^N x_i^2\) and \(t_{xy} =
 \sum_{i = 1}^N x_i y_i\).
 
-
-The case where we know the whole population however is not that interesting, we are instead interested in the case where we have to sample from the
-population to estimate such statistics. To do that we have to introduce some terms:
+The case where we know the whole population is not realistic, we are instead interested in the case where we have to sample from the
+population to estimate \(B_0\) and \(B_1\). To do that we have to introduce some terms:
 
 \begin{definition} \label{def:sampUnitPopFrame}
-  A \textbf{sampling unit} is one "element" we want to sample.
-  The \textbf{sampling population}, or universe, \(U = \{1, 2, 3, ..., N\}\), is a
-  finite set containing all the sampling units you are interested in. 
-  The \textbf{sampling frame} is the list of all sampling units you are going to sample from. 
+ A \textbf{sampling unit} is one "element" we want to sample.
+ The \textbf{sampling population}, or universe, \(U = \{1, 2, 3, ..., N\}\), is a
+ finite set containing all the sampling units you are interested in. 
+ The \textbf{sampling frame} is the list of all sampling units you are going to sample from. 
 \end{definition}
 
-In the case of our API example, our sampling units are schools, while
+In the case of our API dataset, our sampling units are schools, while
 the sampling population is all the schools in California having more than 100 students.
 The sampling frame would be all schools in California that the researchers know
 about and that the researchers think have more the 100 students.
 Ideally the sampling frame and the sampling population would be the same, but that is not always to case.
-
 When taking different types of samples from the API dataset, the sampling population and the sampling frame are equal, since
 we have a table of all the data and we will just choose rows from that table for
 our samples. But there are cases where this is not the case. An example of this
@@ -370,85 +403,76 @@ didn't do it the last one.
 Choosing the correct sampling frame to match your target sampling population is
 difficult and getting it wrong will influence your results.
 
-To represent the elements in \(U\) by natural numbers we let the elements
-have a arbitrary ordering and denote them by their indices. We do this for
-simplicity of notation as the order of the elements do not matter in the inference.
+We will represent the sampling units by listing them in an arbitrary order and
+then letting their indeces represent them. This simplifies notation.
 
 
 \begin{definition} \label{def:sample}
-A \textbf{sample}, \(S \subseteq U\), is a subset of the sampling frame. This is the data we will analyse to try to get information about the sampling population.
+A \textbf{sample}, \(S \subseteq U\), is a subset of the sampling frame. This is the data we will analyse to learn about the sampling population.
 A \textbf{probability sample} is a sample where the sampling units included are chosen randomly.
-The \textbf{sampling probability} of a sampling unit is the probability that a specific sampling unit is included in the sample.
+The \textbf{sampling probability} of a sampling unit is the probability that a
+specific sampling unit will be included in the sample.
 \end{definition}
 
-We will denote the sampling units chosen in the sample by their indices in the
-sampling population.
-
-So we have a probability sample, where every sampling unit has some probability to be included in the sample, called the sampling probability.
 
 If we then let \(\hat{t}_x, \hat{t}_y, \hat{t}_{x^2}, \hat{t}_{xy}, \hat{N}\) be estimators
 for \(t_x, t_y, t_{x^2},
-t_{xy}, N\) respectively, we get the estimators for \(B_0\) and \(B_1\):
-
+t_{xy}, N\) respectively, we get the estimators for \(B_0\) and \(B_1\)
 \begin{equation*}
-  \hat{B}_1 = \frac{\hat{t}_{xy} - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x}
-    {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
+ \hat{B}_1 = \frac{\hat{t}_{xy} - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x}
+   {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
 \end{equation*}
 
 \begin{equation*}
-  \hat{B}_0 = \frac{1}{\widehat{N}} \left( \hat{t}_y - \frac{\hat{t}_{xy} \hat{t}_x - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x^2}
-    {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
-  \right)
-  = \frac{\hat{t}_y}{\hat{N}} - \hat{B}_1\frac{\hat{t}_x}{\hat{N}}
+ \hat{B}_0 = \frac{1}{\widehat{N}} \left( \hat{t}_y - \frac{\hat{t}_{xy} \hat{t}_x - \frac{1}{\widehat{N}} \hat{t}_y \hat{t}_x^2}
+   {\hat{t}_{x^2} - \frac{1}{\widehat{N}} \hat{t}_x^2}
+ \right)
+ = \frac{\hat{t}_y}{\hat{N}} - \hat{B}_1\frac{\hat{t}_x}{\hat{N}}
 \end{equation*}
-
-To do this however we need to introduce some terminology:
 
 Since \(\hat{B}_0\) and \(\hat{B}_1\) are non linear expressions of dependent
-statistics, calculating exact variances can get very complicated. We therefore
+statistics, deriving exact expressions for the variances can get very complicated. We, therefore,
 often have to settle with having estimates of the variances instead.
 There are several ways to do so, but a common one,
-and the one we will use in here, is linearization. Linearization takes a
-non-linear expression of stochastic variables we can do inference about and uses
+and the one we use in this thesis, is linearization. Linearization takes a
+non-linear expression of stochastic variables we want to do inference about and uses
 the first two terms of the Taylor expansion to make it linear.
-Say for example we have \(h(a, b, c, d, e) = \frac{ea - bc}{ed - b^2}\), such that
+For example, we have \(h(a, b, c, d, e) = \frac{ea - bc}{ed - b^2}\), such that
 \(h(\hat{t_{xy}}, \hat{t_x}, \hat{t}_y, \hat{t}_{x^2}, \hat{N}) = \hat{B_1}\).
-We then get:
-\begin{align*}
-  \mathrm{Var}(\hat{B_1})
-  &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
-  \hat{t}_y, \hat{t}_{x^2}, \hat{N})) \right) \\
-  &\approx \frac{\widehat{\mathrm{Var}}\left( \sum_{i \in S} w_i q_i \right)}
-    {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
+We then get\begin{align*}
+ \mathrm{Var}(\hat{B_1})
+ &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
+ \hat{t}_y, \hat{t}_{x^2}, \hat{N})) \right) \\
+ &\approx \frac{\widehat{\mathrm{Var}}\left( \sum_{i \in S} w_i q_i \right)}
+   {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
 \end{align*}
 
 where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
 
 \subsection{Simple random sample} \label{sec:SRS}
 
-One of the simpler probability samples is a Simple Random Sample (SRS). A
+The simplest probability sample is the Simple Random Sample (SRS). A
 sample of size \(M \leq N\) is an SRS if every subset \(S \subseteq U\) has the same
 probability of being chosen.
-Say for example that \(U = \{1, 2, 3, 4\}\) and that we want a sample, \(S\) of
-size \(3\). Then there are \(\binom{4}{3} = 4\)  possible samples:
-\begin{equation*}
- S_1 = \{1, 2, 3\}, 
- S_2 = \{1, 2, 4\}, 
- S_3 = \{1, 3, 4\}, 
- S_4 = \{2, 3, 4\} .
- \end{equation*}
-
-%\( S_1 = \{1, 2, 3\} \)
-%\( S_2 = \{1, 2, 4\} \)
-%\( S_3 = \{1, 3, 4\} \)
-%\( S_4 = \{2, 3, 4\} \).
+If, for example, \(U = \{1, 2, 3, 4\}\) and we want a sample \(S\) of
+size \(3\), then there are \(\binom{4}{3} = 4\)  possible samples:
+%\begin{equation*}
+%S_1 = \{1, 2, 3\}, 
+%S_2 = \{1, 2, 4\}, 
+%S_3 = \{1, 3, 4\}, 
+%S_4 = \{2, 3, 4\} .
+%\end{equation*}
+\( S_1 = \{1, 2, 3\},\ \)
+\( S_2 = \{1, 2, 4\},\ \)
+\( S_3 = \{1, 3, 4\}\ \) and
+\( S_4 = \{2, 3, 4\} \).
 
 For this to be a SRS each of these subsets need to have the same probability of
-being chosen, i.e. \(P(S_1) = P(S_2) = P(S_3) = P(S_4) = 0.25\). A consequence of
+being chosen, i.e, \(P(S_1) = P(S_2) = P(S_3) = P(S_4) = 0.25\). A consequence of
 having a SRS is that all the sampling probabilities are equal, \(P(1 \in S) =
 P(2 \in S) = P(3 \in S) = P(4 \in S) = 0.75\). But having equal sampling
 probabilities is not sufficient for the sample to be an SRS.
-Look for example at this case:
+Look, for example, at this case:
 Assume we want a sample of size \(2\) from a population of size \(4\), and that
 \(P(\{1, 3\}) = 0.5\) and \(P(\{2, 4\}) = 0.5\) while the probabilities of all the
 other possible samples are \(0\). Then \(P(1 \in S) = P(2 \in S) = P(3 \in S) = P(4 \in S) = 0.5\)
@@ -456,19 +480,20 @@ but this is not a SRS since all possible subsets of size \(2\) do not have equal
 probability of being chosen.
 
 
-\subsubsection{Estimation}
+\subsubsection{Estimating regression coefficients}
 
-One of the more common statistics we want to estimate is the total of some value
-for the whole population. We might for example want to estimate the total number
-of students enrolled in school, in our API example.
+We need estimates of several different totals of the population to estimate the
+regression coefficients. We need the total of, among others, the \(y_i\)'s, the
+\(x_i\) and the \(x_i * y_i\)'s, to calculate the estimates.
+We will do inference on the total of the \(y_i\)'s here, but the other totals
+are equivalent.
 
-We would then denote the value of interest in one school, i.e. the number of
-enrolled students by \(y_i\) and let
+Let
 \(
-  t_y = \sum_{i = 1}^{N} y_i
+ t_y = \sum_{i = 1}^{N} y_i
 \)
 be the value we want to estimate.
-The natural estimate of this total, if we sample \(n\) elements, would be
+The natural estimator of this total, if we sample \(n\) elements, would be
 \(
 \hat{t}_y = \frac{N}{n}\sum_{i \in S} y_i
 \)
@@ -476,26 +501,24 @@ where we take the average of the values in our sample and then scale it up to
 the whole population.
 It can be shown using indicator variables and sampling probabilities that
 \(\hat{t}_y\) is an unbiased estimator for \(t_y\).
-%A statistic related to the total is the mean of some value. We denote the true
-%mean in the population
-%\begin{equation*}
-%\bar{y}_U = \frac{1}{N} \sum_{i = 1}^{N} y_i
-%\end{equation*}
-%and the sample mean
-%\begin{equation*}
-%\bar{y}_S = \frac{1}{n} \sum_{i \in S} y_i ,
-%\end{equation*}
-%which we use as our estimator.
-%
-%Then we can rewrite the estimate for \(t\) as:
-%\begin{equation*}
-%\hat{t}_y = \frac{N}{n} \sum_{i \in S} y_i = N\bar{y}_S
-%\end{equation*}
-%
-%Using the fact that \(\hat{t}_y\) is unbiased it is trivial to show that
-%\(\bar{y}_S\) is an unbiased estimator for \(\bar{y}_U\).
-It can also be shown that the variance of the estimator is of the form:
-\begin{equation*}
+
+\begin{definition}
+ The \textbf{weight} of a sampling unit is the inverse of the sampling
+ probability of the sampling unit. 
+ We denote the weight of \(y_i\) as \(w_i\).
+\end{definition}
+
+It can be shown that the sampling probability of a sampling unit in a SRS is
+\(\frac{n}{N}\). This means that the weight of each sampling unit is
+\(\frac{N}{n}\). We can therefore rewrite the estimator for \(t_y\) as
+\(
+\hat{t}_y = \sum_{i \in S} w_i y_i
+\)
+
+This is a convenient way to calculate estimates for more complicated sampling
+schemes.
+
+It can also be shown that the variance of the estimator is of the form\begin{equation*}
 \mathrm{Var} \left( \hat{t}_y \right) = S^2\frac{N^2}{n} \left( 1 - \frac{n}{N}
 \right)
 \end{equation*}
@@ -506,14 +529,12 @@ S^2 = \frac{1}{N - 1} \sum_{i = 1}^N (y_i - \bar{y})^2
 \)
 is the variance of the whole population.
 We do not, however, know \(S^2\) as that would require us to know the \(y\) values
-for the whole population \(U\). Instead we estimate \(S^2\) by the unbiased estimator:
-\(
-  s^2 = \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
+for the whole population \(U\). Instead we estimate \(S^2\) by the unbiased estimator\(
+ s^2 = \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \)
-which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\):
-\begin{align*}
-  \widehat{\mathrm{Var}(\hat{t}_y)}
-  &=\frac{N^2}{\left( n - 1 \right)n} \left( 1 - \frac{n}{N} \right) \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
+which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\)\begin{align*}
+ \widehat{\mathrm{Var}(\hat{t}_y)}
+ &=\frac{N^2}{\left( n - 1 \right)n} \left( 1 - \frac{n}{N} \right) \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \end{align*}
 Since \(s^2\) is unbiased we have that \(s^2\frac{N^2}{n} \left( 1 - \frac{n}{N}
 \right)\) is an unbiased estimator of the variance of \(\hat{t}_y\).
@@ -532,40 +553,48 @@ This means that if the population size decreases but the sample size stays the
 same the variance will decrease, as there are fewer unmeasured sampling units.
 
 Using linearization we get this estimate for the variance of \(\hat{B}_1\) when
-the sample is from an SRS:
-\begin{equation*}
+the sample is from an SRS\begin{equation*}
 \widehat{\mathrm{Var}}(\hat{B}_1) = \left( 1 - \frac{n}{N} \right) \frac{n}{n - 1} \frac{\sum_{i \in S} \left( x_i - \bar{x} \right)^2 \left( y_i - \hat{B}_0 - \hat{B}_1 x_i \right)^2}
 {\left( \sum_{i \in S} \left( x_i - \bar{x} \right)^2 \right)^2}
 \end{equation*}
 
 which we can compare to the estimate of the variance for \(\hat{\beta}_1\) in
-the model based case:
-
+the model based case
 \begin{equation*}
-  \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{\sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
-  \hat{\beta}_1 x_i \right)^2}{
-    \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}.
+ \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{\sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
+ \hat{\beta}_1 x_i \right)^2}{
+   \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}.
 \end{equation*}
 
+\subsection{Unequal probability sampling}
+\textbf{Trenger jeg en egen seksjon for dette? Føler ikke at det passer under
+  noen av de andre seksjonene, men samtidig er det kanskje litt lite for en egen
+overskrift?}
 
 \subsection{Stratification} \label{sec:strat}
 
-In stratification we split the sampling frame into a partition, i.e. \(H\) non
+In stratification we split the sampling frame into a partition, i.e, \(H\) non
 overlapping subsets that together comprise the whole sampling frame. These
-subsets are called \textbf{strata}. We let each stratum have \(N_i, i = 1, \dots
-, H\) elements, and \(N_1 + N_2 + \dots + N_H = N\). When sampling we
-indepentently make a samples, \(S_1, S_2, \dots, S_H\), with \(n_i, i = 1, \dots
-, H\) elements from each stratum. When
+subsets are called \textbf{strata}. We let each stratum have \(N_i,\ i = 1, \dots
+, H,\) elements, and \(N_1 + N_2 + \dots + N_H = N\). When sampling we
+indepentently take samples from each stratum, \(S_1, S_2, \dots, S_H\), with \(n_i,\ i = 1, \dots
+, H,\) elements. When
 estimating a total we can therefore first estimate the total of each stratum and
 then add these totals to get an estimate of the population total.
-If we let \(t_{y,h}\) we the total in stratum \(h\) we get \(\hat{t}_y =
-\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i = \sum_{h = 1}^H \hat{t}_{y,h}\). Since the estimate for each
-stratum is unbiased, following from Section \ref{sec:SRS}, the estimate from the
+If we let \(t_{y,h}\) be the total in stratum \(h\) we get \(\hat{t}_y =
+\sum_{h = 1}^H \hat{t}_{y, h} \), where we can use different sampling schemes to
+estimate each \(t_{y, h}\).
+If we let each sample of the subsets be a simple SRS we get \( \hat{t}_{y, h} =
+\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i = \sum_{i \in S} w_i y_i\),
+where \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
+Since the estimate for each
+stratum total is unbiased, see section \ref{sec:SRS}, the estimate of the population
 total is unbiased.
-Since the samples from the different strate are independent the variance is also
+
+Since the samples from the different strate are independent the variance of the estimator is also
 easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
-    1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right) = \sum_{h =
-    1}^H\mathrm{Var}\left(\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right)\). This
+   1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right) = \sum_{h =
+   1}^H\mathrm{Var}\left(\hat{t}_{y, h}\right)\). This
 means that to minimize the variance of \(\hat{t}\) we should choose the strata
 such that the internal variance is as small as possible.
 
@@ -586,13 +615,57 @@ distance from the correct value. However the variance from the stratified sample
 is smaller. In addition we have the option of finding the mean of each of the
 strata separately without taking new samples.
 
+\begin{example}
+ Suppose we want to investigate a relationship between the API score of a school
+ and the proportion of the parents that have not completed high school. To be
+ sure that we get a sample including all levels of schools we can use
+ stratification. We
+ want to make sure we sample both good and bad schools by the API metric, so we
+ choose to stratify last years API scores. We will sample \(100\) schools where last
+ years API scores were \(< 500\), \(100\) schools where last years API scores
+ were \(\le 500\) and \(< 750\) and \(100\) schools where last years API scores
+ were \(\ge 750\). We will compare the results against a SRS of size \(300\).
+\end{example}
 
 \subsection{Clustering}
 
+In clustering we split the sampling frame into a partition as in stratification.
+Here, however, we do a probability sample to choose which of the subsets we will
+collect data from, which is now \(S\). Then we have to do a probability sample
+inside of each of these chosen subsets, \(S_1, S_2, \dots, S_n\).
+
+\begin{definition}
+ \textbf{Primary sampling unit (psu)} are subsets of the sampling frame, that
+ are sampled first in a sampling scheme. \\
+ \textbf{Secondary sampling unit (ssu)} are smaller subsets of the sampling
+ frame, each included in ppus. The ssus are often individual units in the
+ sampling frame.
+\end{definition}
+
+There are two ``types'' of cluster sampling; one-stage cluster sampling and
+multi-stage cluster sampling. In one-stage cluster sampling we sample all the
+elements in the subsets chosen in \(S\), so each element has probability \(1\)
+of being included. In multi-stage cluster sampling, however,
+we make a sample of the ssus inside the psus in \(S\), where not all ssus are
+included in the sample. Multi-stage cluster sampling is often what is used in
+practice, but since the idea is so similar and the formulas get so complicated
+we will restrict outselves to one-stage cluster sampling in this thesis.
+
+the ppus are the subsets from the
+partitioning and the ssus are the individual sampling units.
+
+Let \(N\) be the number of clusters (psus) in the population and let \(M_i,\ i =
+1, 2, \dots, N\) be the number of individuals (ssus) in each cluster. If we let
+\(\hat{t}_{y, i}\) be an estimate for the total in cluster \(i\). Then we
+consider the psus sampling units and let the estimate of the population total be,
+as in a SRS, \(\hat{t}_y = \sum_{i \in S} \frac{M_i}{m_i} \hat{t}_{y, i}\),
+where \(S\) is the psu sample and \(m_i\) is the number of psus sampled.
+
 \subsection{Complex surveys}
 
-\subsection{Variance estimation (?)}
+\section{Variance estimation}
 
+\section{Discussion}
 
 
 
