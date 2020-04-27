@@ -35,18 +35,43 @@
 
 Linear regression is a useful tool to describe relationships between variables.
 When we want to investigate possible associations, linear regression
-is one of the most common tools we could use. It can be used to show show correlation between
-variables, and in some cases where experiments are designed very carefully, it can even suggest causation.
-It can,, for example,, be used in the social sciences to try to show a relationship
-between income and age of death.
-When fitting a model, data is needed. It is very important to take into account the methods used in
-the information gathering when fitting models. What is the probability of each
+is one of the most common tools we could use. It can be used to show correlation between
+variables, and in some cases, where experiments are designed very carefully, it can even suggest causation.
+It can, for example, be used in the social sciences to try to show a relationship
+between income and age of death. Since we are measuring a concrete population
+(TODO: reformulate) we
+have a finite population. If we know the measurements for the whole population there
+is no uncertainty, we can just calculate whatever value for the population we
+want. When we generalize from a sample to the whole population, however, we get
+uncertainty. There are different approaches of handling this uncertainty, and
+which we choose depends on what we know about the data. For example, which
+methods were used in the information gathering?
+What is the probability of each
 individual being included in the sample? Are they sampled independently? Is the
 sampling done in such a way that we are guaranteed to have individuals from
 several different parts of the population?
 
-When considering observed data there is always uncertainty. There are different
-approaches to handling this uncertainty. One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
+Our goal is to 
+
+(TODO: reformulate start of paragraph) When considering observed data there is always uncertainty. There are different
+approaches to handling this uncertainty. One approach takes advantage of the fact that the
+population sampled from is often large. This means that taking a sample is
+almost the same as pulling values from a distribution, for example a normal distribution. We can therefore
+take advantage of the additional structure, that comes from pulling values from a
+distribution, to model the uncertainty. In this approach we have to assume that
+the values we measure from an individual can change if we measure the individual
+again. The only requirement, and all we need to know about the data to perform
+the analysis, is that the data is sampled independently. This is called the
+model based approach. The fact that the
+values we measure can be different when we measure again is not very realistic,
+however.
+
+A more realistic approach is to assume that every time we measure an
+individual we get the same value, in which case we can not pretend to be pulling
+values from a distribution. To model the uncertainty in this approach we look at the
+
+
+One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
 infinite population, that is described by some distribution. This could,, for example,, be a
 normal distribution with some mean and variance. We model the uncertainty by using the
 fact that we know how this distribution behaves.
