@@ -38,7 +38,15 @@ When we want to investigate possible associations, linear regression
 is one of the most common tools we could use. It can be used to show correlation between
 variables, and in some cases, where experiments are designed very carefully, it can even suggest causation.
 It can, for example, be used in the social sciences to try to show a relationship
-between income and age of death. Since we are measuring a concrete population
+between income and age of death. In linear regression we want to approximate the
+linear line that best describes the relationship between the predictor and the
+response. Since the relationship is usually not simply linear the line will not
+fit perfectly with the population, which gives us residuals, the vertical
+vectors that is between the points and the linear line.
+
+
+
+Since we are measuring a concrete population
 (TODO: reformulate) we
 have a finite population. If we know the measurements for the whole population there
 is no uncertainty, we can just calculate whatever value for the population we
@@ -623,33 +631,52 @@ easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
 means that to minimize the variance of \(\hat{t}\) we should choose the strata
 such that the internal variance is as small as possible.
 
-Suppose we want to sample schools in the API dataset to learn about the student
-performance throught the API metric. We might reasonably assume that students
-having parents with higher education will get more help at home for schoolwork
-and therefore perform better in school. It might therefore be reasonable to
-create strate that splits the population by the percentage of parents with a
-college degree. If we take an SRS of size \(300\) of all the schools we get an API mean of
-\(659.37\) with a variance \(56.36\). However if we take a stratified sample,
-where the strate are the schools with less than \(20\%\) of parents having
-college degrees, schools with between \(20\%\) and \(40\%\) of parents having
-college degrees and schools with more than \(40\%\) of parents with college
-degrees, and we take a sample of 100 schools from each stratum, we get an API
-mean of \(668.33\) and variance \(43.37\). Since we have the full dataset we can
-find the true mean, which is \(664.7\), so both methods were roughtly the same
-distance from the correct value. However the variance from the stratified sample
-is smaller. In addition we have the option of finding the mean of each of the
-strata separately without taking new samples.
+% Suppose we want to sample schools in the API dataset to learn about the student
+% performance throught the API metric. We might reasonably assume that students
+% having parents with higher education will get more help at home for schoolwork
+% and therefore perform better in school. It might therefore be reasonable to
+% create strate that splits the population by the percentage of parents with a
+% college degree. If we take an SRS of size \(300\) of all the schools we get an API mean of
+% \(659.37\) with a variance \(56.36\). However if we take a stratified sample,
+% where the strate are the schools with less than \(20\%\) of parents having
+% college degrees, schools with between \(20\%\) and \(40\%\) of parents having
+% college degrees and schools with more than \(40\%\) of parents with college
+% degrees, and we take a sample of 100 schools from each stratum, we get an API
+% mean of \(668.33\) and variance \(43.37\). Since we have the full dataset we can
+% find the true mean, which is \(664.7\), so both methods were roughtly the same
+% distance from the correct value. However the variance from the stratified sample
+% is smaller. In addition we have the option of finding the mean of each of the
+% strata separately without taking new samples.
+
+TODO: Velger ofte ikke sample størrelse etter populasjonsstørrelse, velger
+heller en absolutt størrelse.
 
 \begin{example}
- Suppose we want to investigate a relationship between the API score of a school
- and the proportion of the parents that have not completed high school. To be
- sure that we get a sample including all levels of schools we can use
- stratification. We
- want to make sure we sample both good and bad schools by the API metric, so we
- choose to stratify last years API scores. We will sample \(100\) schools where last
- years API scores were \(< 500\), \(100\) schools where last years API scores
- were \(\le 500\) and \(< 750\) and \(100\) schools where last years API scores
- were \(\ge 750\). We will compare the results against a SRS of size \(300\).
+  Suppose that we want to investigate the relationship between the API score of
+  a school and the average level of education of the student's parents. We might
+  be interested in knowing if the effect the parents education level has on
+  their childs performance changes as they get older. It would therefore make
+  sense to stratify on which level the school is, elementary school, middle
+  school or high school. We can then see if the estimated slope coefficient is
+  different in each of these strata.
+  The population has \(4421\) elementary schools, \(755\) middle schools and
+  \(1018\) high schools and we choose to sample \(50\) schools from each strata.
+
+  The table shows the estimated slope for each school level. We can see that
+  parent education level seems to have a higher effect in Elementary schools
+  than higher school levels. Regression on all the strata together gives the
+  slope \(158\), which is somewhere in between all the individual slopes. Not
+  doing stratification would therefore make us loose the information for each
+  school type.
+
+  \begin{tabular}{ccc}
+    %\label{table:stratExCoef}
+    %\caption{Test}
+    Elementary schools & Middle schools & High schools \\
+    \hline \\
+    169.1 & 145 & 143.8
+    
+  \end{tabular}
 \end{example}
 
 \subsection{Clustering}
