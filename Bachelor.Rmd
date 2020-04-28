@@ -7,6 +7,8 @@ output:
     toc: true
     number_sections: true
         #html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -28,24 +30,25 @@ anthuneq <- SDaA::anthuneq
 anthuneq$weights <- 1/anthuneq$prob
 anthuneq$height = anthuneq$height*2.54
 anthsrs$height = anthsrs$height*2.54
+
+anthsrs$fpc <- 3000
+anthuneq$fpc <- 3000
 ```
 
 ```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthsrs, aes(finger, height)) + ylim(147, 181) + xlim(10, 13) +
-  theme(axis.title = element_text(size = 20),
-        axis.text = element_text(size = 14))
-```
+base <- ggplot() + xlim(10, 13) + ylim(145, 191) +
+  theme(axis.title = element_text(size = 20), axis.text = element_text(size = 15)) +
+  ylab("Height (cm)") + xlab("Finger length (cm)")
+  
+srsdots <- base + geom_point(data = anthsrs, aes(finger, height))
 
-```{r, echo = FALSE, warning = FALSE}
-ggplot() + geom_point(data = anthuneq, aes(finger, height)) + ylim(147, 181) + xlim(10, 13) +
-  theme(axis.title = element_text(size = 20),
-        axis.text = element_text(size = 14))
+uneqdots <- base + geom_point(data = anthuneq, aes(finger, height))
 ```
 
 
 ```{r}
-anthuneq.svy <- svydesign(ids = ~0, weights = ~weights, data = anthuneq)
-anthsrs.svy <- svydesign(ids = ~0, data = anthsrs)
+anthuneq.svy <- svydesign(ids = ~0, weights = ~weights, fpc = ~fpc, data = anthuneq)
+anthsrs.svy <- svydesign(ids = ~0, fpc = ~fpc, data = anthsrs)
 
 normalmoduneq <- lm(height ~ finger, data = anthuneq)
 survmoduneq <- svyglm(height ~ finger, design = anthuneq.svy)
@@ -121,56 +124,11 @@ predict.int.survmodsrs$upper <- predict.int.survmodsrs$fit + predict.int.survmod
 ```
 
 
-```{r}
-#prop = 0.0001
-#size.uneq <- ceiling(anthuneq$weights)
-#size.uneq <- replace(size.uneq, size.uneq == 1384, prop * 1384)
-#size.uneq <- replace(size.uneq, size.uneq == 2767, prop * 2767)
-#size.uneq <- replace(size.uneq, size.uneq == 16584, prop * 16584)
-#size.uneq <- replace(size.uneq, size.uneq == 33223, prop * 33223)
-
-#size.uneq <- rep(0.8, length(nrow(anthuneq)))
-#size.srs <- rep(0.8, length(nrow(anthuneq)))
-#
-#base <- ggplot() + xlim(10, 13) + ylim(147, 183)
-#
-#uneq.surv.plot <- base +
-#  geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
-#  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
-#  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
-#  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
-#  theme(axis.title.x = element_text(size = 20))
-#
-#uneq.normal.plot <- base +
-#  geom_point(data = anthuneq, aes(finger, height), size = size.uneq) +
-#  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
-#  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
-#  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
-#  theme(axis.title.x = element_text(size = 20))
-#
-#srs.surv.plot <- base +
-#  geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
-#  geom_abline(slope = survcoef[2], intercept = survcoef[1], color = "blue", lwd = 1) +
-#  geom_line(data = predict.int.survmod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
-#  geom_line(data = predict.int.survmod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
-#  theme(axis.title.x = element_text(size = 20))
-#
-#srs.normal.plot <- base +
-#  geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
-#  geom_abline(slope = normalcoef[2], intercept = normalcoef[1], color = "red", lwd = 1) +
-#  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
-#  geom_line(data = predict.int.normalmod, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
-#  theme(axis.title.x = element_text(size = 20))
-#
-#plot_grid(uneq.normal.plot, uneq.surv.plot, srs.normal.plot, srs.surv.plot, ncol = 2, labels = "AUTO")
-```
-
 
 ```{r}
 size.uneq <- rep(0.8, length(nrow(anthuneq)))
 size.srs <- rep(0.8, length(nrow(anthuneq)))
 
-base <- ggplot() + xlim(10, 13) + ylim(145, 191)
 
 srs.plot <- base +
   geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.survmodsrs, fill = "blue", alpha = 0.5) +
@@ -181,8 +139,7 @@ srs.plot <- base +
   geom_line(data = predict.int.survmodsrs, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
   geom_abline(slope = normalcoefsrs[2], intercept = normalcoefsrs[1], color = "red", lwd = 1) +
   geom_line(data = predict.int.normalmodsrs, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
-  geom_line(data = predict.int.normalmodsrs, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
-  theme(axis.title.x = element_text(size = 20))
+  geom_line(data = predict.int.normalmodsrs, aes(x = x.vals, y = upr), color = "red", linetype = "dashed")
 
 uneq.plot <- base +
   geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.survmoduneq, fill = "blue", alpha = 0.5) +
@@ -193,15 +150,28 @@ uneq.plot <- base +
   geom_line(data = predict.int.survmoduneq, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
   geom_abline(slope = normalcoefuneq[2], intercept = normalcoefuneq[1], color = "red", lwd = 1) +
   geom_line(data = predict.int.normalmoduneq, aes(x = x.vals, y = lwr), color = "red", linetype = "dashed") +
-  geom_line(data = predict.int.normalmoduneq, aes(x = x.vals, y = upr), color = "red", linetype = "dashed") +
-  theme(axis.title.x = element_text(size = 20))
+  geom_line(data = predict.int.normalmoduneq, aes(x = x.vals, y = upr), color = "red", linetype = "dashed")
 
 
-plot_grid(srs.plot, uneq.plot, ncol = 2, labels = "AUTO")
+plot_grid(srsdots, uneqdots, srs.plot, uneq.plot, ncol = 2)
+```
+
+```{r}
+ggsave("images/ex1.pdf", height = 18, units = "cm")
+setwd("images/")
+pdf("ex1Pred.pdf")
+print(plot_grid(srs.plot, uneq.plot, ncol = 2))
+dev.off()
 ```
 
 
+
 ## Stratification
+
+```{r}
+data(api)
+```
+
 
 ```{r}
 apistrat %>% filter(stype == "H") %>% nrow
@@ -270,3 +240,168 @@ svymean(~api00, svy.srs)
 svymean(~api00, svy.strat)
 mean(apipop$api00)
 ```
+
+
+```{r}
+plot(x = apipop$api99, y = apipop$api00)
+plot(x = apipop$target, y = apipop$api00)
+plot(x = apipop$meals, y = apipop$api00)
+plot(x = apipop$ell, y = apipop$api00)
+plot(x = apipop$mobility, y = apipop$api00)
+plot(x = apipop$acs.k3, y = apipop$api00)
+plot(x = apipop$acs.46, y = apipop$api00)
+plot(x = apipop$not.hsg, y = apipop$api00)
+plot(x = apipop$hsg, y = apipop$api00)
+plot(x = apipop$some.col, y = apipop$api00)
+plot(x = apipop$col.grad, y = apipop$api00)
+plot(x = apipop$grad.sch, y = apipop$api00)
+plot(x = apipop$avg.ed, y = apipop$api00)
+plot(x = apipop$full, y = apipop$api00)
+plot(x = apipop$emer, y = apipop$api00)
+```
+
+```{r}
+api.pop.strat.not.hsg <- apipop %>% mutate(strat = case_when(not.hsg < 20 ~ 1, TRUE ~ 2))
+api.strat.not.hsg <- api.pop.strat.not.hsg[stratsample(api.pop.strat.not.hsg$strat, c("1" = 100, "2" = 100)),]
+api.strat.not.hsg$pw <- case_when(api.strat.not.hsg$strat == 1 ~ sum(api.pop.strat.not.hsg$strat == 1) / 100, api.strat.not.hsg$strat == 2 ~ sum(api.pop.strat.not.hsg$strat == 2) / 100)
+api.strat.not.hsg$fpc <- case_when(api.strat.not.hsg$strat == 1 ~ sum(api.pop.strat.not.hsg$strat == 1), api.strat.not.hsg$strat == 2 ~ sum(api.pop.strat.not.hsg$strat == 2))
+
+(api.strat.not.hsg %>% filter(strat == 2))$pw
+
+svy.srs <- svydesign(id = ~1, weights = ~pw, data = apisrs, fpc = ~fpc)
+svy.strat <- svydesign(id=~1,strata=~strat, weights=~pw, data=api.strat.not.hsg, fpc=~fpc)
+
+summary(svyglm(api00 ~ not.hsg, design = svy.srs))
+summary(svyglm(api00 ~ not.hsg, design = svy.strat))
+
+# Stratifiser på api99
+```
+
+```{r}
+api.pop.strat.api99 <- apipop %>% mutate(strat = case_when(api99 < 500 ~ 1, api99 >= 500 & api99 < 750 ~ 2, api99 >= 750 ~ 3))
+api.strat.api99 <- api.pop.strat.api99[stratsample(api.pop.strat.api99$strat, c("1" = 100, "2" = 100, "3" = 100)),]
+api.strat.api99$pw <- case_when(api.strat.api99$strat == 1 ~ sum(api.pop.strat.api99$strat == 1) / 100, api.strat.api99$strat == 2 ~ sum(api.pop.strat.api99$strat == 2) / 100, api.strat.api99$strat == 3 ~ sum(api.pop.strat.api99$strat == 3) / 100)
+api.strat.api99$fpc <- case_when(api.strat.api99$strat == 1 ~ sum(api.pop.strat.api99$strat == 1), api.strat.api99$strat == 2 ~ sum(api.pop.strat.api99$strat == 2), api.strat.api99$strat == 3 ~ sum(api.pop.strat.api99$strat == 3))
+
+apisrs300 <- apipop[sample(1:nrow(apipop), 300, replace = F),]
+apisrs300$pw <- nrow(apipop)/300
+apisrs300$fpc <- nrow(apipop)
+
+(api.strat.api99 %>% filter(strat == 2))$pw
+
+svy.srs <- svydesign(id = ~1, weights = ~pw, data = apisrs300, fpc = ~fpc)
+svy.strat <- svydesign(id=~1,strata=~strat, weights=~pw, data=api.strat.api99, fpc=~fpc)
+
+summary(svyglm(api00 ~ not.hsg, design = svy.srs))
+summary(svyglm(api00 ~ not.hsg, design = svy.strat))
+
+summary(lm(api00 ~ not.hsg, data = apipop))
+
+ggplot(data = api.strat.api99, aes(x = not.hsg, y = api00)) + geom_point()
+ggplot(data = apisrs300, aes(x = not.hsg, y = api00)) + geom_point()
+```
+
+```{r}
+mod1 <- lm(api00 ~ as.factor(stype) * col.grad, data = apipop)
+mod2 <- lm(api00 ~ as.factor(stype) + col.grad, data = apipop)
+
+anova(mod1, mod2)
+
+counts <- sapply(table(apipop$cnum), function(i) min(5, i))
+api.strat.cnum <- apipop[stratsample(apipop$cnum, counts),]
+api.strat.cnum <- api.strat.cnum %>% mutate(fpc = table(apipop$cnum)[cnum])
+svy.api.strat.cnum <- svydesign(id=~1,strata=~cnum, data=api.strat.cnum, fpc=~fpc)
+
+api.strat.cnum.svymod <- svyglm(api00 ~ acs.k3, design = svy.api.strat.cnum)
+summary(api.strat.cnum.svymod)
+
+svy.api.strat <- svydesign(id=~1,strata=~stype, weights=~pw, data=apistrat, fpc=~fpc)
+api.strat.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.strat)
+api.strat.normmod <- lm(api00 ~ col.grad, data = apistrat)
+summary(api.strat.svymod)
+summary(api.strat.normmod)
+```
+
+```{r}
+modE <- svyglm(api00 ~ avg.ed, design = subset(svy.api.strat, stype == "E"))
+modM <- svyglm(api00 ~ avg.ed, design = subset(svy.api.strat, stype == "M"))
+modH <- svyglm(api00 ~ avg.ed, design = subset(svy.api.strat, stype == "H"))
+
+coef(api.strat.svymod)
+coef(modE)
+coef(modM)
+coef(modH)
+
+ggplot(data = apistrat, aes(avg.ed, api00, colour = stype)) + geom_point() + geom_abline(intercept = coef(api.strat.svymod)[1], slope = coef(api.strat.svymod)[2])
+```
+
+
+## clustering
+
+```{r}
+apiclus1$pw = 757/15
+svy.clus <- svydesign(id = ~dnum, weights = ~pw, fpc = ~fpc, data = apiclus1)
+
+api.clus.svymod <- svyglm(api00 ~ avg.ed, design = svy.clus)
+summary(api.clus.svymod)
+
+#api.clus.normmod <- lm(api00 ~ avg.ed, data = apiclus1)
+#summary(api.clus.normmod)
+
+api.srs.clus <- apipop[sample(1:nrow(apipop), nrow(apiclus1), replace = F),]
+api.srs.clus$pw <- nrow(apipop) / nrow(apiclus1)
+api.srs.clus$fpc <- nrow(apipop)
+
+svy.api.srs.clus <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs.clus)
+
+api.clus.srs.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.srs.clus)
+summary(api.clus.srs.svymod)
+```
+
+```{r}
+x.vals = seq(from = 1, to = 5, by = 0.01)
+
+clus.srs.svy.cov <- vcov(api.clus.srs.svymod)
+predict.api.clus.srs.svymod <- as.data.frame(predict(api.clus.srs.svymod, newdata = data.frame(avg.ed = x.vals), se=TRUE))
+predict.int.api.clus.srs.svymod <- data.frame(fit = predict.api.clus.srs.svymod$link)
+predict.int.api.clus.srs.svymod$x.vals <- x.vals
+predict.int.api.clus.srs.svymod$se <- sqrt(var(api.clus.srs.svymod$residuals) + clus.srs.svy.cov[1, 1] + predict.int.api.clus.srs.svymod$x.vals^2 * clus.srs.svy.cov[2, 2] + 2*predict.int.api.clus.srs.svymod$x.vals * clus.srs.svy.cov[1, 2])
+predict.int.api.clus.srs.svymod$lower <- predict.int.api.clus.srs.svymod$fit - predict.int.api.clus.srs.svymod$se * qt(0.975, df = nrow(apiclus1))
+predict.int.api.clus.srs.svymod$upper <- predict.int.api.clus.srs.svymod$fit + predict.int.api.clus.srs.svymod$se * qt(0.975, df = nrow(apiclus1))
+
+clus.svy.cov <- vcov(api.clus.svymod)
+predict.api.clus.svymod <- as.data.frame(predict(api.clus.svymod, newdata = data.frame(avg.ed = x.vals), se=TRUE))
+predict.int.api.clus.svymod <- data.frame(fit = predict.api.clus.svymod$link)
+predict.int.api.clus.svymod$x.vals <- x.vals
+predict.int.api.clus.svymod$se <- sqrt(var(api.clus.svymod$residuals) + clus.svy.cov[1, 1] + predict.int.api.clus.svymod$x.vals^2 * clus.svy.cov[2, 2] + 2*predict.int.api.clus.svymod$x.vals * clus.svy.cov[1, 2])
+predict.int.api.clus.svymod$lower <- predict.int.api.clus.svymod$fit - predict.int.api.clus.svymod$se * qt(0.975, df = nrow(apiclus1))
+predict.int.api.clus.svymod$upper <- predict.int.api.clus.svymod$fit + predict.int.api.clus.svymod$se * qt(0.975, df = nrow(apiclus1))
+
+```
+
+```{r}
+min(apipop$api00)
+max(apipop$api00)
+```
+
+
+```{r}
+api.clus.svymod.coef <- coef(api.clus.svymod)
+api.clus.srs.svymod.coef <- coef(api.clus.srs.svymod)
+
+base <- ggplot() + xlim(1, 5) + ylim(346, 969) +
+  theme(axis.title = element_text(size = 20), axis.text = element_text(size = 15)) +
+  ylab("Height (cm)") + xlab("Finger length (cm)")
+
+base +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.srs.svymod, fill = "blue", alpha = 0.5) +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.svymod, fill = "red", alpha = 0.5) +
+  #geom_point(data = anthsrs, aes(finger, height), size = size.srs) +
+  geom_abline(slope = api.clus.srs.svymod.coef[2], intercept = api.clus.srs.svymod.coef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.api.clus.srs.svymod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.api.clus.srs.svymod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  geom_abline(slope = api.clus.svymod.coef[2], intercept = api.clus.svymod.coef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = lower), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = upper), color = "red", linetype = "dashed")
+```
+
