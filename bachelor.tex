@@ -565,7 +565,7 @@ We do not, however, know \(S^2\) as that would require us to know the \(y\) valu
 for the whole population \(U\). Instead we estimate \(S^2\) by the unbiased estimator\(
  s^2 = \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \)
-which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\)\begin{align*}
+, where \(\hat{\bar{y}} = \frac{1}{n} \sum_{i \in S} y_i \) which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\)\begin{align*}
  \widehat{\mathrm{Var}(\hat{t}_y)}
  &=\frac{N^2}{\left( n - 1 \right)n} \left( 1 - \frac{n}{N} \right) \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \end{align*}
@@ -631,6 +631,20 @@ easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
 means that to minimize the variance of \(\hat{t}\) we should choose the strata
 such that the internal variance is as small as possible.
 
+Stratification is used for several reasons; making it possible to analyze
+subpopulations individually, making sure subgroups are included in the sample
+and reducing uncertainty.
+
+If we have a population with several different interesting subgroups it can be
+useful to let each of these subgroups be their own strata. This will allow us to
+create seperate regression lines for each strata, which will allow us to
+analyze them by themselves. We can then compare the slopes to see if there is a difference in the relationship between the
+response and predictor for the different strata. We could of course make
+regression lines for different subgroups after doing a sample without strata,
+but then we would have no guarantee that each of the subgroups would have enough
+samples to be able to make a useful regression line. Using stratification we can
+choose how many samples we want from each subgroup.
+
 % Suppose we want to sample schools in the API dataset to learn about the student
 % performance throught the API metric. We might reasonably assume that students
 % having parents with higher education will get more help at home for schoolwork
@@ -675,9 +689,10 @@ heller en absolutt størrelse.
     Elementary schools & Middle schools & High schools \\
     \hline \\
     169.1 & 145 & 143.8
-    
   \end{tabular}
 \end{example}
+
+
 
 \subsection{Clustering}
 
@@ -707,13 +722,53 @@ the ppus are the subsets from the
 partitioning and the ssus are the individual sampling units.
 
 Let \(N\) be the number of clusters (psus) in the population and let \(M_i,\ i =
-1, 2, \dots, N\) be the number of individuals (ssus) in each cluster. If we let
-\(\hat{t}_{y, i}\) be an estimate for the total in cluster \(i\). Then we
-consider the psus sampling units and let the estimate of the population total be,
-as in a SRS, \(\hat{t}_y = \sum_{i \in S} \frac{M_i}{m_i} \hat{t}_{y, i}\),
-where \(S\) is the psu sample and \(m_i\) is the number of psus sampled.
+1, 2, \dots, N\) be the number of individuals (ssus) in each cluster. Let
+\(t_{y, i}\) be the total for cluster \(i\), Since we know the totals for the
+clusters in the sample \(S\), we can consider each cluster a sampling unit as we
+have done earlier in the thesis. In one-stage cluster sampling, an SRS is
+usually taken to choose which clusters to include in the sample. This gives the
+same estimator for the total as for a SRS, except that the sampling units here
+are the totals for each cluster instead of individuals as in a normal SRS,
+\(\hat{t}_y = \sum_{i \in S} \frac{N}{n} t_{y, i} = \sum_{i \in S} w_i t_{y, i} \). 
+This also gives the same estimate for the variance as in an SRS,
+\(\widehat{\mathrm{Var}}\left(t_{y}\right) = \frac{N^2}{n} \left( 1 - \frac{n}{N}
+\right) \hat{\mathrm{Var}}\left( t_{y, i} \right) =
+\frac{N^2}{\left( n - 1 \right)n} \left( 1 - \frac{n}{N} \right) \sum_{i \in S}
+\left( t_{y, i} - \hat{\bar{t_y}} \right)^2\), where \(\hat{\bar{t_y}} =
+\frac{1}{n} \sum_{i \in S} t_{y, i}\).
+
+Larger populations often mean that the totals for that population is also large,
+for example when we are measuring API scores for schools, the total of all the
+schools in a population will increase as the number of schools we sample
+increase, as the score is always positive. This means that the variance of the
+total estimates will usually increase if the clusters have very different
+population sizes. It can therefore be useful to try to keep the populations in
+the different clusters as similar as possible. But one should be careful not
+putting too much weight on keeping the population sizes equal, as that may cause
+the clusters to become too spread out physically which will make it expensive to
+measure all individuals in it, which will again defeat the purpose of clustering
+in the first place.
+
+This means that a cluster sample with the same number of individuals in it will
+almost always have a larger variance than a SRS of the same size. This is
+becuase individuals inside a cluster will usually be more similar than
+individuals across clusters. This means that measuring say \(10\) people inside
+one cluster will give less information than measuing \(10\) people randomly
+chosen in the whole population, which will cause a larger uncertainty. Measuring
+inside a cluster is often cheaper than measuring people sampled randomly from
+the whole population though. For example if the clusters are geographical areas,
+which they usually are and each individual sampled needs a researcher or
+interviewer to physically show up, then one will save a lot of time and money
+not having to travel to so many different places. This means that it is often possible to sample
+many more individuals in cluster sampling than when doing samples from the whole
+population, which will decrease the uncertainty and make cluster sampling more
+competitive with other sampling methods.
 
 \subsection{Complex surveys}
+
+In most surveys performed both stratification and clustering is used. One would
+often, for example, first stratify on the different parts of the population you
+are interested in, and then use clustering within each strata.
 
 \section{Variance estimation}
 
