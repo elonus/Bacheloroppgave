@@ -339,17 +339,19 @@ Under the following conditions:
 we get some useful properties, among which are these unbiased estimates for the
 variance of the estimators \(\hat{\beta}_0\) and \(\hat{\beta}_1\)
 \begin{equation*}
- \widehat{\mathrm{Var}} \left( \hat{\beta}_0 \right) = s^2 \frac{\sum_{i = 1}^n x_i^2}{n
+ \widehat{\mathrm{Var}} \left( \hat{\beta}_0 \right) = \frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
+ \hat{\beta}_1 x_i \right)^2 \frac{\sum_{i = 1}^n x_i^2}{n
    \sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}
 \end{equation*}
  
 
 \begin{equation*}
- \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{s^2}{
+ \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
+ \hat{\beta}_1 x_i \right)^2\frac{1}{
    \sum_{i = 1}^n \left( x_i - \bar{x} \right)^2},
 \end{equation*}
 
-where \(s^2 = \frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
+where \(\frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
  \hat{\beta}_1 x_i \right)^2\) is an
 unbiased estimator for the unknown \(\sigma^2\).
 
@@ -551,26 +553,25 @@ It can be shown that the sampling probability of a sampling unit in a SRS is
 This is a convenient way to calculate estimates for more complicated sampling
 schemes.
 
-It can also be shown that the variance of the estimator is of the form\begin{equation*}
-\mathrm{Var} \left( \hat{t}_y \right) = S^2\frac{N^2}{n} \left( 1 - \frac{n}{N}
+It can also be shown that the variance of the estimator is of the form \begin{equation*}
+\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \sum_{i = 1}^N (y_i - \bar{y})^2 
 \right)
 \end{equation*}
 
 where
 \(
-S^2 = \frac{1}{N - 1} \sum_{i = 1}^N (y_i - \bar{y})^2
+\frac{1}{N - 1} \sum_{i = 1}^N (y_i - \bar{y})^2
 \)
 is the variance of the whole population.
-We do not, however, know \(S^2\) as that would require us to know the \(y\) values
-for the whole population \(U\). Instead we estimate \(S^2\) by the unbiased estimator\(
- s^2 = \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
+We do not, however, know the population variance, as that would require us to know the \(y\) values
+for the whole population \(U\). Instead we estimate the population variance by the unbiased estimator\(
+ \frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \)
-, where \(\hat{\bar{y}} = \frac{1}{n} \sum_{i \in S} y_i \) which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\)\begin{align*}
+, where \(\hat{\bar{y}} = \frac{1}{n} \sum_{i \in S} y_i \), which gives us the estimate of \(\mathrm{Var}(\bar{y}_U)\)\begin{align*}
  \widehat{\mathrm{Var}(\hat{t}_y)}
  &=\frac{N^2}{\left( n - 1 \right)n} \left( 1 - \frac{n}{N} \right) \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2
 \end{align*}
-Since \(s^2\) is unbiased we have that \(s^2\frac{N^2}{n} \left( 1 - \frac{n}{N}
-\right)\) is an unbiased estimator of the variance of \(\hat{t}_y\).
+Since \(\frac{1}{n - 1} \sum_{i \in S} \left( y_i - \hat{\bar{y}} \right)^2\) is unbiased, we have that \(\widehat{\mathrm{Var}(\hat{t}_y)}\) is an unbiased estimator of the variance of \(\hat{t}_y\).
 
 We see that all these estimators for totals and means are the same as in the
 model based case. Therefore the estimates for the coefficients in the regression
