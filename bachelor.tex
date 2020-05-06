@@ -40,18 +40,21 @@ variables, and in some cases, where experiments are designed very carefully, it 
 It can, for example, be used in the social sciences to try to show a relationship
 between income and age of death. In linear regression we want to approximate the
 linear line that best describes the relationship between the predictor and the
-response. Since the relationship is usually not simply linear the line will not
+response. Since the relationship is usually not exactly linear, there is almost
+always some noise in the relationship, the line will not
 fit perfectly with the population, which gives us residuals, the vertical
-vectors that is between the points and the linear line.
-
+vectors that is between the points and the linear line. If the relationship was
+exactly linear we would just need to sample two individuals to find the
+regression line, if we discount errors made while measuring. When doing linear
+regression, the goal is to find the line that minimizes the sum of the residuals squared.
 
 
 Since we are measuring a concrete population
 (TODO: reformulate) we
-have a finite population. If we know the measurements for the whole population there
-is no uncertainty, we can just calculate whatever value for the population we
-want. When we generalize from a sample to the whole population, however, we get
-uncertainty. There are different approaches of handling this uncertainty, and
+have a finite population. If we know the measurements for the whole population, there
+is no uncertainty, we can just calculate whatever value we
+want, including the regression intercept and slope. When we generalize from a sample to the whole population, however, we get
+uncertainty, because we can never know the values of the individuals not in the sample. There are different approaches of modeling this uncertainty, and
 which we choose depends on what we know about the data. For example, which
 methods were used in the information gathering?
 What is the probability of each
@@ -59,51 +62,80 @@ individual being included in the sample? Are they sampled independently? Is the
 sampling done in such a way that we are guaranteed to have individuals from
 several different parts of the population?
 
-Our goal is to 
+One approach to model the uncertainty is called the model based approach, which
+is based on the fact that we usually sample from large populations. If the
+population is big enough, taking a sample is almost the same as pulling
+residuals from a distribution, which is where the observation is compared to the
+true regression line. This could be any stochastic distribution, but the most
+normal one to use is the normal distribution. The fact that we assume that the
+sample is pulled from a distribution means that we assume that the value of an
+individual can change if we sample them again. The assumption that the residuals
+are pulled from a distribution implies a structure to the residuals, which we
+can use to model the uncertainties in the residual line. The only thing we need
+to know about the data collection method is the fact that the individuals were
+sampled independently. The fact that the observed values can change is not that
+realistic, however, and viewing the sample as being the same as pulling values
+from a distribution is not always realistic either. These considerations
+motivate another approach.
 
-(TODO: reformulate start of paragraph) When considering observed data there is always uncertainty. There are different
-approaches to handling this uncertainty. One approach takes advantage of the fact that the
-population sampled from is often large. This means that taking a sample is
-almost the same as pulling values from a distribution, for example a normal distribution. We can therefore
-take advantage of the additional structure, that comes from pulling values from a
-distribution, to model the uncertainty. In this approach we have to assume that
-the values we measure from an individual can change if we measure the individual
-again. The only requirement, and all we need to know about the data to perform
-the analysis, is that the data is sampled independently. This is called the
-model based approach. The fact that the
-values we measure can be different when we measure again is not very realistic,
-however.
+% (TODO: reformulate start of paragraph) When considering observed data there is always uncertainty. There are different
+% approaches to handling this uncertainty. One approach takes advantage of the fact that the
+% population sampled from is often large. This means that taking a sample is
+% almost the same as pulling values from a distribution, for example a normal distribution. We can therefore
+% take advantage of the additional structure, that comes from pulling values from a
+% distribution, to model the uncertainty. In this approach we have to assume that
+% the values we measure from an individual can change if we measure the individual
+% again. The only requirement, and all we need to know about the data to perform
+% the analysis, is that the data is sampled independently. This is called the
+% model based approach. The fact that the
+% values we measure can be different when we measure again is not very realistic,
+% however.
 
-A more realistic approach is to assume that every time we measure an
+A perhaps more realistic way to model the uncertainty is to assume that every time we measure an
 individual we get the same value, in which case we can not pretend to be pulling
-values from a distribution. To model the uncertainty in this approach we look at the
+values from a distribution. To model the uncertainty in this approach we look at
+the sampling probabilities, i.e. the probability of each individual being
+included in the sample. Or said another way, here the random part of the model
+is who is sampled as opposed to in the model based approach where the random
+part is the sampled values. Knowing the sampling probabilities is enough to
+estimate the regression intercept and slope, but to estimate the uncertainties
+we also need information regarding dependences between observations and similar.
+Using this type of information and the fact the the random part is now who is in
+the sample is called a design based approach. The design based approach required
+more information about the sampling scheme than the model based approach, but
+even with this extra information the uncertainties are mostly larger than when
+modeling the undertainties with the model based approach. This is because the
+assumption that the observations are pulled from a specific distribution gives a
+lot of extra structure.
+\textbf{Det at jeg begynner å sammenligne størrelsen på variances i modellbasert
+og designbaserte strategier, hører det mer hjemme i diskusjonsdelen enn i introduksjonen?}
 
 
-One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
-infinite population, that is described by some distribution. This could,, for example,, be a
-normal distribution with some mean and variance. We model the uncertainty by using the
-fact that we know how this distribution behaves.
-In this case, the only requirement of the data collection is that the
-individuals in the sample are sampled independently. This is called a model based approach.
+% One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
+% infinite population, that is described by some distribution. This could,, for example,, be a
+% normal distribution with some mean and variance. We model the uncertainty by using the
+% fact that we know how this distribution behaves.
+% In this case, the only requirement of the data collection is that the
+% individuals in the sample are sampled independently. This is called a model based approach.
 
 
-An other approach is to assume that one instead samples from a finite
-population. Instead of looking at the measured values of the individuals sampled and
-possible probability distribution to describe them, which no longer make sense
-in a finite population, we look at the probabilities that
-each individual in the population being included in the sample to model the uncertainty. This is now the
-``random'' part.
-The fact that we consider the probabilities of indivduals being included in the
-sample instead of the values we measure is called a design based approach and is
-the idea that survey statistics is based on. Here we need more details regarding
-how how the data is collected is collected than in the model based approach.
-The goal of survey statistics is to be able to do statistical analysis without
-making assumptions with regards to the distribution of the data. The advantage
-of not making these assumptions is that we do not risk them being wrong, which
-would weaken the confidence in the results. On the other hand,
-making assumptions about the distribution describing the data allows us to decrease the variance, as the assumptions
-gives the data some structure. By making fewer assumptions we
-therefore get larger variances and more uncertainty.
+% An other approach is to assume that one instead samples from a finite
+% population. Instead of looking at the measured values of the individuals sampled and
+% possible probability distribution to describe them, which no longer make sense
+% in a finite population, we look at the probabilities that
+% each individual in the population being included in the sample to model the uncertainty. This is now the
+% ``random'' part.
+% The fact that we consider the probabilities of indivduals being included in the
+% sample instead of the values we measure is called a design based approach and is
+% the idea that survey statistics is based on. Here we need more details regarding
+% how how the data is collected is collected than in the model based approach.
+% The goal of survey statistics is to be able to do statistical analysis without
+% making assumptions with regards to the distribution of the data. The advantage
+% of not making these assumptions is that we do not risk them being wrong, which
+% would weaken the confidence in the results. On the other hand,
+% making assumptions about the distribution describing the data allows us to decrease the variance, as the assumptions
+% gives the data some structure. By making fewer assumptions we
+% therefore get larger variances and more uncertainty.
 
 The population we are sampling from could be very heterogenuous, i.e, different
 parts of the population have very different measured values. Say, for example, we want
@@ -481,7 +513,8 @@ non-linear expression of stochastic variables we want to do inference about and 
 the first two terms of the Taylor expansion to make it linear.
 For example, we have \(h(a, b, c, d, e) = \frac{ea - bc}{ed - b^2}\), such that
 \(h(\hat{t_{xy}}, \hat{t_x}, \hat{t}_y, \hat{t}_{x^2}, \hat{N}) = \hat{B_1}\).
-We then get\begin{align*}
+We then get
+\begin{align*}
  \mathrm{Var}(\hat{B_1})
  &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
  \hat{t}_y, \hat{t}_{x^2}, \hat{N})) \right) \\
@@ -607,10 +640,6 @@ the model based case
    \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}.
 \end{equation*}
 
-\subsection{Unequal probability sampling}
-\textbf{Trenger jeg en egen seksjon for dette? Føler ikke at det passer under
-  noen av de andre seksjonene, men samtidig er det kanskje litt lite for en egen
-overskrift?}
 
 \subsection{Stratification} \label{sec:strat}
 
@@ -631,6 +660,11 @@ where \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
 Since the estimate for each
 stratum total is unbiased, see section \ref{sec:SRS}, the estimate of the population
 total is unbiased.
+
+% TODO: skriv hva w_i er. Vekter estimater fra hvert stratum forskjellig. Hvor mye
+% hver observasjon teller.
+% Legg til eksempel. To strata med forskjellig forventningsverdi. Se på bias med
+% forskjellig sample størrelse.
 
 Since the samples from the different strate are independent the variance of the estimator is also
 easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
@@ -691,6 +725,8 @@ heller en absolutt størrelse.
   doing stratification would therefore make us loose the information for each
   school type.
 
+  TODO: Ta med sanne verdier. Lag konfidensintervall.
+
   \begin{tabular}{ccc}
     %\label{table:stratExCoef}
     %\caption{Test}
@@ -700,7 +736,10 @@ heller en absolutt størrelse.
   \end{tabular}
 \end{example}
 
+  TODO: Eksempel med varians, to stratum med forskjellig forventningsverdi. Med
+  totaler, ikke regresjon.
 
+  TODO: Unequal probability samples
 
 \subsection{Clustering}
 
@@ -711,10 +750,10 @@ inside of each of these chosen subsets, \(S_1, S_2, \dots, S_n\).
 
 \begin{definition}
  \textbf{Primary sampling unit (psu)} are subsets of the sampling frame, that
- are sampled first in a sampling scheme. \\
+ are sampled first in a sampling scheme. TODO: Kalles ofte cluster, men bare psu. \\
  \textbf{Secondary sampling unit (ssu)} are smaller subsets of the sampling
  frame, each included in ppus. The ssus are often individual units in the
- sampling frame.
+ sampling frame. TODO: Ta ssu i teksten, brukes i multistage clustering.
 \end{definition}
 
 There are two ``types'' of cluster sampling; one-stage cluster sampling and
@@ -772,16 +811,162 @@ many more individuals in cluster sampling than when doing samples from the whole
 population, which will decrease the uncertainty and make cluster sampling more
 competitive with other sampling methods.
 
+\begin{example}
+  We again look at the API dataset. Let us suppose that to collect the data, an
+  interviewer has to travel to each school. Then it would take a lot of time and
+  get very expensive if they had to travel to random schools all over
+  California. It would then we a lot cheaper and take a lot less time to just
+  collect data in some chosen school districts, we therefore choose to cluster
+  on them. There are \(757\) school districts in California and take a SRS to
+  get a sample of \(15\). This gives us a sample size of \(183\) schools. Figure
+  %\ref{fig:clustEx} shows how the prediction interval of the regression line
+  based on the clustered sample is larger than the prediction interval of a SRS
+  of size \(183\).
+
+\end{example}
+
 \subsection{Complex surveys}
 
 In most surveys performed both stratification and clustering is used. One would
 often, for example, first stratify on the different parts of the population you
 are interested in, and then use clustering within each strata.
 
+In practice we often combine clustering and stratification to what is called a
+\textbf{complex survey}. 
+
 \section{Variance estimation}
 
+A central part of doing statistics is the calculation of uncertainties. We
+usually express the uncertainty by estimating variance. Without an idea of the
+variance of an estimated value, the estimate is all but useless, as the variance
+could be so large that almost any confidence interval will include all possible
+values. It is therefore very important to have a reasonable estimate of the
+variance. The problem, however, is that in regression the values we are
+interested in are non-linear expressions. We therefore can't find a closed form
+expression for the variance estimate using normal rules, so we instead have to
+use other techniques to
+find variance estimates. One of the more used methods in survey
+statistics, and one which will give a closed form expression for the estiamate,
+is linearization.
+
+
+\begin{example}
+  Let \(\widehat{W} = \frac{\hat{t}_y}{\hat{t}_x}\), where \(\hat{t}_y\) and \(\hat{t}_x\) are stochastic variables. We
+  are interested in finding \(\mathrm{Var} \left( \widehat{W} \right) = \mathrm{Var}
+  \left( \frac{\hat{t}_y}{\hat{t}_x} \right)\).
+  Since this is a non-linear expression, there is no easy formula to calculate
+  it. We do, however, know how to calculate the variance of a linear
+  combination. We can therefore take advantage of the fact that we can
+  approximate \(\widehat{W} = \frac{\hat{t}_y}{\hat{t}_x}\) by using a first degree Taylor approximation,
+  which is linear.
+
+  Let \(h(a, b) = \frac{a}{b}\). Then \(\widehat{W} = h(\hat{t}_y, \hat{t}_x)\).
+  \(h'(a, b) = \begin{bmatrix} \frac{1}{b} & -\frac{a}{b^2} \end{bmatrix}.\)
+
+  This means that
+  \begin{align*}
+    \widehat{W} &= h(\hat{t}_y, \hat{t}_x)
+    \approx h(t_y, t_x) + h'(t_y, t_x) \left( \begin{bmatrix} \hat{t}_y \\ \hat{t}_x \end{bmatrix}
+    - \begin{bmatrix} t_y \\ t_x \end{bmatrix} \right)
+    = \frac{t_y}{t_x} + \begin{bmatrix} \frac{1}{t_x} &
+    -\frac{t_y}{t_x^2} \end{bmatrix} \begin{bmatrix} \hat{t}_y - t_y \\
+      \hat{t}_x - t_x \end{bmatrix} \\
+    &= \frac{t_y}{t_x} + \frac{1}{t_x} \left( \hat{t}_y - t_y \right) - \frac{t_y}{t_x^2} \left( \hat{t}_x - t_x \right)
+    \end{align*}
+
+    Since \(t_y\) and \(t_x\) are deterministic values, they have zero variance
+    and we can ignore them in the variance expression. We can therefore apply
+    the standard rules for calculating variances of linear expressions and we
+    get that
+    \begin{align*}
+      \mathrm{Var} \left( \widehat{W} \right) \approx \mathrm{Var} \left(
+      \frac{t_y}{t_x} + \frac{1}{t_x} \left( \hat{t}_y - t_y \right) -
+      \frac{t_y}{t_x^2} \left( \hat{t}_x - t_x \right) \right)
+    = \frac{1}{t_x^2} \mathrm{Var} \left( \hat{t}_y \right) +
+      \frac{t_y^2}{t_x^4} \mathrm{Var} \left( \hat{t}_x \right),
+      \end{align*}
+      which gives the simple expression \begin{align*}
+                    \widehat{\mathrm{Var}} \left( \widehat{W} \right) = \frac{1}{\hat{t}_x^2} \widehat{\mathrm{Var}} \left( \hat{t}_y \right) +
+                    \frac{\hat{t}_y^2}{\hat{t}_x^4} \widehat{\mathrm{Var}} \left( \hat{t}_x \right)
+                    \end{align*}
+
+    Since \(\hat{t}_y\) and \(\hat{t}_x\) are linear expressions we are able to
+    find closed form expressions for their variance estimates and we can
+    therefore calculate \(\widehat{\mathrm{Var}} \left( \widehat{W} \right)\).
+
+\end{example}
+
+More generally, let \(h(x)\), where \(x = (x_1, x_2, \dots, x_p)\), be a function such that \(h(x) = \theta\), where
+\(\theta\) is the statistic we are interested in. Further, let \(\hat{x}\) be an
+estimate of \(x\), such that \(h(\hat{x}) = \hat{\theta}\). If \(h\) is
+linear, there is no problem finding a closed form for the variance estimate,
+so we assume here that \(h\) is a non-linear function.
+
+By Taylor's theorem, we know that \(h(\hat{x}) = h(x) + h'(x) (\hat{x} - x) + \int_x^x  (\hat{x} -
+t) h''(t) dt\), where the last term is usually small compared to the first two
+in statistics. This allows us to use the approximation \(h(\hat{x}) \approx h(x) +
+h'(x) (\hat{x} - x)\). \(h(x) = \begin{bmatrix} \frac{\partial h}{\partial x_1}
+  (x_1) & \frac{\partial h}{\partial x_2} (x_2) & \dots & \frac{\partial
+    h}{\partial x_p} (x_p)\end{bmatrix}\), which means that \(h(\hat{x}) \approx
+h(x) + h'(x) (\hat{x} -
+x) = h(x) + \sum_{i = 1}^p \frac{\partial h}{\partial x_i} (x_i) \left( \hat{x}_i - x_i
+\right)\), which is a linear expression in \(\hat{x}\). Using normal rules for
+variance estimation of linear expression we have
+\begin{align*}
+  \mathrm{Var} \left( \hat{\theta} \right)
+  &= \mathrm{Var} \left( h(\hat{x}) \right)
+  \approx \mathrm{Var} \left( h(x) + \sum_{i = 1}^p \frac{\partial h}{\partial x_i} (x_i) \left( \hat{x}_i - x_i
+    \right) \right) \\
+    &= \sum_{i = 1}^p \left( \frac{\partial h}{\partial x_i} (x_i)  \right)^2 \mathrm{Var} \left( \hat{x}_i \right) + \sum_{i \neq j}  \frac{\partial h}{\partial x_i} (x_i)  \frac{\partial h}{\partial x_j} (x_j)  \mathrm{Cov} \left( \hat{x}_i, \hat{x}_j \right)
+\end{align*}
+We do not, however, know \(x\), as that are the true values we are trying to
+estimate. But by replacing \(x\) by \(\hat{x}\), and by replacing the variances
+of \(\hat{x}\) by estimated variances in the expression we get an
+estimate of the variance
+\begin{align*}
+  \widehat{\mathrm{Var}} \left( \hat{\theta} \right)
+  = \sum_{i = 1}^p \left( \frac{\partial h}{\partial x_i} (\hat{x}_i)  \right)^2 \widehat{\mathrm{Var}} \left( \hat{x}_i \right) + \sum_{i \neq j}  \frac{\partial h}{\partial x_i} (\hat{x}_i)  \frac{\partial h}{\partial x_j} (\hat{x}_j)  \widehat{\mathrm{Cov}} \left( \hat{x}_i, \hat{x}_j \right)
+\end{align*}
+
+In the regression case, the differentiation, and the estimates of covariance
+gets pretty complicated, so we won't show the derivation here, but by using
+similar techniques one can show that
+\begin{align*}
+ \mathrm{Var}(\hat{B_1})
+ &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
+ \hat{t}_y, \hat{t}_{x^2}, \hat{N})) \right) \\
+ &\approx \frac{\widehat{\mathrm{Var}}\left( \sum_{i \in S} w_i q_i \right)}
+   {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
+\end{align*}
+where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
+
+``Under conditions commonly satisfied in statistics, the last term is small
+relative to the first two ...'' \textbf{Dette er et sitat fra boka, men de
+  utdyper det ikke noe mer. Burde jeg finne en referanse på det?}
+
+
+Linearisering
+TODO: Eksempel, litt enkelt, bare en enkel brøk.
+
+Hvorfor ting vanskelig.
+Kan bruke linearisering.
+
+Resampling hvis vi har tid
+
 \section{Discussion}
+Ta opp viktigste poenger.
+Må gjøre varianskorreksjon.
 
+har ikke trukket tilfeldig.
 
+stratifisering
+
+clustering
+
+blir vanskelig å diskutere varians
+
+Veldig nyttig
+
+Ingen formler.
 
 \end{document}
