@@ -12,26 +12,37 @@
 \DeclareGraphicsExtensions{.png,.pdf}
 \graphicspath{{images/}}
 
-\title{Bachelor}
+\title{Linear Regression for Survey Data \\
+{\Large Bachelor's Thesis}}
 \author{Andreas Matre}
-\date{February 2020}
+\date{\today}
+%\date{February 2020}
 
 \begin{document}
 
-\newtheorem{definition}{Definition}[section]
+%\newtheorem{definition}{Definition}[section]
+\newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
-\newtheorem{example}{Example}[section]
+%\newtheorem{example}{Example}[section]
+\newtheorem{example}{Example}
 
 
 \maketitle
 
 \begin{abstract}
   % 200 ord
+  This Bachelor's thesis answers the course MA2002 which is 15 credits.
 \end{abstract}
+
+\newpage
 
 \tableofcontents
 
+\newpage
+
 \section{Introduction}
+
+TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger.
 
 Linear regression is a useful tool to describe relationships between variables.
 When we want to investigate possible associations, linear regression
@@ -49,9 +60,8 @@ regression line, if we discount errors made while measuring. When doing linear
 regression, the goal is to find the line that minimizes the sum of the residuals squared.
 
 
-Since we are measuring a concrete population
-(TODO: reformulate) we
-have a finite population. If we know the measurements for the whole population, there
+Since we are doing measurements on a real population, it is also finite.
+If we know the measurements for the whole population, there
 is no uncertainty, we can just calculate whatever value we
 want, including the regression intercept and slope. When we generalize from a sample to the whole population, however, we get
 uncertainty, because we can never know the values of the individuals not in the sample. There are different approaches of modeling this uncertainty, and
@@ -64,13 +74,13 @@ several different parts of the population?
 
 One approach to model the uncertainty is called the model based approach, which
 is based on the fact that we usually sample from large populations. If the
-population is big enough, taking a sample is almost the same as pulling
+population is large enough, taking a sample is almost the same as pulling
 residuals from a distribution, which is where the observation is compared to the
 true regression line. This could be any stochastic distribution, but the most
 normal one to use is the normal distribution. The fact that we assume that the
-sample is pulled from a distribution means that we assume that the value of an
+sample is drawn from a distribution means that we assume that the value of an
 individual can change if we sample them again. The assumption that the residuals
-are pulled from a distribution implies a structure to the residuals, which we
+are drawn from a distribution implies a structure to the residuals, which we
 can use to model the uncertainties in the residual line. The only thing we need
 to know about the data collection method is the fact that the individuals were
 sampled independently. The fact that the observed values can change is not that
@@ -105,7 +115,7 @@ the sample is called a design based approach. The design based approach required
 more information about the sampling scheme than the model based approach, but
 even with this extra information the uncertainties are mostly larger than when
 modeling the undertainties with the model based approach. This is because the
-assumption that the observations are pulled from a specific distribution gives a
+assumption that the observations are drawn from a specific distribution gives a
 lot of extra structure.
 \textbf{Det at jeg begynner å sammenligne størrelsen på variances i modellbasert
 og designbaserte strategier, hører det mer hjemme i diskusjonsdelen enn i introduksjonen?}
@@ -202,6 +212,7 @@ information gathering is not taken into account.
 
 \begin{example}
 
+  TODO: Nevn at jeg antar normalfordeling i model based.
 We use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
 The researcher oversampled people having short fingers and undersampled people
 having long fingers.
@@ -271,6 +282,9 @@ intervals we can see that the blue prediction interval seems to be ``correct''
 by the metric that about 95\% of the dots are inside it, but the red one is far
 from having that many dots.
 
+These differences show that it is very important taking the design of the survey
+into account when analyzing the data.
+
 % The bottom row of figure \ref{fig:ex1} shows the difference between taking into account the
 % sampling probabilities or not.
 % In the top plots, where the regression lines are plotted on top of the unequal
@@ -313,7 +327,9 @@ stratification and clustering into a complex survey.
 
 %The thesis will start by giving an introduction to survey statistics, where giving the necessary background theory needed to be able to talk about linear regression in this context.
 
-\section{Model based simple linear regression} \label{sec:modLinReg}
+\section{Classical simple linear regression} \label{sec:modLinReg}
+
+TODO: Teksten er veldig to-the-point, noe jeg liker, men det kan bli litt intenst å lese for noen som ikke er kjent med survey statistics fra tidligere. Jeg tror noen enkle figurer vil hjelpe. Jeg tenkte at en enkel figur i Section 2 når du snakker om avstandene fra regresjonslinjen kunne vært fint også.
 
 In classical simple linear regression, each observation \(i\) consists of a
 response variable, \(y_i\), and a predictor, \(x_i\) for \(i = 1, ..., n\), where \(n\) is the number of observations. The
@@ -368,7 +384,11 @@ Under the following conditions:
 \item All \(\epsilon_1\), \(\epsilon_2\), ..., \(\epsilon_n\) are independent of each other.
 \end{enumerate}
 
-Item 1 means that data points should be as likely to be over line as under it.
+TODO: I Section 2 I teksten som følger etter de fire ligningene øverst på side 6, må du være mer korrekt. Du skriver “… as likely to be over the line as under it”. Dette er ikke riktig med mindre fordelingen til residualene er symmetrisk. Du burde skrive “… on average lie on the line” eller noe sånt. På samme måte må du være mer presis med utsagnet om item 2.
+
+
+Item 1 means that data points should on average lie on the line.
+TODO: Se over, spesiel
 Item 2 means that the data points should have roughly the same vertical
 Euclidean distance from the regression line.
 Item 3 and 4 means that there should be no pattern in whether the data points is over
@@ -409,6 +429,8 @@ the sample are not independent of each other?
 
 This is what survey statistics tells us.
 
+TODO: skriv om, skriv på mer formell måte
+The randomness does not arise from measurement but from selection
 
 
 \section{Regression in the context of finite populations}
@@ -430,6 +452,9 @@ never get an exact answer as the estimates will differ when they are based on
 different samples, no matter how large. Here, however, we can find \(B_0\) and
 \(B_1\), since we can sample the whole population if we want.
 
+TODO:  Ligningen til slutt på side 6 kommer litt plutselig. Det hadde vært fint med litt mer forklaring.
+
+
 If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
 as in Section \ref{sec:modLinReg}, which after rewriting them become
 \begin{equation*}
@@ -448,6 +473,9 @@ where \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
 
 The case where we know the whole population is not realistic, we are instead interested in the case where we have to sample from the
 population to estimate \(B_0\) and \(B_1\). To do that we have to introduce some terms:
+
+TODO: I Definition 3.1 føler jeg sampling population versus sampling frame blir forvirrende. Kanskje det er bedre å forklare sampling frame I en separat definisjon.
+
 
 \begin{definition} \label{def:sampUnitPopFrame}
  A \textbf{sampling unit} is one "element" we want to sample.
@@ -524,6 +552,8 @@ We then get
 
 where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
 
+TODO: Si noe om se seksjon 8 for fler detaljer om ikke-lineære uttrykk
+
 \subsection{Simple random sample} \label{sec:SRS}
 
 The simplest probability sample is the Simple Random Sample (SRS). A
@@ -583,6 +613,9 @@ It can be shown using indicator variables and sampling probabilities that
  We denote the weight of \(y_i\) as \(w_i\).
 \end{definition}
 
+TODO: Si mer om vekter, ta opp igjen diskusjonen i introduksjonen, hvor mange
+datapunktet hver verdi svarer til. Hvorfor weight et intuitivt navn.
+
 It can be shown that the sampling probability of a sampling unit in a SRS is
 \(\frac{n}{N}\). This means that the weight of each sampling unit is
 \(\frac{N}{n}\). We can therefore rewrite the estimator for \(t_y\) as
@@ -594,9 +627,10 @@ This is a convenient way to calculate estimates for more complicated sampling
 schemes.
 
 It can also be shown that the variance of the estimator is of the form \begin{equation*}
-\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \sum_{i = 1}^N (y_i - \bar{y})^2 
-\right)
+\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^N (y_i - \bar{y})^2 
 \end{equation*}
+
+TODO: Mer forklaring.
 
 where
 \(
@@ -654,7 +688,7 @@ then add these totals to get an estimate of the population total.
 If we let \(t_{y,h}\) be the total in stratum \(h\) we get \(\hat{t}_y =
 \sum_{h = 1}^H \hat{t}_{y, h} \), where we can use different sampling schemes to
 estimate each \(t_{y, h}\).
-If we let each sample of the subsets be a simple SRS we get \( \hat{t}_{y, h} =
+If we let each sample of the subsets be a simple SRS we get \( \hat{t}_y =
 \sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i = \sum_{i \in S} w_i y_i\),
 where \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
 Since the estimate for each
@@ -665,6 +699,54 @@ total is unbiased.
 % hver observasjon teller.
 % Legg til eksempel. To strata med forskjellig forventningsverdi. Se på bias med
 % forskjellig sample størrelse.
+
+Since we often sample differently in the different strata,
+the individuals sampled from the different stratum usually have
+different sampling probabilities. This means that the sampling weights also
+differ as they are the inverse of the sampling probabilities.
+
+\begin{example}
+  Suppose a population is divided into two strata, each with a population of
+  \(1000\) individuals. Let one be values from a normal distribution with mean
+  \(0\) and variance \(1\) and one with mean \(10\) and variance \(1\), called
+  \(A\) and \(B\).
+  \textbf{Dumt å si at de er fra en fordeling?}.
+  Our goal is to estimate the sum of the values.
+
+  The true sum of the population values is \(10058.59\). If we sample the same
+  proportion of values from \(A\) and \(B\) we can estimate the sum the same way
+  as in a SRS. Let \(S_{A, 100}\) and
+  \(S_{B, 100}\) be SRS's of size \(100\) from \(A\) and \(B\) respectively.
+  Then an unbiased estimate of the total is \(\sum_{i \in S_{A, 100} \cup S_{B,
+      100} } \frac{2000}{200} y_i = 10104.81\). The bias is only \(46.22\) which is only \(0.46\%\) of the
+  value.
+
+  If we sample different proportions of values from \(A\) and \(B\), however, we
+  can't use this simple estimate. Let \(S_{A, 50}\) be a SRS of size \(50\)
+  from \(A\). If we use the same SRS estimate again we get \(\sum_{i \in S_{A, 50} \cup S_{B,
+      100}} \frac{2000}{150} y_i = 13560.02\). The bias is here \(3501.425\) which is \(34.8\%\) of the
+  value. This is a much larger error. This is because we have more samples from
+  \(B\) than \(A\), and \(B\) has a higher mean than \(A\). Since each sampled
+  value is counted the same this causes the estimate to become too large. To fix
+  this we need to let the sampled values from \(A\) count, or weigh, more than
+  the ones from \(B\). This is because the values in \(S_{A, 50}\) have to
+  represent the same size population as the values in \(S_{B, 100}\), but there
+  are only half as many values in \(S_{A, 50}\) as in \(S_{B, 100}\). Therefore,
+  each value in \(S_{A, 50}\) has to count two times as much as the values in \(S_{B, 100}\).
+
+  Doing this the estimate becomes \(\sum_{i
+    \in S_{A, 50}} \frac{1000}{50} y_i + \sum_{i \in S_{B, 100}}
+  \frac{1000}{100} = 10174.61\) which has a bias of \(116\) which is \(1.15\%\),
+  a huge improvement over the \(34.8\%\) bias where we did not take the
+  different sampling probabilities into account.
+\end{example}
+
+TODO: kan gjenta introduksjonen når det gjelder vekter.
+
+This illustrates the importance of using the correct weights. In the example the
+values in \(S_{A, 50}\) had a lower sampling probability than the ones in
+\(S_{B, 100}\), which means that their weights increase, since they are the
+inverse of the sampling probability.
 
 Since the samples from the different strate are independent the variance of the estimator is also
 easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
@@ -727,6 +809,7 @@ heller en absolutt størrelse.
 
   TODO: Ta med sanne verdier. Lag konfidensintervall.
 
+  \begin{center}
   \begin{tabular}{ccc}
     %\label{table:stratExCoef}
     %\caption{Test}
@@ -734,14 +817,12 @@ heller en absolutt størrelse.
     \hline \\
     169.1 & 145 & 143.8
   \end{tabular}
+  \end{center}
 \end{example}
 
-  TODO: Eksempel med varians, to stratum med forskjellig forventningsverdi. Med
-  totaler, ikke regresjon.
-
-  TODO: Unequal probability samples
 
 \subsection{Clustering}
+
 
 In clustering we split the sampling frame into a partition as in stratification.
 Here, however, we do a probability sample to choose which of the subsets we will
@@ -815,17 +896,47 @@ competitive with other sampling methods.
   We again look at the API dataset. Let us suppose that to collect the data, an
   interviewer has to travel to each school. Then it would take a lot of time and
   get very expensive if they had to travel to random schools all over
-  California. It would then we a lot cheaper and take a lot less time to just
+  California. It would then be a lot cheaper and take a lot less time to just
   collect data in some chosen school districts, we therefore choose to cluster
-  on them. There are \(757\) school districts in California and take a SRS to
-  get a sample of \(15\). This gives us a sample size of \(183\) schools. Figure
-  %\ref{fig:clustEx} shows how the prediction interval of the regression line
-  based on the clustered sample is larger than the prediction interval of a SRS
-  of size \(183\).
+  on them. There are \(757\) school districts in California and we take a SRS to
+  get a sample of \(15\). This gives us a sample of \(183\) schools.
+  %Figure \ref{fig:exClus} shows how the prediction interval of the regression line
+  %based on the clustered sample is larger than the prediction interval of a SRS
+  %of size \(183\).
+
+  \begin{figure}
+    \centering
+    \includegraphics[scale = 0.5]{exClus}
+
+    \caption{Plot of regression line for a clustering sample. The red line is
+      the regression line from analyzing the sample as a clustered sample. The
+      blue line is the regression line from analyzing the clustered sample as an
+    SRS. The shaded areas are the regression lines prediction intervals.}
+
+    \label{fig:exClus}
+  \end{figure}
+
+  In Figure \ref{fig:exClus} we show regression lines from analyzing the sample
+  in two ways. For the red line, we did it the ``correct'' way. We have taken
+  the sampling scheme into account, so the correlation between the individuals
+  in the same cluster is corrected for. For the blue line we ignored the
+  clustering and analyzed the sample as if it was a SRS. This ignores all
+  correlation between the individuals.
+  TODO: Gi tall på hvor mange punkter er inni prediksjonsintervall
+
+  We can see from the prediction intervals, the shaded areas, that clustering
+  gives more uncertainty than a SRS of the same size. This makes sense, as each
+  individual in the clustered sample carries a lot less information than each
+  individual in an SRS, as the individuals inside a cluster can usually be
+  assumed to be more similar the individuals in different clusters.
 
 \end{example}
 
 \subsection{Complex surveys}
+
+TODO: Ta opp utviklingsland, vet ofte heller ikke populasjonen.
+Trenger stratum for counties og urban vs rural
+Må gjøre clustering for å unngå å reise rundt i hele Kenya.
 
 In most surveys performed both stratification and clustering is used. One would
 often, for example, first stratify on the different parts of the population you
@@ -849,8 +960,10 @@ find variance estimates. One of the more used methods in survey
 statistics, and one which will give a closed form expression for the estiamate,
 is linearization.
 
+TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
 
 \begin{example}
+  TODO: Forklar stegene bedre, f.eks. hvorfor sentrere på sanne verdier.
   Let \(\widehat{W} = \frac{\hat{t}_y}{\hat{t}_x}\), where \(\hat{t}_y\) and \(\hat{t}_x\) are stochastic variables. We
   are interested in finding \(\mathrm{Var} \left( \widehat{W} \right) = \mathrm{Var}
   \left( \frac{\hat{t}_y}{\hat{t}_x} \right)\).
@@ -902,7 +1015,8 @@ estimate of \(x\), such that \(h(\hat{x}) = \hat{\theta}\). If \(h\) is
 linear, there is no problem finding a closed form for the variance estimate,
 so we assume here that \(h\) is a non-linear function.
 
-By Taylor's theorem, we know that \(h(\hat{x}) = h(x) + h'(x) (\hat{x} - x) + \int_x^x  (\hat{x} -
+TODO: Se på grensene i integralet
+By Taylor's theorem, we know that \(h(\hat{x}) = h(x) + h'(x) (\hat{x} - x) + \int_x^{\hat{x}}  (\hat{x} -
 t) h''(t) dt\), where the last term is usually small compared to the first two
 in statistics. This allows us to use the approximation \(h(\hat{x}) \approx h(x) +
 h'(x) (\hat{x} - x)\). \(h(x) = \begin{bmatrix} \frac{\partial h}{\partial x_1}
@@ -962,11 +1076,27 @@ har ikke trukket tilfeldig.
 stratifisering
 
 clustering
+  Kan ikke gjøre dette i model based
 
 blir vanskelig å diskutere varians
 
 Veldig nyttig
 
 Ingen formler.
+
+Hvis du har gjort clustering og stratifisering er det direkte feil med model
+based. Se eksempel 1. Survey statistics er alltid riktig, model based noen ganger.
+
+Disse type metoder brukes ofte for å estimare dødelighet, vaksinasjonsrate og
+lignende i utviklingsland. Mest i clustering, litt her i diskusjonen.
+https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2624622 er master oppgave jeg
+kan se på og referere til. Spesielt interessant er 1.3.
+https://dhsprogram.com/pubs/pdf/fr308/fr308.pdf er rapport om Kenya som
+masteroppgaven over bruker. Kan referere til den.
+
+TODO: Du trenger en referanseliste til slutt og noen refereranser underveis. Spesielt i forbindelse med least squares estimatorene i Section 2, og noen av uttrykkene i Section 3. Det ville også vært fint å hatt en eller to referanser i Section 1.
+Natbib: citations, navn og årstall (authoryear)
+
+Cit seksjon 2, bok fra ST1101
 
 \end{document}
