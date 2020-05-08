@@ -184,7 +184,7 @@ dev.off()
 
 
 
-## Stratification
+# Stratification
 
 ```{r}
 data(api)
@@ -354,11 +354,41 @@ coef(modE)
 coef(modM)
 coef(modH)
 
+confint(api.strat.svymod, parm = "avg.ed")
+confint(modE, parm = "avg.ed")
+confint(modM, parm = "avg.ed")
+confint(modH, parm = "avg.ed")
+
+coef(lm(api00 ~ avg.ed, data = (apipop %>% filter(stype == "E"))))
+coef(lm(api00 ~ avg.ed, data = (apipop %>% filter(stype == "M"))))
+coef(lm(api00 ~ avg.ed, data = (apipop %>% filter(stype == "H"))))
+
 ggplot(data = apistrat, aes(avg.ed, api00, colour = stype)) + geom_point() + geom_abline(intercept = coef(api.strat.svymod)[1], slope = coef(api.strat.svymod)[2])
 ```
 
+## Eksempel unequal probabilities
 
-## clustering
+```{r}
+set.seed(123)
+A <- rnorm(1000, mean = 0, sd = 1)
+B <- rnorm(1000, mean = 10, sd = 1)
+
+tot <- sum(A) + sum(B)
+
+A.sample.100 <- A[sample(1:1000, 100, replace = F)]
+B.sample.100 <- B[sample(1:1000, 100, replace = F)]
+
+tot.est.100.100 <- sum(A.sample.100 * 1000/100) + sum(B.sample.100 * 1000/100)
+
+A.sample.50 <- A[sample(1:1000, 50, replace = F)]
+
+tot.est.wrong.50.100 <- sum(c(A.sample.50, B.sample.100)) * 2000/150
+tot.est.correct.50.100 <- 1000/50 * sum(A.sample.50) + 1000/100 * sum(B.sample.100)
+```
+
+
+
+# Clustering
 
 ```{r}
 apiclus1$pw = 757/15
@@ -379,8 +409,8 @@ svy.api.srs.clus <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs
 api.clus.srs.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.srs.clus)
 summary(api.clus.srs.svymod)
 
-api.srs.90 <- apipop[sample(1:nrow(apipop), 800, replace = F),]
-api.srs.90$pw <- nrow(apipop) / 800
+api.srs.90 <- apipop[sample(1:nrow(apipop), 183, replace = F),]
+api.srs.90$pw <- nrow(apipop) / 183
 api.srs.90$fpc <- nrow(apipop)
 
 svy.api.srs.90 <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs.90)
@@ -419,8 +449,9 @@ predict.int.api.srs.90.svymod$upper <- predict.int.api.srs.90.svymod$fit + predi
 ```{r}
 # Find percent inside prediction interval
 percent.in.pred.val <- function(pred, resp, x.vals, lower, upper) {
-  pred <- pred[!is.na(pred)]
-  resp <- resp[!is.na(resp)]
+  notNA <- complete.cases(pred, resp)
+  pred <- pred[notNA]
+  resp <- resp[notNA]
   inside <- sapply(1:length(pred), function(i) {
     if (min(abs(pred[i] - x.vals)) < 10^-5) {
       index <- which.min(abs(x.vals - pred[i]))
@@ -453,9 +484,9 @@ max(apipop$api00)
 api.clus.svymod.coef <- coef(api.clus.svymod)
 api.clus.srs.svymod.coef <- coef(api.clus.srs.svymod)
 
-base <- ggplot() + xlim(1, 5) + ylim(346, 969) +
+base <- ggplot() + xlim(1, 5) + ylim(300, 1100) +
   theme(axis.title = element_text(size = 20), axis.text = element_text(size = 15)) +
-  ylab("Height (cm)") + xlab("Finger length (cm)")
+  ylab("API") + xlab("Average education")
 
 base +
   geom_point(data = apipop, aes(avg.ed, api00)) +
@@ -470,7 +501,7 @@ base +
 ```
 
 ```{r}
-ggsave("images/ex1.pdf", height = 18, units = "cm")
+ggsave("images/exClus.pdf", height = 12, units = "cm")
 ```
 
 ```{r}
@@ -486,5 +517,13 @@ base +
   geom_abline(slope = api.clus.svymod.coef[2], intercept = api.clus.svymod.coef[1], color = "red", lwd = 1) +
   geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = lower), color = "red", linetype = "dashed") +
   geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = upper), color = "red", linetype = "dashed")
+```
+
+
+# Complex survey
+
+```{r}
+# Frist stage: Stratifisering på county
+# Second stage: Clustering på district
 ```
 
