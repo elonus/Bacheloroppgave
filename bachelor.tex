@@ -12,9 +12,14 @@
 \DeclareGraphicsExtensions{.png,.pdf}
 \graphicspath{{images/}}
 
+%\usepackage[english]{babel}
+%\usepackage{natlib}
+%\bibliographystyle{unsrtnat}
+
 \title{Linear Regression for Survey Data \\
 {\Large Bachelor's Thesis}}
-\author{Andreas Matre}
+\author{Andreas Matre \\
+Supervisor: Geir-Arne Fuglstad}
 \date{\today}
 %\date{February 2020}
 
@@ -88,18 +93,6 @@ realistic, however, and viewing the sample as being the same as pulling values
 from a distribution is not always realistic either. These considerations
 motivate another approach.
 
-% (TODO: reformulate start of paragraph) When considering observed data there is always uncertainty. There are different
-% approaches to handling this uncertainty. One approach takes advantage of the fact that the
-% population sampled from is often large. This means that taking a sample is
-% almost the same as pulling values from a distribution, for example a normal distribution. We can therefore
-% take advantage of the additional structure, that comes from pulling values from a
-% distribution, to model the uncertainty. In this approach we have to assume that
-% the values we measure from an individual can change if we measure the individual
-% again. The only requirement, and all we need to know about the data to perform
-% the analysis, is that the data is sampled independently. This is called the
-% model based approach. The fact that the
-% values we measure can be different when we measure again is not very realistic,
-% however.
 
 A perhaps more realistic way to model the uncertainty is to assume that every time we measure an
 individual we get the same value, in which case we can not pretend to be pulling
@@ -117,35 +110,7 @@ even with this extra information the uncertainties are mostly larger than when
 modeling the undertainties with the model based approach. This is because the
 assumption that the observations are drawn from a specific distribution gives a
 lot of extra structure.
-\textbf{Det at jeg begynner å sammenligne størrelsen på variances i modellbasert
-og designbaserte strategier, hører det mer hjemme i diskusjonsdelen enn i introduksjonen?}
 
-
-% One approach is to assume that the population sampled from is part of a ``superpopulation'', i.e, an
-% infinite population, that is described by some distribution. This could,, for example,, be a
-% normal distribution with some mean and variance. We model the uncertainty by using the
-% fact that we know how this distribution behaves.
-% In this case, the only requirement of the data collection is that the
-% individuals in the sample are sampled independently. This is called a model based approach.
-
-
-% An other approach is to assume that one instead samples from a finite
-% population. Instead of looking at the measured values of the individuals sampled and
-% possible probability distribution to describe them, which no longer make sense
-% in a finite population, we look at the probabilities that
-% each individual in the population being included in the sample to model the uncertainty. This is now the
-% ``random'' part.
-% The fact that we consider the probabilities of indivduals being included in the
-% sample instead of the values we measure is called a design based approach and is
-% the idea that survey statistics is based on. Here we need more details regarding
-% how how the data is collected is collected than in the model based approach.
-% The goal of survey statistics is to be able to do statistical analysis without
-% making assumptions with regards to the distribution of the data. The advantage
-% of not making these assumptions is that we do not risk them being wrong, which
-% would weaken the confidence in the results. On the other hand,
-% making assumptions about the distribution describing the data allows us to decrease the variance, as the assumptions
-% gives the data some structure. By making fewer assumptions we
-% therefore get larger variances and more uncertainty.
 
 The population we are sampling from could be very heterogenuous, i.e, different
 parts of the population have very different measured values. Say, for example, we want
@@ -433,7 +398,7 @@ TODO: skriv om, skriv på mer formell måte
 The randomness does not arise from measurement but from selection
 
 
-\section{Regression in the context of finite populations}
+\section{Regression in the context of finite populations} \label{sec:RegFinPop}
 Now consider the case where the population is finite, i.e, the population
 consists of \((x_1, y_1),
 (x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
@@ -480,8 +445,8 @@ TODO: I Definition 3.1 føler jeg sampling population versus sampling frame blir
 \begin{definition} \label{def:sampUnitPopFrame}
  A \textbf{sampling unit} is one "element" we want to sample.
  The \textbf{sampling population}, or universe, \(U = \{1, 2, 3, ..., N\}\), is a
- finite set containing all the sampling units you are interested in. 
- The \textbf{sampling frame} is the list of all sampling units you are going to sample from. 
+ finite set containing all the sampling units we are interested in. 
+ The \textbf{sampling frame} is the list of all sampling units we are going to sample from. 
 \end{definition}
 
 In the case of our API dataset, our sampling units are schools, while
@@ -710,7 +675,6 @@ differ as they are the inverse of the sampling probabilities.
   \(1000\) individuals. Let one be values from a normal distribution with mean
   \(0\) and variance \(1\) and one with mean \(10\) and variance \(1\), called
   \(A\) and \(B\).
-  \textbf{Dumt å si at de er fra en fordeling?}.
   Our goal is to estimate the sum of the values.
 
   The true sum of the population values is \(10058.59\). If we sample the same
@@ -769,23 +733,6 @@ but then we would have no guarantee that each of the subgroups would have enough
 samples to be able to make a useful regression line. Using stratification we can
 choose how many samples we want from each subgroup.
 
-% Suppose we want to sample schools in the API dataset to learn about the student
-% performance throught the API metric. We might reasonably assume that students
-% having parents with higher education will get more help at home for schoolwork
-% and therefore perform better in school. It might therefore be reasonable to
-% create strate that splits the population by the percentage of parents with a
-% college degree. If we take an SRS of size \(300\) of all the schools we get an API mean of
-% \(659.37\) with a variance \(56.36\). However if we take a stratified sample,
-% where the strate are the schools with less than \(20\%\) of parents having
-% college degrees, schools with between \(20\%\) and \(40\%\) of parents having
-% college degrees and schools with more than \(40\%\) of parents with college
-% degrees, and we take a sample of 100 schools from each stratum, we get an API
-% mean of \(668.33\) and variance \(43.37\). Since we have the full dataset we can
-% find the true mean, which is \(664.7\), so both methods were roughtly the same
-% distance from the correct value. However the variance from the stratified sample
-% is smaller. In addition we have the option of finding the mean of each of the
-% strata separately without taking new samples.
-
 TODO: Velger ofte ikke sample størrelse etter populasjonsstørrelse, velger
 heller en absolutt størrelse.
 
@@ -800,28 +747,27 @@ heller en absolutt størrelse.
   The population has \(4421\) elementary schools, \(755\) middle schools and
   \(1018\) high schools and we choose to sample \(50\) schools from each strata.
 
-  The table shows the estimated slope for each school level. We can see that
+  The table shows the estimated slope with 95\% confidence intervals along with
+  true slopes for each school level. We observe that all the true values are
+  inside the confidence intervals. We can see that
   parent education level seems to have a higher effect in Elementary schools
   than higher school levels. Regression on all the strata together gives the
   slope \(158\), which is somewhere in between all the individual slopes. Not
   doing stratification would therefore make us loose the information for each
   school type.
 
-  TODO: Ta med sanne verdier. Lag konfidensintervall.
-
   \begin{center}
-  \begin{tabular}{ccc}
-    %\label{table:stratExCoef}
-    %\caption{Test}
-    Elementary schools & Middle schools & High schools \\
+  \begin{tabular}{c|ccc}
+    & Elementary schools & Middle schools & High schools \\
     \hline \\
-    169.1 & 145 & 143.8
+    Estimates (95\% confidence interval) & 169.1 (136.9, 201.3) & 145 (121, 169) & 143.8 (119.7, 167.9) \\
+    True value & 144.5 & 157.7 & 152.2
   \end{tabular}
   \end{center}
 \end{example}
 
 
-\subsection{Clustering}
+\subsection{Clustering} \label{sec:clustering}
 
 
 In clustering we split the sampling frame into a partition as in stratification.
@@ -831,23 +777,19 @@ inside of each of these chosen subsets, \(S_1, S_2, \dots, S_n\).
 
 \begin{definition}
  \textbf{Primary sampling unit (psu)} are subsets of the sampling frame, that
- are sampled first in a sampling scheme. TODO: Kalles ofte cluster, men bare psu. \\
- \textbf{Secondary sampling unit (ssu)} are smaller subsets of the sampling
- frame, each included in ppus. The ssus are often individual units in the
- sampling frame. TODO: Ta ssu i teksten, brukes i multistage clustering.
+ are sampled first in a sampling scheme. These are also often called clusters. 
 \end{definition}
 
 There are two ``types'' of cluster sampling; one-stage cluster sampling and
 multi-stage cluster sampling. In one-stage cluster sampling we sample all the
 elements in the subsets chosen in \(S\), so each element has probability \(1\)
 of being included. In multi-stage cluster sampling, however,
-we make a sample of the ssus inside the psus in \(S\), where not all ssus are
-included in the sample. Multi-stage cluster sampling is often what is used in
-practice, but since the idea is so similar and the formulas get so complicated
+we make a sample of the \textbf{secondary sampling units (ssus)}, which are
+individuals inside the clusters, inside the psus in \(S\). Here not all ssus, or
+individuals, inside the cluster are included. Multi-stage cluster sampling is often what is used in
+practice, but since the ideas are so similar to one-stage cluster sampling and
+the formulas get so complicated in multi-stage cluster sampling
 we will restrict outselves to one-stage cluster sampling in this thesis.
-
-the ppus are the subsets from the
-partitioning and the ssus are the individual sampling units.
 
 Let \(N\) be the number of clusters (psus) in the population and let \(M_i,\ i =
 1, 2, \dots, N\) be the number of individuals (ssus) in each cluster. Let
@@ -893,16 +835,20 @@ population, which will decrease the uncertainty and make cluster sampling more
 competitive with other sampling methods.
 
 \begin{example}
-  We again look at the API dataset. Let us suppose that to collect the data, an
+  We again look at the API dataset and want to predict API score based on
+  the parents' average education level. Suppose that to collect the data, an
   interviewer has to travel to each school. Then it would take a lot of time and
   get very expensive if they had to travel to random schools all over
-  California. It would then be a lot cheaper and take a lot less time to just
-  collect data in some chosen school districts, we therefore choose to cluster
-  on them. There are \(757\) school districts in California and we take a SRS to
-  get a sample of \(15\). This gives us a sample of \(183\) schools.
-  %Figure \ref{fig:exClus} shows how the prediction interval of the regression line
-  %based on the clustered sample is larger than the prediction interval of a SRS
-  %of size \(183\).
+  California. It would be a lot cheaper and take a lot less time to
+  collect data in just some school districts. We therefore choose to cluster
+  on the school districts. There are \(757\) school districts in California and we take a SRS to
+  get a sample of \(15\). This gives us a sample of \(183\) schools. Based on
+  the data collected from these schools we can now make regression lines and
+  prediction intervals.
+  To make the regression line and to accurately estimate the variance we have to
+  take the correlation between the individuals in the same cluster into account.
+  If we do not take this into account we will get a different result and a too
+  small variance estimate.
 
   \begin{figure}
     \centering
@@ -911,25 +857,37 @@ competitive with other sampling methods.
     \caption{Plot of regression line for a clustering sample. The red line is
       the regression line from analyzing the sample as a clustered sample. The
       blue line is the regression line from analyzing the clustered sample as an
-    SRS. The shaded areas are the regression lines prediction intervals.}
+    SRS. The shaded areas are the regression lines 95\% prediction intervals.
+    The points are the data points from the whole population.}
 
     \label{fig:exClus}
   \end{figure}
 
-  In Figure \ref{fig:exClus} we show regression lines from analyzing the sample
-  in two ways. For the red line, we did it the ``correct'' way. We have taken
+  TODO: Gjør ferdig eksempel og tekst etterpå
+
+  Figure \ref{fig:exClus} shows two different regression lines. For the red line, we did it the ``correct'' way. We have taken
   the sampling scheme into account, so the correlation between the individuals
   in the same cluster is corrected for. For the blue line we ignored the
   clustering and analyzed the sample as if it was a SRS. This ignores all
   correlation between the individuals.
-  TODO: Gi tall på hvor mange punkter er inni prediksjonsintervall
 
-  We can see from the prediction intervals, the shaded areas, that clustering
-  gives more uncertainty than a SRS of the same size. This makes sense, as each
+  The shaded areas, which represent the 95\% prediction intervals, show that
+  taking the correlation between the sampled individuals into account gives a
+  larges variance than when we assume that the individuals are independently sampled.
+  This makes sense, as each
   individual in the clustered sample carries a lot less information than each
   individual in an SRS, as the individuals inside a cluster can usually be
   assumed to be more similar the individuals in different clusters.
 
+  The 95\% prediction interval made from clustering includes \(\sim 97\%\) of the
+  population, while the 95\% prediction interval from interpreting the cluster
+  sample as a SRS includes just \(\sim 91\%\) of the population. Therefore, the 95\%
+  prediction interval for the regression line where we assume independence is
+  too small, which illustratess that it
+  is important to take the sampling method into account to get correct
+  uncertainty estimates.
+
+  
 \end{example}
 
 \subsection{Complex surveys}
@@ -938,12 +896,38 @@ TODO: Ta opp utviklingsland, vet ofte heller ikke populasjonen.
 Trenger stratum for counties og urban vs rural
 Må gjøre clustering for å unngå å reise rundt i hele Kenya.
 
-In most surveys performed both stratification and clustering is used. One would
-often, for example, first stratify on the different parts of the population you
-are interested in, and then use clustering within each strata.
-
 In practice we often combine clustering and stratification to what is called a
-\textbf{complex survey}. 
+\textbf{complex survey}. We first create strata for the different subpopulations
+we are interested in data from, before we use clustering to make it
+practically possible to perform the survey.
+
+A real example where survey statistics is used is the Demographic and Health
+Survey (DHS) in Kenya. This survey collects among other things, 
+information regarding the birth rates and mortality rates in Kenya. These
+surveys are important because there is no databases of these kind of things in a
+lot of developing countries.
+Ideally one would of course do a full census of the population, but that is not
+possible in practice as it would be extremely expensive. Each household that is
+surveyed has to be visited in person by a trained interviewer. Visiting
+households spread in the whole country would need both a lot of travel time and
+more interviewers who have to be trained. Instead one desings a
+complex survey combining the sampling methods introduced earlier in Section
+\ref{sec:RegFinPop}. This is a lot cheaper, and if the survey is designed well
+one will get good data from this as well.
+
+In the DHS in Kenya the researchers wanted data on both urban and rural
+populations in each county they first started with splitting the country into
+strata. Two strata for each county, one for the urban population and one for the
+rural population, except for two counties which only has a urban population.
+Each of these strata were then further divided into smaller geographic units,
+these are the clusters. The researchers then do a SRS of the clusters inside
+each stratum to choose which ones to visit.
+
+Inside each cluster the researchers then sample again 25 households to actually
+visit. The fact that the researchers made a new sample inside the cluster is
+called two-stage clustering, this has not been a topic of this thesis, but the
+principals used are the same as the ones used in one-stage clustering introduced
+in section \ref{sec:clustering}.
 
 \section{Variance estimation}
 
@@ -963,7 +947,6 @@ is linearization.
 TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
 
 \begin{example}
-  TODO: Forklar stegene bedre, f.eks. hvorfor sentrere på sanne verdier.
   Let \(\widehat{W} = \frac{\hat{t}_y}{\hat{t}_x}\), where \(\hat{t}_y\) and \(\hat{t}_x\) are stochastic variables. We
   are interested in finding \(\mathrm{Var} \left( \widehat{W} \right) = \mathrm{Var}
   \left( \frac{\hat{t}_y}{\hat{t}_x} \right)\).
@@ -988,7 +971,7 @@ TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
     \end{align*}
 
     Since \(t_y\) and \(t_x\) are deterministic values, they have zero variance
-    and we can ignore them in the variance expression. We can therefore apply
+    and we can treat them as any other constants in the variance expression. We can therefore apply
     the standard rules for calculating variances of linear expressions and we
     get that
     \begin{align*}
@@ -1002,6 +985,14 @@ TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
                     \widehat{\mathrm{Var}} \left( \widehat{W} \right) = \frac{1}{\hat{t}_x^2} \widehat{\mathrm{Var}} \left( \hat{t}_y \right) +
                     \frac{\hat{t}_y^2}{\hat{t}_x^4} \widehat{\mathrm{Var}} \left( \hat{t}_x \right)
                     \end{align*}
+
+    Taylor approximation works best if the point we are approximating around is
+    near the point we want the function value at. This means that in this case we should
+    choose a fixed point near \((\hat{t}_x, \hat{t}_y)\). Since this is an approximation
+    of \((t_x, t_y)\), that point is a natural one to approximate around. Another
+    advantage of approximation around \((t_x, t_y)\) is the fact that to get a
+    variance approximation we can calculate we can exchange \((t_x,
+    t_y)\) with \((\hat{t}_x, \hat{t}_y)\) and get a numeric value.
 
     Since \(\hat{t}_y\) and \(\hat{t}_x\) are linear expressions we are able to
     find closed form expressions for their variance estimates and we can
@@ -1054,13 +1045,6 @@ similar techniques one can show that
 \end{align*}
 where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
 
-``Under conditions commonly satisfied in statistics, the last term is small
-relative to the first two ...'' \textbf{Dette er et sitat fra boka, men de
-  utdyper det ikke noe mer. Burde jeg finne en referanse på det?}
-
-
-Linearisering
-TODO: Eksempel, litt enkelt, bare en enkel brøk.
 
 Hvorfor ting vanskelig.
 Kan bruke linearisering.
