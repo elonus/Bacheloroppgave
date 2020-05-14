@@ -12,9 +12,10 @@
 \DeclareGraphicsExtensions{.png,.pdf}
 \graphicspath{{images/}}
 
-%\usepackage[english]{babel}
-%\usepackage{natlib}
-%\bibliographystyle{unsrtnat}
+\usepackage[english]{babel}
+\usepackage[square, numbers]{natbib}
+\bibliographystyle{abbrvnat}
+\setcitestyle{authoryear,open={((},close={))}}
 
 \title{Linear Regression for Survey Data \\
 {\Large Bachelor's Thesis}}
@@ -47,7 +48,7 @@ Supervisor: Geir-Arne Fuglstad}
 
 \section{Introduction}
 
-TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger.
+TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger. \cite{st1101}
 
 Linear regression is a useful tool to describe relationships between variables.
 When we want to investigate possible associations, linear regression
@@ -111,6 +112,8 @@ modeling the undertainties with the model based approach. This is because the
 assumption that the observations are drawn from a specific distribution gives a
 lot of extra structure.
 
+We may sometimes want to make separate analyses on different parts of the
+population, we might be interested in different
 
 The population we are sampling from could be very heterogenuous, i.e, different
 parts of the population have very different measured values. Say, for example, we want
@@ -121,13 +124,17 @@ mean income of the residents of Oslo. To fix this we could split
 the city population into subsets; one for each city district. We can then sample
 from each of these districts independently. Doing that, we are guaranteed to get
 a sample including people from different parts of the city, and therefore
-more likely to get a representative sample ( TODO: Skriv om ``representative
-sample'' ). This can dramatically decrease the
+more likely to get correct estimates. This can dramatically decrease the
 variance of values we estimate, if the subsets are chosen smartly. Doing this also allows us to make
 separate estimates of the statistic of interest for different parts of the
 population, i.e, we could make a separate estimate of the mean income for each city
-district in addition to the estimate for the city as a whole. This method is
+district in addition to the estimate for the city as a whole. We may also be
+interested in making separate analyses on different parts of the population. We
+might, for example, be interested in separate means of income for different
+ethnicities. This can also be done by splitting the population into subsets to
+make sure that we have enough data about each group we are interested in. This method is
 called stratification.
+
 
 Another potential problem is that researchers are often on a limited budget, and
 it can be very expensive to sample randomly from the whole population. Say
@@ -167,7 +174,7 @@ value which can be interpreted as the number of individuals in the population
 that observation represents. So an observation with a small chance of being
 included in the sample would have a larger weight than one with a high chance of
 being included.
-In normal regression each individual in the population has the same chance of
+In classical regression each individual in the population has the same chance of
 being included so each observation therefore has the same weight.
 
 We start
@@ -177,7 +184,6 @@ information gathering is not taken into account.
 
 \begin{example}
 
-  TODO: Nevn at jeg antar normalfordeling i model based.
 We use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
 The researcher oversampled people having short fingers and undersampled people
 having long fingers.
@@ -230,7 +236,7 @@ sample will result in the slope tending to be smaller than what it should be.
 %\end{figure}
 
 The bottom row of figure \ref{fig:ex1} illustrate the difference between
-classical regression and regression taking the probabilities of being included
+classical regression, assuming a normal distribution, and regression taking the probabilities of being included
 in the sample into account. The bottom left plot shows regressions based on a
 sample where every person has the same probability of being included. We can see
 only one regression line is this plot, this is because both regression lines are
@@ -294,8 +300,6 @@ stratification and clustering into a complex survey.
 
 \section{Classical simple linear regression} \label{sec:modLinReg}
 
-TODO: Teksten er veldig to-the-point, noe jeg liker, men det kan bli litt intenst å lese for noen som ikke er kjent med survey statistics fra tidligere. Jeg tror noen enkle figurer vil hjelpe. Jeg tenkte at en enkel figur i Section 2 når du snakker om avstandene fra regresjonslinjen kunne vært fint også.
-
 In classical simple linear regression, each observation \(i\) consists of a
 response variable, \(y_i\), and a predictor, \(x_i\) for \(i = 1, ..., n\), where \(n\) is the number of observations. The
 relationship between the response and the covariates is assumed to be
@@ -317,9 +321,19 @@ Residual Sum of Squared (RSS). The RSS is defined by
   = \frac{1}{n} \sum_{i = 1}^n \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2.
 \end{align*}
 RSS can be geometrically thought of as the sum of the squared distances of
-the data points in the sample from the regression line. Our goal is to find a
+the data points in the sample from the regression line, see Figure \ref{fig:residuals}. Our goal is to find a
 line that is as close as possible to the observed sample, and minimizing the RSS
 is therefore one way to find a close line.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale = 0.5]{Residuals_for_Linear_Regression_Fit.png}
+  \caption{Illustration of residuals. The red line is a regression line. The
+    distances between the points and the line are illustrated by the vertical
+    black lines. \cite{residualsFigure}}
+  \label{fig:residuals}
+  
+\end{figure}
 
 The estimators \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimizes the RSS are
 %$$
@@ -346,18 +360,17 @@ Under the following conditions:
 \item \(\mathrm{E} \left( \epsilon_i \right) = 0\ \forall \ i = 1, 2, ..., n\)
 \item \(\mathrm{Var} \left( \epsilon_i \right) = \sigma^2\ \forall \ i = 1, 2, ..., n\)
 \item All the \(\epsilon\) are independent of any predictor or observation number.
-\item All \(\epsilon_1\), \(\epsilon_2\), ..., \(\epsilon_n\) are independent of each other.
+\item All \(\epsilon_1\), \(\epsilon_2\), ..., \(\epsilon_n\) are independent of each other,
 \end{enumerate}
 
-TODO: I Section 2 I teksten som følger etter de fire ligningene øverst på side 6, må du være mer korrekt. Du skriver “… as likely to be over the line as under it”. Dette er ikke riktig med mindre fordelingen til residualene er symmetrisk. Du burde skrive “… on average lie on the line” eller noe sånt. På samme måte må du være mer presis med utsagnet om item 2.
+%TODO: I Section 2 I teksten som følger etter de fire ligningene øverst på side 6, må du være mer korrekt. Du skriver “… as likely to be over the line as under it”. Dette er ikke riktig med mindre fordelingen til residualene er symmetrisk. Du burde skrive “… on average lie on the line” eller noe sånt. På samme måte må du være mer presis med utsagnet om item 2.
 
 
-Item 1 means that data points should on average lie on the line.
-TODO: Se over, spesiel
+where item 1 means that data points should on average lie on the line.
 Item 2 means that the data points should have roughly the same vertical
 Euclidean distance from the regression line.
 Item 3 and 4 means that there should be no pattern in whether the data points is over
-or under the regression line and on the vertical Eudlidean distance from the
+or under the regression line and on the vertical Euclidean distance from the
 regression line.
 
 we get some useful properties, among which are these unbiased estimates for the
@@ -381,21 +394,10 @@ unbiased estimator for the unknown \(\sigma^2\).
 
 New: This is based on the fact that we assume the response is random, i.e, that
 it is possible to get a different response if we measure again. This means we
-can think of the residuals as coming from some stochastic distribution. What
-happens, then, if we instead assume that the responses are fixed and are the
-same if we measure them again?
-
-This is the idea that survey statistics is based on.
-
-Old: This is all based on the fact that the response has a distribution, which again
-is based on the assumption that we have an infinite population to sample from.
-What happens then, if we have a finite population? And what if the elements in
-the sample are not independent of each other?
-
-This is what survey statistics tells us.
-
-TODO: skriv om, skriv på mer formell måte
-The randomness does not arise from measurement but from selection
+can think of the residuals as coming from some stochastic distribution. We will
+now consider what happens if we instead assume that the responses are fixed and the
+randomness comes from each individuals probability of being sampled instead.
+This approach is called survey statistics
 
 
 \section{Regression in the context of finite populations} \label{sec:RegFinPop}
@@ -414,14 +416,15 @@ in the population from the line.
 This differs from model based linear regression where we want to estimate the
 deterministic part of the relationship between \(x_i\) and \(y_i\), but we can
 never get an exact answer as the estimates will differ when they are based on
-different samples, no matter how large. Here, however, we can find \(B_0\) and
-\(B_1\), since we can sample the whole population if we want.
+different samples, no matter how large. Here, however, it is possible to find \(B_0\) and
+\(B_1\), because we can simply sample the whole population, even if that often
+is not possible in practice.
 
-TODO:  Ligningen til slutt på side 6 kommer litt plutselig. Det hadde vært fint med litt mer forklaring.
+%TODO:  Ligningen til slutt på side 6 kommer litt plutselig. Det hadde vært fint med litt mer forklaring.
 
-
-If we know the whole population we can just compute \(B_0\) and \(B_1\) using the same formulas
-as in Section \ref{sec:modLinReg}, which after rewriting them become
+If we do, however, know the whole population, we can just compute \(B_0\) and \(B_1\) using the same formulas
+as in Section \ref{sec:modLinReg}. For our purposes we will rewrite them a bit,
+such that they are expressed by totals of the population. They therefore become
 \begin{equation*}
  B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
    {t_{x^2} - \frac{1}{N} t_x^2},
@@ -439,18 +442,21 @@ where \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
 The case where we know the whole population is not realistic, we are instead interested in the case where we have to sample from the
 population to estimate \(B_0\) and \(B_1\). To do that we have to introduce some terms:
 
-TODO: I Definition 3.1 føler jeg sampling population versus sampling frame blir forvirrende. Kanskje det er bedre å forklare sampling frame I en separat definisjon.
 
-
-\begin{definition} \label{def:sampUnitPopFrame}
+\begin{definition} \label{def:sampUnitPop}
  A \textbf{sampling unit} is one "element" we want to sample.
  The \textbf{sampling population}, or universe, \(U = \{1, 2, 3, ..., N\}\), is a
- finite set containing all the sampling units we are interested in. 
- The \textbf{sampling frame} is the list of all sampling units we are going to sample from. 
+ finite set containing all the sampling units we are interested in.
 \end{definition}
 
 In the case of our API dataset, our sampling units are schools, while
 the sampling population is all the schools in California having more than 100 students.
+
+\begin{definition} \label{def:sampFrame}
+ The \textbf{sampling frame} is the list of all sampling units we can draw a
+ sample from.
+\end{definition}
+
 The sampling frame would be all schools in California that the researchers know
 about and that the researchers think have more the 100 students.
 Ideally the sampling frame and the sampling population would be the same, but that is not always to case.
@@ -461,8 +467,8 @@ could be if we were doing a political survey to try to predict who will win the
 next election.
 In that case our sampling population, who we are interested in information
 about, would be everyone who are going to vote in the next election. It is
-is impossible to get a list of them though, so we instead have to use 
-some other part of the population we have information about. We might have a
+impossible to get a list of them though, so we instead have to use 
+some other part of the population we have information about as our sampling frame. We might have a
 list of all who voted last election, which might be a good approximation of
 those who are going to vote this election, but then we would miss out on all the
 new eligible voters and people who might have decided to vote this election but
@@ -515,9 +521,8 @@ We then get
    {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
 \end{align*}
 
-where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
-
-TODO: Si noe om se seksjon 8 for fler detaljer om ikke-lineære uttrykk
+where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\). See
+section \ref{sec:VarEst} for more details regarding variance estimation.
 
 \subsection{Simple random sample} \label{sec:SRS}
 
@@ -572,30 +577,9 @@ the whole population.
 It can be shown using indicator variables and sampling probabilities that
 \(\hat{t}_y\) is an unbiased estimator for \(t_y\).
 
-\begin{definition}
- The \textbf{weight} of a sampling unit is the inverse of the sampling
- probability of the sampling unit. 
- We denote the weight of \(y_i\) as \(w_i\).
-\end{definition}
-
-TODO: Si mer om vekter, ta opp igjen diskusjonen i introduksjonen, hvor mange
-datapunktet hver verdi svarer til. Hvorfor weight et intuitivt navn.
-
-It can be shown that the sampling probability of a sampling unit in a SRS is
-\(\frac{n}{N}\). This means that the weight of each sampling unit is
-\(\frac{N}{n}\). We can therefore rewrite the estimator for \(t_y\) as
-\(
-\hat{t}_y = \sum_{i \in S} w_i y_i
-\)
-
-This is a convenient way to calculate estimates for more complicated sampling
-schemes.
-
 It can also be shown that the variance of the estimator is of the form \begin{equation*}
 \mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^N (y_i - \bar{y})^2 
 \end{equation*}
-
-TODO: Mer forklaring.
 
 where
 \(
@@ -654,23 +638,19 @@ If we let \(t_{y,h}\) be the total in stratum \(h\) we get \(\hat{t}_y =
 \sum_{h = 1}^H \hat{t}_{y, h} \), where we can use different sampling schemes to
 estimate each \(t_{y, h}\).
 If we let each sample of the subsets be a simple SRS we get \( \hat{t}_y =
-\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i = \sum_{i \in S} w_i y_i\),
+\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\),
 where \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
 Since the estimate for each
 stratum total is unbiased, see section \ref{sec:SRS}, the estimate of the population
 total is unbiased.
 
-% TODO: skriv hva w_i er. Vekter estimater fra hvert stratum forskjellig. Hvor mye
-% hver observasjon teller.
-% Legg til eksempel. To strata med forskjellig forventningsverdi. Se på bias med
-% forskjellig sample størrelse.
 
 Since we often sample differently in the different strata,
 the individuals sampled from the different stratum usually have
-different sampling probabilities. This means that the sampling weights also
-differ as they are the inverse of the sampling probabilities.
+different sampling probabilities. This means that different sampling units
+should weigh differently when making estimates, as illustrated in example \ref{ex:uneqProbs}.
 
-\begin{example}
+\begin{example} \label{ex:uneqProbs}
   Suppose a population is divided into two strata, each with a population of
   \(1000\) individuals. Let one be values from a normal distribution with mean
   \(0\) and variance \(1\) and one with mean \(10\) and variance \(1\), called
@@ -705,12 +685,39 @@ differ as they are the inverse of the sampling probabilities.
   different sampling probabilities into account.
 \end{example}
 
-TODO: kan gjenta introduksjonen når det gjelder vekter.
+This illustrates how important it is to take the sampling probabilities into
+account. To do this we usually give each sampled unit a weight value:
 
-This illustrates the importance of using the correct weights. In the example the
-values in \(S_{A, 50}\) had a lower sampling probability than the ones in
-\(S_{B, 100}\), which means that their weights increase, since they are the
-inverse of the sampling probability.
+\begin{definition}
+ The \textbf{weight} of a sampling unit is the inverse of the sampling
+ probability of the sampling unit. 
+ We denote the weight of \(y_i\) as \(w_i\).
+\end{definition}
+
+An intuitive way to interpret weights is that the weight of an observation is
+how many sampling units in the population they represent. If we sample few units
+from a large strata, each of these sampled units represents many more individuals than
+in a strata where we sample almost the whole subpopulation. The name weight
+makes sense, as an observation representing many unobserved units should
+``weigh'' more when estimating values than observations representing few
+unobserved units.
+
+Specifically, in example \ref{ex:uneqProbs}, the \(50\) sampled units from \(S_{A,
+  50}\) represent a population of \(1000\), so each sampled unit represents
+\(20\) units including itself. This is opposed to the \(100\) sampled units in
+\(S_{B, 100}\) which also represent a population of \(1000\). Here each sampled
+unit only represents \(10\) units including itself.
+
+
+Using weights, we can rewrite the estimate of \(t_y\) in a more general form,
+which is valid for any sampling scheme, \(\hat{t}_y = \sum_{i \in S}w_i y_i\).
+This is a convenient way to calculate estimates of more complicated surveys, as
+one only needs to calculate the weights once, and then one can use them for many
+different calculations.
+This also works for an SRS as it can be shown that the sampling probability of a sampling unit in a SRS is
+\(\frac{n}{N}\). This means that the weight of each sampling unit is
+\(\frac{N}{n}\). Therefore the estimator using weights is the same as the one
+introduced in section \ref{sec:SRS}, \(\hat{t}_y = \sum_{i \in S}\frac{N}{n} y_i\).
 
 Since the samples from the different strate are independent the variance of the estimator is also
 easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
@@ -732,9 +739,6 @@ regression lines for different subgroups after doing a sample without strata,
 but then we would have no guarantee that each of the subgroups would have enough
 samples to be able to make a useful regression line. Using stratification we can
 choose how many samples we want from each subgroup.
-
-TODO: Velger ofte ikke sample størrelse etter populasjonsstørrelse, velger
-heller en absolutt størrelse.
 
 \begin{example}
   Suppose that we want to investigate the relationship between the API score of
@@ -929,7 +933,7 @@ called two-stage clustering, this has not been a topic of this thesis, but the
 principals used are the same as the ones used in one-stage clustering introduced
 in section \ref{sec:clustering}.
 
-\section{Variance estimation}
+\section{Variance estimation} \label{sec:VarEst}
 
 A central part of doing statistics is the calculation of uncertainties. We
 usually express the uncertainty by estimating variance. Without an idea of the
@@ -1082,5 +1086,10 @@ TODO: Du trenger en referanseliste til slutt og noen refereranser underveis. Spe
 Natbib: citations, navn og årstall (authoryear)
 
 Cit seksjon 2, bok fra ST1101
+%\cite{sampReg}
+
+\medskip
+
+\bibliography{bibfile}
 
 \end{document}
