@@ -130,6 +130,9 @@ predict.int.survmodsrs$lower <- predict.int.survmodsrs$fit - predict.int.survmod
 predict.int.survmodsrs$upper <- predict.int.survmodsrs$fit + predict.int.survmodsrs$se * qt(0.975, df = nrow(anthsrs))
 ```
 
+```{r}
+percent.in.pred.val(SDaA::anthrop$finger, SDaA::anthrop$height*2.54, predict.int.survmoduneq$x.vals, predict.int.survmoduneq$lower, predict.int.survmoduneq$upper)
+```
 
 
 ```{r}
@@ -391,6 +394,25 @@ tot.est.correct.50.100 <- 1000/50 * sum(A.sample.50) + 1000/100 * sum(B.sample.1
 # Clustering
 
 ```{r}
+# Lage egen one-stage cluster på dnum
+# ER NOE FEIL, ALT FOR LITE PREDIKSJONSINTERVALL
+
+n <- 100
+dnums <- unique(apipop$dnum)[sample(1:length(unique(apipop$dnum)), n, replace = F)]
+
+dnumclus <- apipop %>% filter(dnum %in% dnums)
+dnumclus$pw <- length(unique(apipop$dnum)) / n
+dnumclus$fpc <- length(unique(apipop$dnum))
+
+svy.dnum <- svydesign(id = ~dnum, weights = ~pw, fpc = ~fpc, data = dnumclus)
+dnum.clus.svymod <- svyglm(api00 ~ avg.ed, design = svy.dnum)
+summary(dnum.clus.svymod)
+
+base + geom_point(data = dnumclus, aes(avg.ed, api00), color = "red") + geom_point(data = apiclus1, aes(avg.ed, api00), color = "blue")
+```
+
+
+```{r}
 apiclus1$pw = 757/15
 svy.clus <- svydesign(id = ~dnum, weights = ~pw, fpc = ~fpc, data = apiclus1)
 
@@ -400,22 +422,22 @@ summary(api.clus.svymod)
 #api.clus.normmod <- lm(api00 ~ avg.ed, data = apiclus1)
 #summary(api.clus.normmod)
 
-api.srs.clus <- apipop[sample(1:nrow(apipop), nrow(apiclus1), replace = F),]
-api.srs.clus$pw <- nrow(apipop) / nrow(apiclus1)
-api.srs.clus$fpc <- nrow(apipop)
+api.srs.clus <- dnumclus
+api.srs.clus$pw <- length(unique(apipop$dnum)) / length(unique(dnumclus$dnum))
+api.srs.clus$fpc <- length(unique(apipop$dnum))
 
 svy.api.srs.clus <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs.clus)
 
 api.clus.srs.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.srs.clus)
 summary(api.clus.srs.svymod)
 
-api.srs.90 <- apipop[sample(1:nrow(apipop), 183, replace = F),]
-api.srs.90$pw <- nrow(apipop) / 183
-api.srs.90$fpc <- nrow(apipop)
+api.srs.183 <- apipop[sample(1:nrow(apipop), 183, replace = F),]
+api.srs.183$pw <- nrow(apipop) / 183
+api.srs.183$fpc <- nrow(apipop)
 
-svy.api.srs.90 <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs.90)
+svy.api.srs.183 <- svydesign(id = ~1, weights = ~pw, fpc = ~fpc, data = api.srs.183)
 
-api.srs.90.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.srs.90)
+api.srs.183.svymod <- svyglm(api00 ~ avg.ed, design = svy.api.srs.183)
 ```
 
 ```{r}
@@ -437,13 +459,21 @@ predict.int.api.clus.svymod$se <- sqrt(var(api.clus.svymod$residuals) + clus.svy
 predict.int.api.clus.svymod$lower <- predict.int.api.clus.svymod$fit - predict.int.api.clus.svymod$se * qt(0.975, df = nrow(apiclus1))
 predict.int.api.clus.svymod$upper <- predict.int.api.clus.svymod$fit + predict.int.api.clus.svymod$se * qt(0.975, df = nrow(apiclus1))
 
-srs.90.svy.cov <- vcov(api.srs.90.svymod)
-predict.api.srs.90.svymod <- as.data.frame(predict(api.srs.90.svymod, newdata = data.frame(avg.ed = x.vals), se=TRUE))
-predict.int.api.srs.90.svymod <- data.frame(fit = predict.api.srs.90.svymod$link)
-predict.int.api.srs.90.svymod$x.vals <- x.vals
-predict.int.api.srs.90.svymod$se <- sqrt(var(api.srs.90.svymod$residuals) + srs.90.svy.cov[1, 1] + predict.int.api.srs.90.svymod$x.vals^2 * srs.90.svy.cov[2, 2] + 2*predict.int.api.srs.90.svymod$x.vals * srs.90.svy.cov[1, 2])
-predict.int.api.srs.90.svymod$lower <- predict.int.api.srs.90.svymod$fit - predict.int.api.srs.90.svymod$se * qt(0.975, df = nrow(apipop))
-predict.int.api.srs.90.svymod$upper <- predict.int.api.srs.90.svymod$fit + predict.int.api.srs.90.svymod$se * qt(0.975, df = nrow(apipop))
+srs.183.svy.cov <- vcov(api.srs.183.svymod)
+predict.api.srs.183.svymod <- as.data.frame(predict(api.srs.183.svymod, newdata = data.frame(avg.ed = x.vals), se=TRUE))
+predict.int.api.srs.183.svymod <- data.frame(fit = predict.api.srs.183.svymod$link)
+predict.int.api.srs.183.svymod$x.vals <- x.vals
+predict.int.api.srs.183.svymod$se <- sqrt(var(api.srs.183.svymod$residuals) + srs.183.svy.cov[1, 1] + predict.int.api.srs.183.svymod$x.vals^2 * srs.183.svy.cov[2, 2] + 2*predict.int.api.srs.183.svymod$x.vals * srs.183.svy.cov[1, 2])
+predict.int.api.srs.183.svymod$lower <- predict.int.api.srs.183.svymod$fit - predict.int.api.srs.183.svymod$se * qt(0.975, df = nrow(apipop))
+predict.int.api.srs.183.svymod$upper <- predict.int.api.srs.183.svymod$fit + predict.int.api.srs.183.svymod$se * qt(0.975, df = nrow(apipop))
+
+dnum.clus.svy.cov <- vcov(dnum.clus.svymod)
+predict.dnum.clus.svymod <- as.data.frame(predict(dnum.clus.svymod, newdata = data.frame(avg.ed = x.vals), se=TRUE))
+predict.int.dnum.clus.svymod <- data.frame(fit = predict.dnum.clus.svymod$link)
+predict.int.dnum.clus.svymod$x.vals <- x.vals
+predict.int.dnum.clus.svymod$se <- sqrt(var(dnum.clus.svymod$residuals) + dnum.clus.svy.cov[1, 1] + predict.int.dnum.clus.svymod$x.vals^2 * dnum.clus.svy.cov[2, 2] + 2*predict.int.dnum.clus.svymod$x.vals * dnum.clus.svy.cov[1, 2])
+predict.int.dnum.clus.svymod$lower <- predict.int.dnum.clus.svymod$fit - predict.int.dnum.clus.svymod$se * qt(0.975, df = nrow(dnumclus))
+predict.int.dnum.clus.svymod$upper <- predict.int.dnum.clus.svymod$fit + predict.int.dnum.clus.svymod$se * qt(0.975, df = nrow(dnumclus))
 ```
 
 ```{r}
@@ -457,7 +487,6 @@ percent.in.pred.val <- function(pred, resp, x.vals, lower, upper) {
       index <- which.min(abs(x.vals - pred[i]))
       return(resp[i] >= lower[index] & resp[i] <= upper[index])
     }
-    #print(i)
     index <- which.min(abs(x.vals - pred[i]))
     meanLower <- 0.5*(lower[index] + lower[index + 1])
     meanUpper <- 0.5*(upper[index] + upper[index + 1])
@@ -465,12 +494,12 @@ percent.in.pred.val <- function(pred, resp, x.vals, lower, upper) {
   })
   
   return(sum(inside)/length(inside))
-  #return(inside)
 }
 
-percent.in.pred.val(apipop$avg.ed, apipop$api00, predict.int.api.srs.90.svymod$x.vals, predict.int.api.srs.90.svymod$lower, predict.int.api.srs.90.svymod$upper)
+percent.in.pred.val(apipop$avg.ed, apipop$api00, predict.int.api.srs.183.svymod$x.vals, predict.int.api.srs.183.svymod$lower, predict.int.api.srs.183.svymod$upper)
 percent.in.pred.val(apipop$avg.ed, apipop$api00, predict.int.api.clus.svymod$x.vals, predict.int.api.clus.svymod$lower, predict.int.api.clus.svymod$upper)
 percent.in.pred.val(apipop$avg.ed, apipop$api00, predict.int.api.clus.srs.svymod$x.vals, predict.int.api.clus.srs.svymod$lower, predict.int.api.clus.srs.svymod$upper)
+percent.in.pred.val(apipop$avg.ed, apipop$api00, predict.int.dnum.clus.svymod$x.vals, predict.int.dnum.clus.svymod$lower, predict.int.dnum.clus.svymod$upper)
 ```
 
 
@@ -490,6 +519,7 @@ base <- ggplot() + xlim(1, 5) + ylim(300, 1100) +
 
 base +
   geom_point(data = apipop, aes(avg.ed, api00)) +
+  geom_point(data = apiclus1, aes(avg.ed, api00), color = "green") +
   geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.srs.svymod, fill = "blue", alpha = 0.5) +
   geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.svymod, fill = "red", alpha = 0.5) +
   geom_abline(slope = api.clus.srs.svymod.coef[2], intercept = api.clus.srs.svymod.coef[1], color = "blue", lwd = 1) +
@@ -506,17 +536,32 @@ ggsave("images/exClus.pdf", height = 12, units = "cm")
 
 ```{r}
 api.clus.svymod.coef <- coef(api.clus.svymod)
-api.srs.90.svymod.coef <- coef(api.srs.90.svymod)
+api.srs.183.svymod.coef <- coef(api.srs.183.svymod)
 base +
   geom_point(data = apipop, aes(avg.ed, api00)) +
-  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.srs.90.svymod, fill = "blue", alpha = 0.5) +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.srs.183.svymod, fill = "blue", alpha = 0.5) +
   geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.svymod, fill = "red", alpha = 0.5) +
-  geom_abline(slope = api.srs.90.svymod.coef[2], intercept = api.srs.90.svymod.coef[1], color = "blue", lwd = 1) +
-  geom_line(data = predict.int.api.srs.90.svymod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
-  geom_line(data = predict.int.api.srs.90.svymod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  geom_abline(slope = api.srs.183.svymod.coef[2], intercept = api.srs.183.svymod.coef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.api.srs.183.svymod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.api.srs.183.svymod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
   geom_abline(slope = api.clus.svymod.coef[2], intercept = api.clus.svymod.coef[1], color = "red", lwd = 1) +
   geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = lower), color = "red", linetype = "dashed") +
   geom_line(data = predict.int.api.clus.svymod, aes(x = x.vals, y = upper), color = "red", linetype = "dashed")
+```
+
+```{r}
+api.clus.srs.svymod.coef <- coef(api.clus.srs.svymod)
+dnum.clus.svymod.coef <- coef(dnum.clus.svymod)
+base +
+  geom_point(data = apipop, aes(avg.ed, api00)) +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.dnum.clus.svymod, fill = "blue", alpha = 0.5) +
+  geom_ribbon(aes(x = x.vals, ymin = lower, ymax = upper), data = predict.int.api.clus.srs.svymod, fill = "red", alpha = 0.5) +
+  geom_abline(slope = dnum.clus.svymod.coef[2], intercept = dnum.clus.svymod.coef[1], color = "blue", lwd = 1) +
+  geom_line(data = predict.int.dnum.clus.svymod, aes(x = x.vals, y = lower), color = "blue", linetype = "dashed") +
+  geom_line(data = predict.int.dnum.clus.svymod, aes(x = x.vals, y = upper), color = "blue", linetype = "dashed") +
+  geom_abline(slope = api.clus.srs.svymod.coef[2], intercept = api.clus.srs.svymod.coef[1], color = "red", lwd = 1) +
+  geom_line(data = predict.int.api.clus.srs.svymod, aes(x = x.vals, y = lower), color = "red", linetype = "dashed") +
+  geom_line(data = predict.int.api.clus.srs.svymod, aes(x = x.vals, y = upper), color = "red", linetype = "dashed")
 ```
 
 
