@@ -17,12 +17,14 @@
 \bibliographystyle{abbrvnat}
 \setcitestyle{authoryear,open={((},close={))}}
 
-\title{Linear Regression for Survey Data \\
+%\usepackage[mmyyyy]{datetime}
+
+\title{\textbf{Linear Regression for Survey Data} \\
 {\Large Bachelor's Thesis}}
 \author{Andreas Matre \\
 Supervisor: Geir-Arne Fuglstad}
-\date{\today}
-%\date{February 2020}
+%\date{\today}
+\date{May 2020}
 
 \begin{document}
 
@@ -38,6 +40,36 @@ Supervisor: Geir-Arne Fuglstad}
 \begin{abstract}
   % 200 ord
   This Bachelor's thesis answers the course MA2002 which is 15 credits.
+  In this thesis we look at how to do linear regression when the data is from a
+  complex sampling design. We use a different paradigm from classical model
+  regression, where we assume the randomness comes from the measurements. Here
+  we instead assume the randomness comes from the probabilities of being
+  included in the sample.
+
+  The first sampling technique we look at is a Simple Random Sample. First we
+  choose the size of the sample. Then each possible subset of
+  the population of the sample size has the same probability of being chosen as
+  the sample. A Simple Random Sample has the advantage that all the sampled
+  units are independent.
+
+  The second sampling technique we look at is stratification. Here we split the
+  population into a partition and sample independently from each subset. This
+  allows us to get independent regression lines from each subset as well as
+  potentially reducing variance if the sampling units inside the subsets are
+  similar.
+
+  The third sampling technique we look at is clustering. Here we again split
+  the population into a partition, but sample the subsets to sample from instead
+  of sampling from all subsets as in stratification. Clustering is used
+  to reduce costs when doing surveys. Often the clusters are geographical areas,
+  which means that sampling only inside some subsets allow us to save a lot of
+  travel time. Clustering usually leads to more uncertainty compared to a SRS
+  or a stratified sample of the same size, as the units inside each cluster are
+  often similar. This causes each sampled individual to carry less information.
+
+  When performing large surveys these techniques are usually combined into what
+  is called a complex survey, for example by first doing stratification on the
+  whole population and then using clustering inside each subset.
 \end{abstract}
 
 \newpage
@@ -48,30 +80,29 @@ Supervisor: Geir-Arne Fuglstad}
 
 \section{Introduction}
 
-TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger. \cite{st1101}
+%TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger. \cite{st1101}
 
 Linear regression is a useful tool to describe relationships between variables.
 When we want to investigate possible associations, linear regression
-is one of the most common tools we could use. It can be used to show correlation between
+is one of the most common tools we use. It can be used to show correlation between
 variables, and in some cases, where experiments are designed very carefully, it can even suggest causation.
 It can, for example, be used in the social sciences to try to show a relationship
 between income and age of death. In linear regression we want to approximate the
 linear line that best describes the relationship between the predictor and the
 response. Since the relationship is usually not exactly linear, there is almost
-always some noise in the relationship, the line will not
+always some noise around the line. The line will not
 fit perfectly with the population, which gives us residuals, the vertical
-vectors that is between the points and the linear line. If the relationship was
+vectors that are between the points and the linear line. If the relationship was
 exactly linear we would just need to sample two individuals to find the
 regression line, if we discount errors made while measuring. When doing linear
 regression, the goal is to find the line that minimizes the sum of the residuals squared.
-
 
 Since we are doing measurements on a real population, it is also finite.
 If we know the measurements for the whole population, there
 is no uncertainty, we can just calculate whatever value we
 want, including the regression intercept and slope. When we generalize from a sample to the whole population, however, we get
 uncertainty, because we can never know the values of the individuals not in the sample. There are different approaches of modeling this uncertainty, and
-which we choose depends on what we know about the data. For example, which
+which method we choose depends on what we know about the data. For example, which
 methods were used in the information gathering?
 What is the probability of each
 individual being included in the sample? Are they sampled independently? Is the
@@ -81,19 +112,17 @@ several different parts of the population?
 One approach to model the uncertainty is called the model based approach, which
 is based on the fact that we usually sample from large populations. If the
 population is large enough, taking a sample is almost the same as pulling
-residuals from a distribution, which is where the observation is compared to the
-true regression line. This could be any stochastic distribution, but the most
-normal one to use is the normal distribution. The fact that we assume that the
+values from a distribution around the regression line. This could be any stochastic distribution, but the most
+common one is the normal distribution. The fact that we assume that the
 sample is drawn from a distribution means that we assume that the value of an
 individual can change if we sample them again. The assumption that the residuals
 are drawn from a distribution implies a structure to the residuals, which we
 can use to model the uncertainties in the residual line. The only thing we need
 to know about the data collection method is the fact that the individuals were
 sampled independently. The fact that the observed values can change is not that
-realistic, however, and viewing the sample as being the same as pulling values
-from a distribution is not always realistic either. These considerations
+realistic, however, nor the fact that the population approximates a
+distribution around the regression line. These considerations
 motivate another approach.
-
 
 A perhaps more realistic way to model the uncertainty is to assume that every time we measure an
 individual we get the same value, in which case we can not pretend to be pulling
@@ -392,7 +421,7 @@ where \(\frac{1}{n - 2} \sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
  \hat{\beta}_1 x_i \right)^2\) is an
 unbiased estimator for the unknown \(\sigma^2\).
 
-New: This is based on the fact that we assume the response is random, i.e, that
+This is based on the fact that we assume the response is random, i.e, that
 it is possible to get a different response if we measure again. This means we
 can think of the residuals as coming from some stochastic distribution. We will
 now consider what happens if we instead assume that the responses are fixed and the
@@ -419,8 +448,6 @@ never get an exact answer as the estimates will differ when they are based on
 different samples, no matter how large. Here, however, it is possible to find \(B_0\) and
 \(B_1\), because we can simply sample the whole population, even if that often
 is not possible in practice.
-
-%TODO:  Ligningen til slutt på side 6 kommer litt plutselig. Det hadde vært fint med litt mer forklaring.
 
 If we do, however, know the whole population, we can just compute \(B_0\) and \(B_1\) using the same formulas
 as in Section \ref{sec:modLinReg}. For our purposes we will rewrite them a bit,
@@ -503,6 +530,7 @@ t_{xy}, N\) respectively, we get the estimators for \(B_0\) and \(B_1\)
  = \frac{\hat{t}_y}{\hat{N}} - \hat{B}_1\frac{\hat{t}_x}{\hat{N}}
 \end{equation*}
 
+\textbf{Fjerne dette avsnittet om varians og bare refere til seksjon 4?}\\
 Since \(\hat{B}_0\) and \(\hat{B}_1\) are non linear expressions of dependent
 statistics, deriving exact expressions for the variances can get very complicated. We, therefore,
 often have to settle with having estimates of the variances instead.
@@ -652,7 +680,7 @@ should weigh differently when making estimates, as illustrated in example \ref{e
 
 \begin{example} \label{ex:uneqProbs}
   Suppose a population is divided into two strata, each with a population of
-  \(1000\) individuals. Let one be values from a normal distribution with mean
+  \(1000\) individuals. Let one be values with mean
   \(0\) and variance \(1\) and one with mean \(10\) and variance \(1\), called
   \(A\) and \(B\).
   Our goal is to estimate the sum of the values.
@@ -686,7 +714,7 @@ should weigh differently when making estimates, as illustrated in example \ref{e
 \end{example}
 
 This illustrates how important it is to take the sampling probabilities into
-account. To do this we usually give each sampled unit a weight value:
+account. To do this we usually give each sampled unit a weight value,
 
 \begin{definition}
  The \textbf{weight} of a sampling unit is the inverse of the sampling
@@ -720,7 +748,7 @@ This also works for an SRS as it can be shown that the sampling probability of a
 introduced in section \ref{sec:SRS}, \(\hat{t}_y = \sum_{i \in S}\frac{N}{n} y_i\).
 
 Since the samples from the different strate are independent the variance of the estimator is also
-easy to calculate: \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
+easy to calculate, \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
    1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right) = \sum_{h =
    1}^H\mathrm{Var}\left(\hat{t}_{y, h}\right)\). This
 means that to minimize the variance of \(\hat{t}\) we should choose the strata
@@ -877,7 +905,7 @@ competitive with other sampling methods.
 
   The shaded areas, which represent the 95\% prediction intervals, show that
   taking the correlation between the sampled individuals into account gives a
-  larges variance than when we assume that the individuals are independently sampled.
+  larger variance than when we assume that the individuals are independently sampled.
   This makes sense, as each
   individual in the clustered sample carries a lot less information than each
   individual in an SRS, as the individuals inside a cluster can usually be
@@ -901,20 +929,20 @@ Trenger stratum for counties og urban vs rural
 Må gjøre clustering for å unngå å reise rundt i hele Kenya.
 
 In practice we often combine clustering and stratification to what is called a
-\textbf{complex survey}. We first create strata for the different subpopulations
+\textbf{complex survey}. We usually first create strata for the different subpopulations
 we are interested in data from, before we use clustering to make it
 practically possible to perform the survey.
 
-A real example where survey statistics is used is the Demographic and Health
-Survey (DHS) in Kenya. This survey collects among other things, 
-information regarding the birth rates and mortality rates in Kenya. These
-surveys are important because there is no databases of these kind of things in a
-lot of developing countries.
+A real example, where survey statistics with a complex survey design is used, is the Demographic and Health
+Survey (DHS) in Kenya. This survey collects, among other things, 
+information regarding the birth rates and mortality rates in Kenya. This type of
+surveys are important because no one has any overview of statistics as these in
+a lot of developing countries.
 Ideally one would of course do a full census of the population, but that is not
 possible in practice as it would be extremely expensive. Each household that is
-surveyed has to be visited in person by a trained interviewer. Visiting
+surveyed has to be visited by a trained interviewer. Visiting
 households spread in the whole country would need both a lot of travel time and
-more interviewers who have to be trained. Instead one desings a
+more interviewers who have to be trained. Instead one designs a
 complex survey combining the sampling methods introduced earlier in Section
 \ref{sec:RegFinPop}. This is a lot cheaper, and if the survey is designed well
 one will get good data from this as well.
@@ -933,6 +961,16 @@ called two-stage clustering, this has not been a topic of this thesis, but the
 principals used are the same as the ones used in one-stage clustering introduced
 in section \ref{sec:clustering}.
 
+Counterintuively one can often get better results doing a smaller well designed
+survey than sampling as many as possible. This is because, if we have a small
+population to sample, we need few interviewers and we can therefore make sure
+they are all well trained and suited to the job. If we just focus on getting as
+large samples as possible one often has to compromise on the quality of the
+training the interviewer get. This can lead to poorly trained interviewers introducing errors
+to the data, for example if the household they are supposed to visit is not
+home, they might visit their neighbours instead. This compromises the results of
+the survey, as some demographics might be more likely to be home than others.
+
 \section{Variance estimation} \label{sec:VarEst}
 
 A central part of doing statistics is the calculation of uncertainties. We
@@ -947,8 +985,6 @@ use other techniques to
 find variance estimates. One of the more used methods in survey
 statistics, and one which will give a closed form expression for the estiamate,
 is linearization.
-
-TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
 
 \begin{example}
   Let \(\widehat{W} = \frac{\hat{t}_y}{\hat{t}_x}\), where \(\hat{t}_y\) and \(\hat{t}_x\) are stochastic variables. We
@@ -983,11 +1019,12 @@ TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
       \frac{t_y}{t_x} + \frac{1}{t_x} \left( \hat{t}_y - t_y \right) -
       \frac{t_y}{t_x^2} \left( \hat{t}_x - t_x \right) \right)
     = \frac{1}{t_x^2} \mathrm{Var} \left( \hat{t}_y \right) +
-      \frac{t_y^2}{t_x^4} \mathrm{Var} \left( \hat{t}_x \right),
+      \frac{t_y^2}{t_x^4} \mathrm{Var} \left( \hat{t}_x \right) -
+      2 \frac{t_y}{t_x^3}\mathrm{Cov}(\hat{t}_x, \hat{t}_y),
       \end{align*}
       which gives the simple expression \begin{align*}
                     \widehat{\mathrm{Var}} \left( \widehat{W} \right) = \frac{1}{\hat{t}_x^2} \widehat{\mathrm{Var}} \left( \hat{t}_y \right) +
-                    \frac{\hat{t}_y^2}{\hat{t}_x^4} \widehat{\mathrm{Var}} \left( \hat{t}_x \right)
+                    \frac{\hat{t}_y^2}{\hat{t}_x^4} \widehat{\mathrm{Var}} \left( \hat{t}_x \right) - 2 \frac{\hat{t}_y}{\hat{t}_x^3}\widehat{\mathrm{Cov}}(\hat{t}_x, \hat{t}_y)
                     \end{align*}
 
     Taylor approximation works best if the point we are approximating around is
@@ -1002,6 +1039,14 @@ TODO: Ha med eksempel med tall, enten i dette eksempelet eller lag et nytt.
     find closed form expressions for their variance estimates and we can
     therefore calculate \(\widehat{\mathrm{Var}} \left( \widehat{W} \right)\).
 
+    To illustrate this with a concrete example, suppose \(\hat{t}_x = 100\) with
+    \(\widehat{\mathrm{Var}}\left( \hat{t}_x \right) = 5\) and \(\hat{t}_y = 230\) with
+    \(\widehat{\mathrm{Var}}\left( \hat{t}_y \right) = 23\) and that they are independent
+    such that \(\mathrm{Cov} \left( \hat{t}_x, \hat{t}_y \right) = 0\).
+
+    Then we have \(\widehat{\mathrm{Var}} \left( \widehat{W} \right) =
+    \frac{1}{100^2} 23 + \frac{230^2}{100^4} 5 = 0.0049.\)
+
 \end{example}
 
 More generally, let \(h(x)\), where \(x = (x_1, x_2, \dots, x_p)\), be a function such that \(h(x) = \theta\), where
@@ -1010,7 +1055,6 @@ estimate of \(x\), such that \(h(\hat{x}) = \hat{\theta}\). If \(h\) is
 linear, there is no problem finding a closed form for the variance estimate,
 so we assume here that \(h\) is a non-linear function.
 
-TODO: Se på grensene i integralet
 By Taylor's theorem, we know that \(h(\hat{x}) = h(x) + h'(x) (\hat{x} - x) + \int_x^{\hat{x}}  (\hat{x} -
 t) h''(t) dt\), where the last term is usually small compared to the first two
 in statistics. This allows us to use the approximation \(h(\hat{x}) \approx h(x) +
@@ -1039,7 +1083,7 @@ estimate of the variance
 
 In the regression case, the differentiation, and the estimates of covariance
 gets pretty complicated, so we won't show the derivation here, but by using
-similar techniques one can show that
+similar techniques it can be shown that
 \begin{align*}
  \mathrm{Var}(\hat{B_1})
  &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
@@ -1047,46 +1091,145 @@ similar techniques one can show that
  &\approx \frac{\widehat{\mathrm{Var}}\left( \sum_{i \in S} w_i q_i \right)}
    {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
 \end{align*}
-where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\).
+where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\), and
+\(\bar{x} = \frac{\hat{t}_x}{\hat{N}}\).
 
 
-Hvorfor ting vanskelig.
-Kan bruke linearisering.
-
-Resampling hvis vi har tid
+%Resampling hvis vi har tid
 
 \section{Discussion}
-Ta opp viktigste poenger.
-Må gjøre varianskorreksjon.
 
-har ikke trukket tilfeldig.
+When analysing survey data it is important to take the survey design into
+account. In design based statistics have other things to take into account than
+we are used to in classical model based statistics. One big difference is the
+fact that since we assume a finite population it is possible to get no
+uncertainty for the regression line. If we sample the whole population we are
+100\% certain of which linear line minimizes the RSS. This causes us to have a
+extra factor in the variance estimations called the finite population
+coefficient. This factor reduces the variance of our estimates as we sample
+larger parts of our population. For large populations this factor can often be
+discounted, but in smaller population or when we sample a large fraction of the
+population it helps reduce our uncertainty in our results.
 
-stratifisering
+Another important thing to take into account is the fact that we don't always
+sample individuals independently. Sometimes we might sample some parts of the
+population with larger probabilities than others, and sometimes parts of our
+sample will be very correlated. This is important to take into account when
+making variance estimates. This happens mostly in clustering, where we sample
+only from some subsets of the population. This often causes more uncertainty
+than similarly sized independent samples, since each sample unit contains less
+information, as sampling units in the same clusters are usually similar.
 
-clustering
-  Kan ikke gjøre dette i model based
 
-blir vanskelig å diskutere varians
+%Tre hovedpunkter:
+%* Bias, hva går feil, når, hvordan?
 
-Veldig nyttig
+If samples are 
 
-Ingen formler.
+%* Variansestimering er vankelig. Lett å lage estimater med vekter som er unbiased, men varians
+%blir vanskelig. 
 
-Hvis du har gjort clustering og stratifisering er det direkte feil med model
-based. Se eksempel 1. Survey statistics er alltid riktig, model based noen ganger.
+Since we can use weights, calculating estimates of most values is pretty
+straight forward, including estimates of regression coefficients. The non-linear nature
+of the regression coefficients, however, makes it difficult to estimate the
+variances. There are several methods to get variance estimates, including using
+resampling, but the one used in this thesis is linearization. Using
+linearization allows us to get pretty good variance estimates for the regression
+coefficients. As seen in section \ref{sec:VarEst} linearization has given us a
+closed form formular for the varianse estimates of the slope parameter, and a
+similar one for the intercept is also possible to derive.
 
-Disse type metoder brukes ofte for å estimare dødelighet, vaksinasjonsrate og
-lignende i utviklingsland. Mest i clustering, litt her i diskusjonen.
-https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2624622 er master oppgave jeg
-kan se på og referere til. Spesielt interessant er 1.3.
-https://dhsprogram.com/pubs/pdf/fr308/fr308.pdf er rapport om Kenya som
-masteroppgaven over bruker. Kan referere til den.
+%
+%* Varians
+%  Hva skjer med varians når du har clustering?
+%  Hvis du ikke tar høyde for det får du for lav varians og potensielt bias.
+%  Hovedfeil: lav varians. Tror ting er uavhengige.
+%  varianskorreksjon
 
-TODO: Du trenger en referanseliste til slutt og noen refereranser underveis. Spesielt i forbindelse med least squares estimatorene i Section 2, og noen av uttrykkene i Section 3. Det ville også vært fint å hatt en eller to referanser i Section 1.
-Natbib: citations, navn og årstall (authoryear)
+Ignoring sampling design can cause big problems with variance estimation. In
+many sampling designs clustering is used, which means sampling units in the sample are correlated. This means
+that each sampling unit carries less information than if they were independent.
+Assuming that the sampling units in the sample are independent when they are not
+will cause underestimation of the variance. Believing the variance is smaller
+than it actually is can lead to a stronger belief in the results than warranted.
+In regression one is often interested in whether the regression line is flat or
+not. Having a too small variance estimate might cause us to reject the null
+hypothesis that the slope is zero, while we with a more correct variance would
+not reject that null hypothesis.
 
-Cit seksjon 2, bok fra ST1101
-%\cite{sampReg}
+%
+%* Hvis iid, får ikke feil svar av survey statistics
+%  Fordel med model based, trenger mindre data. Låner styrke med like parametre.
+%  Blir vanskelig med survey statistics, kan ikke låne styrke fra naboer.
+%  I model based er de korrelerte.
+%  Har fylker, vil ha kommuner.
+%
+%  Hvis du har nok data bruk survey statistics, hvis man ikke har nok, må man
+%  kanskje bruke model based.
+%
+%  Hvis modellen er helt riktig får man ingen bias av å ikke ta høyde for vekter
+%  i model based. Men modeller er aldri helt riktig. 
+%
+%  Model based kan være nødvendig når man ikke har nok data. 
+%
+%  skal selvfølgelig bruke survey statistics, men må iblandt være pragmatisk.
+%  Hvis respons er uavhengig av clusters, kan vi se bort fra dem. Tilsvarende med stratifisering.
+%  Riktig svar: Samle mer data. Pragmatisk: Modle based.
+
+An important thing to note is that using survey statistics will never give wrong
+results. As illustrated in the bottom left panel of figure \ref{fig:ex1}, the
+regression line from classical linear regression is the exact same as the one
+from survey statistics where we assume each observation is independently sampled.
+This is also true in general. A disadvantage of survey statistics, however, is
+that one in general needs more data to get good results. This is because in
+model based statistics, the assumptions one make gives additional structure to
+the data. This is structure which we would have to ``estimate'' using survey
+statistics, causing us to ``use up'' some of the statistical power we want to
+use for estimating regression coefficients and variance. If we have too little
+data to get any robust conclusions we would need to collect more data if we want
+to keep using survey statistics. Another option, however, if it looks like the
+assumptions regarding the distribution is  fulfilled, is to switch to
+a model based regression. In addition, one would have to make sure that
+clustering and stratification will not cause problems by violating independence.
+If observations inside clusters are no more similar than observations in
+different clusters one can disregard the clustering and still get good results.
+One can correct for different sampling probabilities by incorporating weights in
+the model based regression.
+The correct choice is always to use survey statistics, but if you don't have
+enough data and the model seems to fit it can sometimes be an acceptable
+alternative to use model based regression instead.
+
+
+%Ta opp viktigste poenger.
+%Må gjøre varianskorreksjon.
+%
+%har ikke trukket tilfeldig.
+%
+%stratifisering
+%
+%clustering
+%  Kan ikke gjøre dette i model based
+%
+%blir vanskelig å diskutere varians
+%
+%Veldig nyttig
+%
+%Ingen formler.
+%
+%Hvis du har gjort clustering og stratifisering er det direkte feil med model
+%based. Se eksempel 1. Survey statistics er alltid riktig, model based noen ganger.
+%
+%Disse type metoder brukes ofte for å estimare dødelighet, vaksinasjonsrate og
+%lignende i utviklingsland. Mest i clustering, litt her i diskusjonen.
+%https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2624622 er master oppgave jeg
+%kan se på og referere til. Spesielt interessant er 1.3.
+%https://dhsprogram.com/pubs/pdf/fr308/fr308.pdf er rapport om Kenya som
+%masteroppgaven over bruker. Kan referere til den.
+%
+%TODO: Du trenger en referanseliste til slutt og noen refereranser underveis. Spesielt i forbindelse med least squares estimatorene i Section 2, og noen av uttrykkene i Section 3. Det ville også vært fint å hatt en eller to referanser i Section 1.
+%Natbib: citations, navn og årstall (authoryear)
+%
+%Cit seksjon 2, bok fra ST1101
 
 \medskip
 
