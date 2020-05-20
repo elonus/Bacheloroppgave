@@ -211,7 +211,7 @@ with an example illustrating what can go wrong if the methods used in the
 information gathering is not taken into account.
 
 
-\begin{example}
+\begin{example} \label{ex:anthuneq}
 
 We use a dataset from a study of the relationship between the length of a persons left middle finger and their height. 
 The researcher oversampled people having short fingers and undersampled people
@@ -1099,32 +1099,38 @@ where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\), and
 
 \section{Discussion}
 
-When analysing survey data it is important to take the survey design into
-account. In design based statistics have other things to take into account than
-we are used to in classical model based statistics. One big difference is the
-fact that since we assume a finite population it is possible to get no
-uncertainty for the regression line. If we sample the whole population we are
-100\% certain of which linear line minimizes the RSS. This causes us to have a
-extra factor in the variance estimations called the finite population
-coefficient. This factor reduces the variance of our estimates as we sample
-larger parts of our population. For large populations this factor can often be
-discounted, but in smaller population or when we sample a large fraction of the
-population it helps reduce our uncertainty in our results.
+% When analysing survey data it is important to take the survey design into
+% account. In design based statistics have other things to take into account than
+% we are used to in classical model based statistics. One big difference is the
+% fact that since we assume a finite population it is possible to get no
+% uncertainty for the regression line. If we sample the whole population we are
+% 100\% certain of which linear line minimizes the RSS. This causes us to have a
+% extra factor in the variance estimations called the finite population
+% coefficient. This factor reduces the variance of our estimates as we sample
+% larger parts of our population. For large populations this factor can often be
+% discounted, but in smaller population or when we sample a large fraction of the
+% population it helps reduce our uncertainty in our results.
 
-Another important thing to take into account is the fact that we don't always
-sample individuals independently. Sometimes we might sample some parts of the
-population with larger probabilities than others, and sometimes parts of our
-sample will be very correlated. This is important to take into account when
-making variance estimates. This happens mostly in clustering, where we sample
-only from some subsets of the population. This often causes more uncertainty
-than similarly sized independent samples, since each sample unit contains less
-information, as sampling units in the same clusters are usually similar.
+% Another important thing to take into account is the fact that we don't always
+% sample individuals independently. Sometimes we might sample some parts of the
+% population with larger probabilities than others, and sometimes parts of our
+% sample will be very correlated. This is important to take into account when
+% making variance estimates. This happens mostly in clustering, where we sample
+% only from some subsets of the population. This often causes more uncertainty
+% than similarly sized independent samples, since each sample unit contains less
+% information, as sampling units in the same clusters are usually similar.
 
 
 %Tre hovedpunkter:
 %* Bias, hva går feil, når, hvordan?
 
-If samples are 
+When using sampling designs where the sampling probabilities differ, we risk the
+chance of having a bias in our results if we do not take it into account. This
+is illustrated in example \ref{ex:anthuneq}, where the regression line where we ignore the
+unequal sampling probabilities is too flat, and in example \ref{ex:uneqProbs},
+where we get different estimates of the totals. A bias in the regression line
+can quickly lead one to reach conclusions, about the relationshiop between the
+predictor and the response, not actually supported by the data.
 
 %* Variansestimering er vankelig. Lett å lage estimater med vekter som er unbiased, men varians
 %blir vanskelig. 
@@ -1153,9 +1159,14 @@ Assuming that the sampling units in the sample are independent when they are not
 will cause underestimation of the variance. Believing the variance is smaller
 than it actually is can lead to a stronger belief in the results than warranted.
 In regression one is often interested in whether the regression line is flat or
-not. Having a too small variance estimate might cause us to reject the null
+not, as a flat regression line means no relationship between predictor and response. Having a too small variance estimate might cause us to reject the null
 hypothesis that the slope is zero, while we with a more correct variance would
-not reject that null hypothesis.
+not reject that null hypothesis. Ignoring the fact that one samples from a
+finite population can also cause the opposite problem, believing that one has
+more uncertainty than there actually is. This happens when one forgets to take
+the fpc into account, which reduces the variance as one samples a larger
+proportion of the population. This would reduce the power of the hypothesis test
+as it would become harder to reject the null hypothesis, even when it is false.
 
 %
 %* Hvis iid, får ikke feil svar av survey statistics
