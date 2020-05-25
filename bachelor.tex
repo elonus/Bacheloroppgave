@@ -39,40 +39,41 @@ Supervisor: Geir-Arne Fuglstad}
 
 \begin{abstract}
   % 200 ord
-  This Bachelor's thesis is submitted for the course MA2002 at NTNU which is 15 credits.
-  In this thesis we discuss how to do linear regression when the data is
-  collected using a
-  complex sampling design. We use a different paradigm from classical
-  regression, where we assume the value observed for each individual is random. Here
-  we instead assume the value of each individual is fixed and the randomness
-  arises from which individuals to include in the sample.
+  This Bachelor's thesis is submitted for the course MA2002 at NTNU which is 15
+  credits over one semester.
 
-  The first sampling technique we look at is a Simple Random Sample. First, we
+  In this thesis we discuss how to do linear regression when the data is
+  collected using a complex sampling design. We use a different paradigm from
+  classical regression, where we assume an infinite population and that the
+  value observed for each individual is random . Here, we instead acknowledge
+  that the population is finite and assume the value of each individual is fixed
+  and the randomness arises from which individuals to include in the sample. The
+  major issues are accounting for different sampling designs to prevent bias and
+  incorrect uncertainty estimates.
+
+  We explain three different sampling techniques: the first sampling technique we look at is a Simple Random Sample. First, we
   choose the size of the sample. Then each possible subset of
   the population of that sample size has the same probability of being chosen as
   the sample. A Simple Random Sample has the advantage that all the sampled
   units are independent.
-
   The second sampling technique we look at is stratification. Here we split the
   population into a partition and sample independently from each subset. This
-  allows us to get independent regression lines from each subset as well as
-  potentially reducing variance if the sampling units inside the subsets are
-  similar.
-
-  The third sampling technique we look at is clustering. Here we again split
+  allows us to get independent regression lines from each subset. The third
+  sampling technique we look at is clustering. Here we again split
   the population into a partition, but instead of sampling from all subsets of
   the partition we instead sample only from some of the subsets, chosen by
   taking a sample of the subsets. Clustering is used
   to reduce costs when doing surveys. Often the clusters are geographical areas,
   which means that sampling only inside some subsets allow us to save 
-  travel time. Units inside clusters are often more similar than randomly chosen
-  units. This causes the sample to carry less information, which
-  means clustering usually leads to higher uncertainty compared to a SRS or a
-  stratified sample of the same size.
-
-  When performing large surveys these techniques are usually combined into what
+  travel time. When performing large surveys these techniques are usually combined into what
   is called a complex survey, for example by first doing stratification on the
-  whole population and then using clustering inside each subset. The non-linear
+  whole population and then using clustering inside each subset.
+
+  If the sampling units inside the strata are similar, stratification reduces
+  the uncertainty compared to a SRS. With clustering, however, we usually get
+  larger uncertainty, as units inside clusters are usually more similar than
+  units across clusters. This causes the sample to carry less information than a
+  non clustered sample. The non-linear
   nature of the regression coefficients means that estimating their variance
   becomes complicated. We therefore show an approximation technique called linearization.
 \end{abstract}
@@ -880,8 +881,9 @@ competitive with other sampling methods.
 \begin{example}
   %TODO: Fikse feil plot, kan løses ved å se på SE til slope coeffisient
   %istedenfor prediction intervall
-  We again consider the API dataset and want to predict API score based on
-  the parents' average education level. Suppose that to collect the data, an
+  We again consider the API dataset and want to see if average class size for
+  kindergarden through third grade
+  impacts the API score for a school. Suppose that to collect the data, an
   interviewer has to travel to each school. Then it would take much time and
   become expensive if the interviewer had to travel to random schools all over
   California. It would be cheaper and take less time to
@@ -889,46 +891,76 @@ competitive with other sampling methods.
   on the school districts. There are \(757\) school districts in California and we take a SRS to
   get a sample of \(15\). This gives us a sample of \(183\) schools. Based on
   the data collected from these schools we can now make regression lines and
-  prediction intervals.
+  confidence intervals for the regression coefficients.
   To make the regression line and to accurately estimate the variance we have to
   take the correlation between the individuals in the same cluster into account.
   If we do not take this into account we will get a different result and a too
   small variance estimate.
 
-  \begin{figure}
+  \begin{table}
     \centering
-    \includegraphics[scale = 0.5]{exClus}
+    \begin{tabular}{c|ccc}
+     & Slope & Std. Error & P-value \\ 
+      \hline
+      Clustering taken into account & 3.232 & 9.254 & 0.732 \\
+      Clustering not taken into account & 3.232 & 0.593 & \(7.49 * 10^{-8}\) \\
+    \end{tabular}
+    \caption{Slope for regression lines along with uncertainty and P-value for
+      the null-hypothesis that the slope is zero. The first row is for the case
+      where the clustering is taken into account. In the second row the
+      clustering was ignored, the samples were assumed to be independent.}
+    \label{tab:exClust}
+  \end{table}
 
-    \caption{Plot of regression line for a clustering sample. The red line is
-      the regression line from analyzing the sample as a clustered sample. The
-      blue line is the regression line from analyzing the clustered sample as an
-    SRS. The shaded areas are the regression lines 95\% prediction intervals.
-    The points are the data points from the whole population.}
+  Observe from Table~\ref{tab:exClust} that the standard error of model where
+  the clustering is ignored is significantly smaller than the standard error of
+  the model where the clustering is accounted for. This is because we assume
+  schools inside each district are more similar than schools in different
+  districts. This causes a sample with many schools in the same districts to
+  carry less information about the whole population than one where schools in
+  all districts have a chance of being included in the sample. The different
+  standard errors means that the hypothesis
+  test, where the null-hypothesis is that the slope is zero, gives different
+  results for the two models. Ignoring the clustering leads to the belief that larger average
+  class size for kindergarden through third grade leads to a higher API score
+  for the school. The sample does, however, suggests no such thing, as the P-value
+  of the model where the clustering is taken into account is \(0.732\).
 
-    \label{fig:exClus}
-  \end{figure}
+  
+%  \begin{figure}
+%    \centering
+%    \includegraphics[scale = 0.5]{exClus}
+%
+%    \caption{Plot of regression line for a clustering sample. The red line is
+%      the regression line from analyzing the sample as a clustered sample. The
+%      blue line is the regression line from analyzing the clustered sample as an
+%    SRS. The shaded areas are the regression lines 95\% prediction intervals.
+%    The points are the data points from the whole population.}
+%
+%    \label{fig:exClus}
+%  \end{figure}
 
-  Figure \ref{fig:exClus} shows two different regression lines. For the red
-  line, we accounted for clustering. We have taken
-  the sampling scheme into account, so the correlation between the individuals
-  in the same cluster is corrected for. For the blue line we ignored the
-  clustering and analyzed the sample as if it were a SRS. This ignores all
-  correlation between the individuals.
+  % Figure \ref{fig:exClus} shows two different regression lines. For the red
+  % line, we accounted for clustering. We have taken
+  % the sampling scheme into account, so the correlation between the individuals
+  % in the same cluster is corrected for. For the blue line we ignored the
+  % clustering and analyzed the sample as if it were a SRS. This ignores all
+  % correlation between the individuals.
 
-  The shaded areas, which represent the 95\% prediction intervals, show that
-  taking the correlation between the sampled individuals into account gives a
-  larger variance than when we assume that the individuals are independently sampled.
-  This makes sense, as the clustered sample carries less information than the
-  SRS, as the individuals inside a cluster can usually be assumed to be more
-  similar than individuals in different clusters.
+  % The shaded areas, which represent the 95\% prediction intervals, show that
+  % taking the correlation between the sampled individuals into account gives a
+  % larger variance than when we assume that the individuals are independently sampled.
+  % This makes sense, as the clustered sample carries less information than the
+  % SRS, as the individuals inside a cluster can usually be assumed to be more
+  % similar than individuals in different clusters.
 
-  The 95\% prediction interval made from clustering includes \(\sim 97\%\) of the
-  population, while the 95\% prediction interval from interpreting the cluster
-  sample as a SRS includes just \(\sim 91\%\) of the population. Therefore, the 95\%
-  prediction interval for the regression line where we assume independence is
-  too small, which illustratess that it
-  is important to take the sampling method into account to get correct
-  uncertainty estimates.
+  % The 95\% prediction interval made from clustering includes \(\sim 97\%\) of the
+  % population, while the 95\% prediction interval from interpreting the cluster
+  % sample as a SRS includes just \(\sim 91\%\) of the population. Therefore, the 95\%
+  % prediction interval for the regression line where we assume independence is
+  % too small, which illustratess that it
+  % is important to take the sampling method into account to get correct
+  % uncertainty estimates.
 
   
 \end{example}
