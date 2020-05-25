@@ -223,7 +223,7 @@ the age groups. Because this gets complicated, it is often difficult to
 find explicit formulas for the variance, and we usually have to estimate the variance
 instead. 
 The fact that we have a finite population, also influences the variance, since we
-get something called the finite population coefficient. This is a factor \(1 -
+get something called the finite population correction. This is a factor \(1 -
 \frac{n}{N}\), where \(n\) is the size of the sample and \(N\) is the size of
 the population. This factor takes into account the fact that as we get a larger
 and larger sample we can learn everything about the population, and therefore
@@ -629,15 +629,18 @@ model are also the same. The variance of the estimators for the coefficients are
 different however.
 The factor \(\left( 1 - \frac{n}{N} \right)\) in the variances is what differs in
 the variance estimate compared to the model based one. It is called the
-\textbf{finite population coefficient (fpc)} and comes from the fact that we are
+\textbf{finite population correction (fpc)} and comes from the fact that we are
 sampling without replacement from a finite population.
-When we sample a larger and larger proportion of the population we will get more
-and more information and therefore the variance will decrease towards zero.
-This means that if the population size decreases but the sample size stays the
-same the variance will decrease, as there are fewer unmeasured sampling units.
+For an intuitive explanation of the fpc, consider we take a sample of size
+\(10\). If the population size is just \(15\) we would expect to have a lot more
+information about the whole population than if the population size was large.
+The fpc also makes sure that the variance is \(0\) if we sample the whole
+population. Note, however, that if we do prediction using our regression line
+we will have a deterministic model. This is because the data points lay around
+the line, so there will always be uncertainty when predicting.
 
 Using linearization we get this estimate for the variance of \(\hat{B}_1\) when
-the sample is from an SRS\begin{equation*}
+the sample is from an SRS, see \cite[Chapter 11.2]{sampReg}  \begin{equation*}
 \widehat{\mathrm{Var}}(\hat{B}_1) = \left( 1 - \frac{n}{N} \right) \frac{n}{n - 1} \frac{\sum_{i \in S} \left( x_i - \bar{x} \right)^2 \left( y_i - \hat{B}_0 - \hat{B}_1 x_i \right)^2}
 {\left( \sum_{i \in S} \left( x_i - \bar{x} \right)^2 \right)^2}
 \end{equation*}
@@ -647,40 +650,40 @@ the model based case
 \begin{equation*}
  \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{\sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
  \hat{\beta}_1 x_i \right)^2}{
-   \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2}.
+   \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2},
 \end{equation*}
+where \(\bar{x} = \frac{1}{n} \sum_{i \in S} x_i\).
+%TODO: Write some words to compare
 
 
 \subsection{Stratification} \label{sec:strat}
 
-In stratification we split the sampling frame into a partition, i.e, \(H\) non
+In stratification we split the sampling frame into a partition, i.e, \(H\) non-
 overlapping subsets that together comprise the whole sampling frame. These
 subsets are called \textbf{strata}. We let each stratum have \(N_i,\ i = 1, \dots
-, H,\) elements, and \(N_1 + N_2 + \dots + N_H = N\). When sampling we
-indepentently take samples from each stratum, \(S_1, S_2, \dots, S_H\), with \(n_i,\ i = 1, \dots
+, H,\) elements. Thus \(N_1 + N_2 + \dots + N_H = N\). When sampling we
+independently draw samples from each stratum, \(S_1, S_2, \dots, S_H\), with \(n_i,\ i = 1, \dots
 , H,\) elements. When
-estimating a total we can therefore first estimate the total of each stratum and
-then add these totals to get an estimate of the population total.
-If we let \(t_{y,h}\) be the total in stratum \(h\) we get \(\hat{t}_y =
+estimating a total we can first estimate the total of each stratum and
+then add these estimated totals to get an estimate of the population total.
+If we let \(t_{y,h}\) be the total in stratum \(h\), for \(h = 1, 2, \dots, H\), we get \(\hat{t}_y =
 \sum_{h = 1}^H \hat{t}_{y, h} \), where we can use different sampling schemes to
 estimate each \(t_{y, h}\).
-If we let each sample of the subsets be a simple SRS we get \( \hat{t}_y =
-\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\),
-where \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
+If we let each sample of the subsets be a simple SRS, we get \( \hat{t}_y =
+\sum_{h = 1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\).
 Since the estimate for each
-stratum total is unbiased, see Section \ref{sec:SRS}, the estimate of the population
+stratum total is unbiased (see Section \ref{sec:SRS}), the estimate of the population
 total is unbiased.
-
 
 Since we often sample differently in the different strata,
 the individuals sampled from the different stratum usually have
 different sampling probabilities. This means that different sampling units
-should weigh differently when making estimates, as illustrated in Example \ref{ex:uneqProbs}.
+should be weighted differently when making estimates, as illustrated in Example \ref{ex:uneqProbs}.
 
 \begin{example} \label{ex:uneqProbs}
-  Suppose a population is divided into two strata, each with a population of
-  \(1000\) individuals. Let one be values with mean
-  \(0\) and variance \(1\) and one with mean \(10\) and variance \(1\), called
+  Suppose a population is divided into two strata, each with a subpopulation of
+  \(1000\) individuals. Let one subpopulation be values with mean
+  \(0\) and variance \(1\) and one subpopulation be values with mean \(10\) and variance \(1\), called
   \(A\) and \(B\).
   Our goal is to estimate the sum of the values.
 
@@ -692,7 +695,8 @@ should weigh differently when making estimates, as illustrated in Example \ref{e
       100} } \frac{2000}{200} y_i = 10104.81\). The bias is only \(46.22\) which is only \(0.46\%\) of the
   value.
 
-  If we sample different proportions of values from \(A\) and \(B\), however, we
+  If the proportion of units sampled from \(A\) is different from the
+  proportion of units sampled from \(B\), however, we
   can't use this simple estimate. Let \(S_{A, 50}\) be a SRS of size \(50\)
   from \(A\). If we use the same SRS estimate again we get \(\sum_{i \in S_{A, 50} \cup S_{B,
       100}} \frac{2000}{150} y_i = 13560.02\). The bias is here \(3501.425\) which is \(34.8\%\) of the
@@ -718,7 +722,7 @@ account. To do this we usually give each sampled unit a weight value,
 \begin{definition}
  The \textbf{weight} of a sampling unit is the inverse of the sampling
  probability of the sampling unit. 
- We denote the weight of \(y_i\) as \(w_i\).
+ We denote the weight of unit \(i\) as \(w_i\).
 \end{definition}
 
 An intuitive way to interpret weights is that the weight of an observation is
@@ -737,34 +741,35 @@ unit only represents \(10\) units including itself.
 
 
 Using weights, we can rewrite the estimate of \(t_y\) in a more general form,
-which is valid for any sampling scheme, \(\hat{t}_y = \sum_{i \in S}w_i y_i\).
+which is valid for any sampling scheme, \(\hat{t}_y = \sum_{i \in S}w_i y_i\),
+where the full sample is \(S = S_1 \cup S_2 \cup \dots \cup S_H\).
 This is a convenient way to calculate estimates of more complicated surveys, as
-one only needs to calculate the weights once, and then one can use them for many
-different calculations.
+one only needs to calculate the weights once, and then one can use them to
+estimate many different quantities.
 This also works for an SRS as it can be shown that the sampling probability of a sampling unit in a SRS is
 \(\frac{n}{N}\). This means that the weight of each sampling unit is
 \(\frac{N}{n}\). Therefore the estimator using weights is the same as the one
 introduced in Section \ref{sec:SRS}, \(\hat{t}_y = \sum_{i \in S}\frac{N}{n} y_i\).
 
-Since the samples from the different strate are independent the variance of the estimator is also
+Since the samples from the different strata are independent, the variance of the estimator is also
 easy to calculate, \(\mathrm{Var}(\hat{t}) = \mathrm{Var}\left(\sum_{h =
-   1}^H\sum_{i \in S_h}\frac{N_h}{n_h}y_i\right) = \sum_{h =
+   1}^H\hat{t}_{y, h}\right) = \sum_{h =
    1}^H\mathrm{Var}\left(\hat{t}_{y, h}\right)\). This
 means that to minimize the variance of \(\hat{t}\) we should choose the strata
-such that the internal variance is as small as possible.
+such that the internal variance in each stratum is as small as possible.
 
-Stratification is used for several reasons; making it possible to analyze
-subpopulations individually, making sure subgroups are included in the sample
+Stratification is used for several reasons: making it possible to analyze
+subpopulations individually, making sure subgroups are included in the sample,
 and reducing uncertainty.
 
-If we have a population with several different interesting subgroups it can be
+If we have a population with several different interesting subgroups, it can be
 useful to let each of these subgroups be their own strata. This will allow us to
-create seperate regression lines for each strata, which will allow us to
+create a seperate regression line for each stratum, which will allow us to
 analyze them by themselves. We can then compare the slopes to see if there is a difference in the relationship between the
 response and predictor for the different strata. We could of course make
-regression lines for different subgroups after doing a sample without strata,
+regression lines for different subgroups after doing a sample without stratification,
 but then we would have no guarantee that each of the subgroups would have enough
-samples to be able to make a useful regression line. Using stratification we can
+samples to be able to make a useful regression line. Using stratification, we can
 choose how many samples we want from each subgroup.
 
 \begin{example}
@@ -775,16 +780,16 @@ choose how many samples we want from each subgroup.
   sense to stratify on which level the school is, elementary school, middle
   school or high school. We can then see if the estimated slope coefficient is
   different in each of these strata.
-  The population has \(4421\) elementary schools, \(755\) middle schools and
+  The sampling frame has \(4421\) elementary schools, \(755\) middle schools and
   \(1018\) high schools and we choose to sample \(50\) schools from each strata.
 
-  The table shows the estimated slope with 95\% confidence intervals along with
+  Table \ref{tab:exStrat} shows the estimated slope with 95\% confidence intervals along with
   true slopes for each school level. We observe that all the true values are
   inside the confidence intervals. We can see that
   parent education level seems to have a higher effect in Elementary schools
   than higher school levels. Regression on all the strata together gives the
   slope \(158\), which is somewhere in between all the individual slopes. Not
-  doing stratification would therefore make us loose the information for each
+  doing stratification would make us loose the information for each
   school type.
 
   \begin{table}
@@ -796,8 +801,9 @@ choose how many samples we want from each subgroup.
     True value & 144.5 & 157.7 & 152.2
   \end{tabular}
   \label{tab:exStrat}
-  \caption{blah test}
-  %TODO: Ordne caption of referere til tabell i teksten
+  \caption{Table of slope coefficients for the different school levels. The
+    first row has estimates from the sample, with 95\% confidnce intervals in
+    parenthesis. The second row has the values, as we know the whole population.}
   \end{table}
 \end{example}
 
@@ -807,32 +813,34 @@ choose how many samples we want from each subgroup.
 
 In clustering we split the sampling frame into a partition as in stratification.
 Here, however, we do a probability sample to choose which of the subsets we will
-collect data from, which is now \(S\). Then we have to do a probability sample
+collect data from. Then we have to do a probability sample
 inside of each of these chosen subsets, \(S_1, S_2, \dots, S_n\).
 
 \begin{definition}
  \textbf{Primary sampling unit (psu)} are subsets of the sampling frame, that
- are sampled first in a sampling scheme. These are also often called clusters. 
+ are sampled first in a sampling scheme. These are also often called \textbf{clusters}. 
 \end{definition}
 
 There are two ``types'' of cluster sampling; one-stage cluster sampling and
 multi-stage cluster sampling. In one-stage cluster sampling we sample all the
-elements in the subsets chosen in \(S\), so each element has probability \(1\)
+elements in the subsets chosen of \(S\), so each element has probability \(1\)
 of being included. In multi-stage cluster sampling, however,
 we make a sample of the \textbf{secondary sampling units (ssus)}, which are
-individuals inside the clusters, inside the psus in \(S\). Here not all ssus, or
-individuals, inside the cluster are included. Multi-stage cluster sampling is often what is used in
-practice, but since the ideas are so similar to one-stage cluster sampling and
-the formulas get so complicated in multi-stage cluster sampling
+individuals inside the clusters. Here not all ssus, or
+individuals, inside the clusters are included. Multi-stage cluster sampling is often what is used in
+practice, but since the ideas are similar to one-stage cluster sampling and
+the formulas get much more complicated in multi-stage cluster sampling,
 we will restrict outselves to one-stage cluster sampling in this thesis.
 
 Let \(N\) be the number of clusters (psus) in the population and let \(M_i,\ i =
 1, 2, \dots, N\) be the number of individuals (ssus) in each cluster. Let
-\(t_{y, i}\) be the total for cluster \(i\), Since we know the totals for the
-clusters in the sample \(S\), we can consider each cluster a sampling unit as we
-have done earlier in the thesis. In one-stage cluster sampling, an SRS is
-usually taken to choose which clusters to include in the sample. This gives the
-same estimator for the total as for a SRS, except that the sampling units here
+\(t_{y, i}\) be the total for cluster \(i\). Since we sample all the ssus inside
+the clusters, we know the totals for the
+clusters in the sample. We can therefore consider each cluster a sampling unit as we
+have done earlier in the thesis. Instead of letting the \(y_i, i \in S\) be the
+sampled values, we let \(t_{y, i}, i \in S\) be the sampled values. In one-stage cluster sampling, an SRS is
+usually taken to choose which clusters to include in the sample. This gives a
+similar estimator for the total as for a SRS, except that the sampling units here
 are the totals for each cluster instead of individuals as in a normal SRS,
 \(\hat{t}_y = \sum_{i \in S} \frac{N}{n} t_{y, i} = \sum_{i \in S} w_i t_{y, i} \). 
 This also gives the same estimate for the variance as in an SRS,
@@ -845,35 +853,37 @@ This also gives the same estimate for the variance as in an SRS,
 Larger populations often mean that the totals for that population is also large,
 for example when we are measuring API scores for schools, the total of all the
 schools in a population will increase as the number of schools we sample
-increase, as the score is always positive. This means that the variance of the
+increases, as the score is always positive. This means that the variance of the
 total estimates will usually increase if the clusters have very different
 population sizes. It can therefore be useful to try to keep the populations in
-the different clusters as similar as possible. But one should be careful not
-putting too much weight on keeping the population sizes equal, as that may cause
+the different clusters as similar as possible. But one should be careful not to put
+too much weight on keeping the population sizes equal, as that may cause
 the clusters to become too spread out physically which will make it expensive to
-measure all individuals in it, which will again defeat the purpose of clustering
+measure all individuals in it, which defeats the purpose of clustering
 in the first place.
 
-This means that a cluster sample with the same number of individuals in it will
+A cluster sample with the same number of individuals in it will
 almost always have a larger variance than a SRS of the same size. This is
-becuase individuals inside a cluster will usually be more similar than
+because individuals inside a cluster will usually be more similar than
 individuals across clusters. This means that measuring say \(10\) people inside
-one cluster will give less information than measuing \(10\) people randomly
+one cluster will give less information than measuring \(10\) people randomly
 chosen in the whole population, which will cause a larger uncertainty. Measuring
 inside a cluster is often cheaper than measuring people sampled randomly from
-the whole population though. For example if the clusters are geographical areas,
-which they usually are and each individual sampled needs a researcher or
-interviewer to physically show up, then one will save time and money
+the whole population, though. For example, if the clusters are geographical areas,
+which they often are, and each individual sampled needs a researcher or
+interviewer to physically travel to them, then one will save time and money
 not having to travel to so many different places. This means that it is often possible to sample
 many more individuals in cluster sampling than when doing samples from the whole
 population, which will decrease the uncertainty and make cluster sampling more
 competitive with other sampling methods.
 
 \begin{example}
-  We again look at the API dataset and want to predict API score based on
+  %TODO: Fikse feil plot, kan løses ved å se på SE til slope coeffisient
+  %istedenfor prediction intervall
+  We again consider the API dataset and want to predict API score based on
   the parents' average education level. Suppose that to collect the data, an
   interviewer has to travel to each school. Then it would take much time and
-  get expensive if they had to travel to random schools all over
+  become expensive if the interviewer had to travel to random schools all over
   California. It would be cheaper and take less time to
   collect data in just some school districts. We therefore choose to cluster
   on the school districts. There are \(757\) school districts in California and we take a SRS to
@@ -898,10 +908,11 @@ competitive with other sampling methods.
     \label{fig:exClus}
   \end{figure}
 
-  Figure \ref{fig:exClus} shows two different regression lines. For the red line, we did it the ``correct'' way. We have taken
+  Figure \ref{fig:exClus} shows two different regression lines. For the red
+  line, we accounted for clustering. We have taken
   the sampling scheme into account, so the correlation between the individuals
   in the same cluster is corrected for. For the blue line we ignored the
-  clustering and analyzed the sample as if it was a SRS. This ignores all
+  clustering and analyzed the sample as if it were a SRS. This ignores all
   correlation between the individuals.
 
   The shaded areas, which represent the 95\% prediction intervals, show that
@@ -924,62 +935,62 @@ competitive with other sampling methods.
 
 \subsection{Complex surveys} \label{sec:complexSurveys}
 
-In practice we often combine clustering and stratification to what is called a
+In practice, we often combine clustering and stratification to what is called a
 \textbf{complex survey}. We usually first create strata for the different subpopulations
-we are interested in data from, before we use clustering to make it
+we are interested in data from. Then we use clustering to make it
 practically possible to perform the survey.
 
 A real example, where survey statistics with a complex survey design is used, is the Demographic and Health
 Survey (DHS) in Kenya. This survey collects, among other things, 
 information regarding the birth rates and mortality rates in Kenya. This type of
-surveys are important because no one has any overview of statistics as these in
+survey is important because no one has any overview of vital statistics in
 many developing countries.
-Ideally one would of course do a full census of the population, but that is not
+Ideally, one would of course do a full census of the population, but that is not
 possible in practice as it would be extremely expensive. Each household that is
-surveyed has to be visited by a trained interviewer. Visiting
-households spread in the whole country would need both much travel time and
-more interviewers who have to be trained. Instead one designs a
+surveyed, has to be visited by a trained interviewer. Visiting
+households spread through the whole country would need both much travel time and
+many interviewers who have to be trained. Instead one designs a
 complex survey combining the sampling methods introduced earlier in Section
-\ref{sec:RegFinPop}. This is cheaper, and if the survey is designed well
-one will get good data from this as well.
+\ref{sec:RegFinPop}. This is cheaper, and if the survey is well designed
+one will get good data from as well.
 
 In the DHS in Kenya the researchers wanted data on both urban and rural
-populations in each county they first started with splitting the country into
+populations in each county, so they first started with splitting the country into
 strata. Two strata for each county, one for the urban population and one for the
-rural population, except for two counties which only has a urban population.
+rural population, except for two counties which only have an urban population.
 Each of these strata were then further divided into smaller geographic units,
 these are the clusters. The researchers then do a SRS of the clusters inside
-each stratum to choose which ones to visit.
+each stratum to choose which ones to visit. \cite{DHS}
 
-Inside each cluster the researchers then sample again 25 households to actually
-visit. The fact that the researchers made a new sample inside the cluster is
-called two-stage clustering, this has not been a topic of this thesis, but the
-principals used are the same as the ones used in one-stage clustering introduced
-in Section \ref{sec:clustering}.
+Inside each cluster the researchers then sample 25 households to actually
+visit. The fact that the researchers make a new sample inside the cluster is, as
+mentioned in Section \ref{sec:clustering}
+called two-stage clustering. It has not been a topic of this thesis, but the
+principles used are the same as the ones used in one-stage clustering. \cite{DHS}
 
-Counterintuively one can often get better results doing a smaller well designed
+Counterintuively, one can often get better results doing a smaller well designed
 survey than sampling as many as possible. This is because, if we have a small
-population to sample, we need few interviewers and we can therefore make sure
+sample, we need few interviewers and can therefore make sure
 they are all well trained and suited to the job. If we just focus on getting as
 large samples as possible one often has to compromise on the quality of the
 training the interviewer get. This can lead to poorly trained interviewers introducing errors
-to the data, for example if the household they are supposed to visit is not
-home, they might visit their neighbours instead. This compromises the results of
+in the data. For example, if no one from the household they are supposed to visit are
+home, they might visit their neighbours instead of coming back later. This compromises the results of
 the survey, as some demographics might be more likely to be home than others.
 
 \section{Variance estimation} \label{sec:VarEst}
 
 A central part of doing statistics is the calculation of uncertainties. We
 usually express the uncertainty by estimating variance. Without an idea of the
-variance of an estimated value, the estimate is all but useless, as the variance
+variance of an estimated quantity, the estimate is all but useless, as the variance
 could be so large that almost any confidence interval will include all possible
 values. It is therefore important to have a reasonable estimate of the
 variance. The problem, however, is that in regression the values we are
-interested in are non-linear expressions. We therefore can't find a closed form
+interested in are non-linear expressions of observations. We therefore can not find a closed form
 expression for the variance estimate using normal rules, so we instead have to
 use other techniques to
-find variance estimates. One of the more used methods in survey
-statistics, and one which will give a closed form expression for the estiamate,
+find variance estimates. One of the more commonly used methods in survey
+statistics, and one which will give a closed form expression for the estimate,
 is linearization.
 
 \begin{example}
@@ -1027,10 +1038,9 @@ is linearization.
     near the point we want the function value at. This means that in this case we should
     choose a fixed point near \((\hat{t}_x, \hat{t}_y)\). Since this is an approximation
     of \((t_x, t_y)\), that point is a natural one to approximate around. Another
-    advantage of approximation around \((t_x, t_y)\) is the fact that to get a
-    variance approximation we can calculate we can exchange \((t_x,
+    advantage of approximating around \((t_x, t_y)\) is the fact that to get a
+    variance approximation, we can exchange \((t_x,
     t_y)\) with \((\hat{t}_x, \hat{t}_y)\) and get a numeric value.
-
     Since \(\hat{t}_y\) and \(\hat{t}_x\) are linear expressions we are able to
     find closed form expressions for their variance estimates and we can
     therefore calculate \(\widehat{\mathrm{Var}} \left( \widehat{W} \right)\).
@@ -1052,8 +1062,8 @@ linear, there is no problem finding a closed form for the variance estimate,
 so we assume here that \(h\) is a non-linear function.
 
 By Taylor's theorem, we know that \(h(\hat{x}) = h(x) + h'(x) (\hat{x} - x) + \int_x^{\hat{x}}  (\hat{x} -
-t) h''(t) dt\), where the last term is usually small compared to the first two
-in statistics. This allows us to use the approximation \(h(\hat{x}) \approx h(x) +
+t) h''(t) dt\), \cite{kalkulus}, where the last term is usually small compared to the first two
+in statistics, \cite[Chapter 9]{sampReg}. This allows us to use the approximation \(h(\hat{x}) \approx h(x) +
 h'(x) (\hat{x} - x)\). \(h(x) = \begin{bmatrix} \frac{\partial h}{\partial x_1}
   (x_1) & \frac{\partial h}{\partial x_2} (x_2) & \dots & \frac{\partial
     h}{\partial x_p} (x_p)\end{bmatrix}\), which means that \(h(\hat{x}) \approx
@@ -1077,9 +1087,8 @@ estimate of the variance
   = \sum_{i = 1}^p \left( \frac{\partial h}{\partial x_i} (\hat{x}_i)  \right)^2 \widehat{\mathrm{Var}} \left( \hat{x}_i \right) + \sum_{i \neq j}  \frac{\partial h}{\partial x_i} (\hat{x}_i)  \frac{\partial h}{\partial x_j} (\hat{x}_j)  \widehat{\mathrm{Cov}} \left( \hat{x}_i, \hat{x}_j \right)
 \end{align*}
 
-In the regression case, the differentiation, and the estimates of covariance
-gets pretty complicated, so we won't show the derivation here, but by using
-similar techniques it can be shown that
+In the regression case, the differentiation and the estimates of covariance
+are complicated, so we will not show the derivation here. However, it can be shown that
 \begin{align*}
  \mathrm{Var}(\hat{B_1})
  &= \mathrm{Var} \left( h(\hat{t_{xy}}, \hat{t_x},
@@ -1088,7 +1097,8 @@ similar techniques it can be shown that
    {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}
 \end{align*}
 where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\), and
-\(\bar{x} = \frac{\hat{t}_x}{\hat{N}}\).
+\(\bar{x} = \frac{\hat{t}_x}{\hat{N}}\), see \cite[Chapter 11]{sampReg} for more
+details.
 
 
 %Resampling hvis vi har tid
@@ -1121,24 +1131,24 @@ where \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\), and
 %* Bias, hva går feil, når, hvordan?
 
 When using sampling designs where the sampling probabilities differ, we risk the
-chance of having a bias in our results if we do not take it into account. This
-is illustrated in Example \ref{ex:anthuneq}, where the regression line where we ignore the
+chance of having a bias in our results if we do not take the sampling design into account. This
+is illustrated in Example \ref{ex:anthuneq} where the regression line where we ignore the
 unequal sampling probabilities is too flat, and in Example \ref{ex:uneqProbs},
 where we get different estimates of the totals. A bias in the regression line
-can quickly lead one to reach conclusions, about the relationshiop between the
+can quickly make one reach conclusions, about the relationshiop between the
 predictor and the response, not actually supported by the data.
 
 %* Variansestimering er vankelig. Lett å lage estimater med vekter som er unbiased, men varians
 %blir vanskelig. 
 
-Since we can use weights, calculating estimates of most values is pretty
+Since we can use weights, calculating estimates of most quantities is
 straight forward, including estimates of regression coefficients. The non-linear nature
 of the regression coefficients, however, makes it difficult to estimate the
 variances. There are several methods to get variance estimates, including using
 resampling, but the one used in this thesis is linearization. Using
-linearization allows us to get pretty good variance estimates for the regression
+linearization allows us to get reasonable variance estimates for the regression
 coefficients. As seen in Section \ref{sec:VarEst} linearization has given us a
-closed form formular for the varianse estimates of the slope parameter, and a
+closed form expression for the variance estimates of the slope parameter, and a
 similar one for the intercept is also possible to derive.
 
 %
@@ -1148,9 +1158,9 @@ similar one for the intercept is also possible to derive.
 %  Hovedfeil: lav varians. Tror ting er uavhengige.
 %  varianskorreksjon
 
-Ignoring sampling design can cause big problems with variance estimation. In
+Ignoring sampling design can cause major problems with variance estimation. In
 many sampling designs clustering is used, which means sampling units in the sample are correlated. This means
-that each sampling unit carries less information than if they were independent.
+that the sample carries less information than if the units were sampled independently.
 Assuming that the sampling units in the sample are independent when they are not
 will cause underestimation of the variance. Believing the variance is smaller
 than it actually is can lead to a stronger belief in the results than warranted.
@@ -1183,17 +1193,17 @@ as it would become harder to reject the null hypothesis, even when it is false.
 %  Hvis respons er uavhengig av clusters, kan vi se bort fra dem. Tilsvarende med stratifisering.
 %  Riktig svar: Samle mer data. Pragmatisk: Modle based.
 
-An important thing to note is that using survey statistics will never give wrong
+It is important to note that using survey statistics will never give wrong
 results. As illustrated in the bottom left panel of Figure \ref{fig:ex1}, the
 regression line from classical linear regression is the exact same as the one
 from survey statistics where we assume each observation is independently sampled.
 This is also true in general. A disadvantage of survey statistics, however, is
-that one in general needs more data to get good results. This is because in
+that one in general needs more data to achieve good results. This is because in
 model based statistics, the assumptions one make gives additional structure to
 the data. This is structure which we would have to ``estimate'' using survey
 statistics, causing us to ``use up'' some of the statistical power we want to
 use for estimating regression coefficients and variance. If we have too little
-data to get any robust conclusions we would need to collect more data if we want
+data to get robust conclusions we would need to collect more data if we want
 to keep using survey statistics. Another option, however, if it looks like the
 assumptions regarding the distribution is  fulfilled, is to switch to
 a model based regression. In addition, one would have to make sure that
