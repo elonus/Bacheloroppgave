@@ -130,7 +130,7 @@ individual being included in the sample? Are the individuals sampled independent
 One approach to model the data is called the model based approach and is based
 on the fact that we usually sample from large populations. We assume that the
 relationship between the predictor and the response is split in two: a linear deterministic
-part and a stochastic part drawn from a distribution. We assume that the population
+part and a stochastic part representing the error, which can be described by a continuous distribution. We assume that the population
 is large enough that the probability of sampling the same unit again if we take
 a new sample is negligible. This allows us to assume that when we sample an unit, 
 the response is the value of the line, given the predictor value, pluss the stochastic
@@ -138,7 +138,10 @@ part, called the residual, which is drawn from the distribution. We can use the
 structure from assuming that the residuals are drawn from a distribution to
 model the uncertainty of the coefficients and predictions. The only thing we need
 to know about the data collection method is the fact that the individuals were
-sampled independently. The assumption that the
+sampled independently. In the model based approach, we assume there exists a
+line representing the deterministic part of the relationshiop between the
+predictor and response. Our goal is to use a sample of the population to get a
+estimate of the true line. The assumption that the
 probability of sampling the same unit again is negligible if we resample is often not
 realistic, however, nor the fact that the residuals follow a
 distribution. This motivates another approach to model the data. 
@@ -174,14 +177,11 @@ more information about the sampling scheme than the model based approach. The
 estimated variances with a design based approach are often larger than when
 using a model based approach. This is because the
 assumption that the observations are drawn from a specific distribution gives a
-lot of extra structure.
-
-%TODO: Enten skriv mer eller slett
-We may sometimes want to make separate analyses on different parts of the
-population, we might be interested in different
+lot of extra structure. In the design based approach our goal in regression is
+to find the line minimizing the residual sum of squares for the whole population.
 
 The population we are sampling from could be heterogenuous, i.e, different
-parts of the population have very different measured values. Say, for example, we want
+parts of the population have very different response values. Say, for example, we want
 to find the mean income of residents of Oslo. When sampling, we could risk
 getting only people living in the west part of Oslo, which is the most wealthy
 area of the city. This would result in the estimate being much higher than the true
@@ -284,7 +284,7 @@ sample will result in the slope tending to be smaller than it should be.
 \end{figure}
 
 %TODO: Prøv å forkorte avsnitt mer
-The bottom row of Figure \ref{fig:ex1} illustrate the difference between
+The bottom row of Figure \ref{fig:ex1} illustrates the difference between
 classical regression, assuming a normal distribution for the residuals,
 and regression taking the sampling probabilities into account. The bottom left plot shows regressions based on a
 sample where every person has the same probability of being included. We can see
@@ -316,6 +316,8 @@ API scores is a metric quantifying the academic performance of the students at t
 We will use this data as the population we will sample from, and we will take
 different kinds of samples to illustrate the concepts introduces in this thesis,
 \cite[Section 1.2]{complexR}.
+
+In this thesis we will use the ``survey'' package in R to make computations \cite{surveyR}.
 
 Section \ref{sec:modLinReg} will give a overview of model based simple
 linear regression, which is assumed known and only a brief repetition will be given.
