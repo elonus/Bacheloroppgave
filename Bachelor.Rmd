@@ -397,7 +397,7 @@ tot.est.correct.50.100 <- 1000/50 * sum(A.sample.50) + 1000/100 * sum(B.sample.1
 # Lage egen one-stage cluster på dnum
 # ER NOE FEIL, ALT FOR LITE PREDIKSJONSINTERVALL
 
-n <- 100
+n <- 20
 dnums <- unique(apipop$dnum)[sample(1:length(unique(apipop$dnum)), n, replace = F)]
 
 dnumclus <- apipop %>% filter(dnum %in% dnums)
