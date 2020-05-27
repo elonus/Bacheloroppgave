@@ -35,7 +35,7 @@ Supervisor: Geir-Arne Fuglstad}
 \newtheorem{example}{Example}
 
 
-\maketitle
+%\maketitle
 
 \begin{abstract}
   % 200 ord
@@ -45,13 +45,14 @@ Supervisor: Geir-Arne Fuglstad}
   In this thesis we discuss how to do linear regression when the data is
   collected using a complex sampling design. We use a different paradigm from
   classical regression, where we assume an infinite population and that the
-  value observed for each individual is random . Here, we instead acknowledge
+  response observed for each individual is random . Here, we instead acknowledge
   that the population is finite and assume the value of each individual is fixed
   and the randomness arises from which individuals to include in the sample. The
   major issues are accounting for different sampling designs to prevent bias and
   incorrect uncertainty estimates.
 
-  We explain three different sampling techniques: the first sampling technique we look at is a Simple Random Sample. First, we
+  We explain three different sampling techniques: the first sampling technique
+  we look at is a Simple Random Sample. First, we
   choose the size of the sample. Then each possible subset of
   the population of that sample size has the same probability of being chosen as
   the sample. A Simple Random Sample has the advantage that all the sampled
@@ -69,13 +70,54 @@ Supervisor: Geir-Arne Fuglstad}
   is called a complex survey, for example by first doing stratification on the
   whole population and then using clustering inside each subset.
 
-  If the sampling units inside the strata are similar, stratification reduces
-  the uncertainty compared to a SRS. With clustering, however, we usually get
+  If the sampling units inside the strata are similar, then stratification will reduce
+  the uncertainty compared to a SRS of the same size. With clustering, however, we usually get
   larger uncertainty, as units inside clusters are usually more similar than
   units across clusters. This causes the sample to carry less information than a
   non clustered sample. The non-linear
   nature of the regression coefficients means that estimating their variance
   becomes complicated. We therefore show an approximation technique called linearization.
+
+  \vspace{5mm}
+
+  Denne bacheloroppgaven er en del av emnet MA2002 på NTNU, som er 15
+  studiepoeng over ett semester.
+
+  I denne oppgaven diskuterer vi hvordan man gjør linear regresjon når et
+  komplekst utvalgsdesign er brukt for å samle inn dataene. Vi bruker et annet
+  paradigme enn i klassisk regresjon hvor vi antar en uendelig populasjon og at
+  hver observerte verdi er tilfeldig. Her aksepterer vi isteden at populasjonen
+  er endelig og antar at hver respons er fastsatt og det tilfeldige kommer fra
+  hvilke individer som er med i utvalget. De største problemene er å ta hensyn
+  til de forskjellige utvalgsdesignene for å unngå skjevhet i resultatene, samt
+  feil variansestimater.
+
+  Vi skal gå gjennom tre ulike utvalgsteknikker: Den første utvalgsteknikken vi
+  ser på er en SRS. Her velger man først størrelsen på utvalget. Så lar man
+  hvert mulige utvalg, med den valgte størrelsen av populasjonen, ha samme sannsynlighet
+  for å bli valgt. En SRS har fordelen at alle individene i utvalget er
+  uavhengige.
+  Den andre utvalgsteknikken vi ser på er stratifisering. Her deler vi
+  populasjonen i en partisjon og gjør et uavhengig utvalg fra hver delmengde.
+  Dette gjør at vi kan lage uavhengige regresjonslinjer for hver delmengde.
+  Den tredje utvalgsmetoden vi ser på er klustering. Her deler vi igjen
+  populasjonen inn i en partisjon, men istedenfor å gjøre et utvalg fra alle
+  delmengdene gjør vi bare et utvalg fra noen av delmengdene, valgt ved å gjøre
+  et utvalg av delmengdene. Klustering er brukt for å redusere kostnadene ved å
+  gjøre utvalg. Ofte er delmengdene geografiske områder, som betyr at å bare
+  gjøre utvalg innen noen delmengder sparer reisetid. Når man utfører store
+  undersøkelser er ofte disse metodene kombinert til det som kalles en kompleks
+  undersøkelse. For eksempel gjør man først stratifisering på hele populasjonen,
+  og så bruker man klustering innen hver delmengde.
+
+  Hvis individene innen delmengdene i stratifisering er like så vil
+  stratifisering redusere usikkerheten i estimatene sammenlignet med en SRS av
+  samme størrelse. Ved klustering, derimot, vil vi som regel få større
+  usikkerheter i estimatene ettersom individene inne i delmengdene ofte er mer
+  like enn individer på tvers av delmengdene. Dette gjør at utvalget inneholder
+  mindre informasjon om populasjonen enn et ikke-klusteret utvalg. Det at
+  regresjonskoeffisientene ikke er lineære uttrykk gjør at variansestimasjon er
+  komplisert. Vi viser derfor en approksimasjonsteknikk som heter linearisering.
 \end{abstract}
 
 \newpage
@@ -85,8 +127,6 @@ Supervisor: Geir-Arne Fuglstad}
 \newpage
 
 \section{Introduction} \label{sec:intro}
-
-%TODO: Jeg liker strukturen på og innholdet i introduksjonen og synes denne fungerer veldig bra. Det er noen formulering og valg av ord som du må jobbe litt med. Det er ikke greit å si “pulled from a distribution”. “Drawn from a distribution” er en mulighet. Men jeg vil at du jobber mer med teksten til du føler deg ferdig før jeg gir mer detaljerte tilbakemeldinger. \cite{st1101}
 
 \begin{figure}
   \centering
@@ -114,8 +154,7 @@ in Figure \ref{fig:residuals}. If the relationship was
 exactly linear we would just need to sample two individuals, which different
 predictor value, to find the regression line. When doing linear
 regression, the goal is to find the line that minimizes the sum of the residuals
-squared. %TODO: Flytte siste setning til slutten av avsnittene om model based og
-         %design based.
+squared. 
 
 Since we are doing measurements on a real population, it is also finite.
 If we knew the measurements for the whole population, there
@@ -317,16 +356,18 @@ We will use this data as the population we will sample from, and we will take
 different kinds of samples to illustrate the concepts introduces in this thesis,
 \cite[Section 1.2]{complexR}.
 
-In this thesis we will use the ``survey'' package in R to make computations \cite{surveyR}.
+In this thesis we will use the ``survey'' package in R to make computations, \cite{surveyR}.
 
 Section \ref{sec:modLinReg} will give a overview of model based simple
 linear regression, which is assumed known and only a brief repetition will be given.
 Section \ref{sec:RegFinPop} will explain how to do linear regression in the context of finite
-populations using survey statistics. Section \ref{sec:SRS} will show how to do linear
-regression when we have a Simple Random Sample. Section \ref{sec:strat} will go through
-linear regression when we have a sample using stratification. Section \ref{sec:clustering} will
-explain linear regression when we have a sample using clustering and Section \ref{sec:complexSurveys}
-will show how to do linear regression when you have surveys combining
+populations using survey statistics. Section \ref{sec:generalResults} explains
+the general theory behind regression in finite population while Section \ref{sec:SRS} will show how to do linear
+regression when we have a Simple Random Sample. Section \ref{sec:surveyDesign}
+talks about estimating quantities with more complex survey designs: Section \ref{sec:strat} will go through
+estimation when we have a sample using stratification. Section \ref{sec:clustering} will
+explain estimation when we have a sample using clustering and Section \ref{sec:complexSurveys}
+will show how to do estimation when we have surveys combining
 stratification and clustering into a complex survey. Section \ref{sec:VarEst} is
 about estimating the variance of non-linear expressions while Section
 \ref{sec:discussion} is the discussion.
@@ -387,12 +428,9 @@ Assume the following conditions:
 \item All \(\epsilon_1\), \(\epsilon_2\), ..., \(\epsilon_n\) are independent of each other,
 \end{enumerate}
 
-%TODO: I Section 2 I teksten som følger etter de fire ligningene øverst på side 6, må du være mer korrekt. Du skriver “… as likely to be over the line as under it”. Dette er ikke riktig med mindre fordelingen til residualene er symmetrisk. Du burde skrive “… on average lie on the line” eller noe sånt. På samme måte må du være mer presis med utsagnet om item 2.
-
-
 Here item 1 means that data points should on average lie on the line. \\
-Item 2 means that the data points should have roughly the same vertical
-Euclidean distance from the regression line. \\
+Item 2 means that the data points should have the same variance around the
+regression line.  \\
 Item 3 and 4 means that there should be no pattern in whether the data points is over
 or under the regression line and on the vertical Euclidean distance from the
 regression line.
@@ -428,12 +466,11 @@ This approach is called survey statistics
 
 \section{Regression in the context of finite populations} \label{sec:RegFinPop}
 
-%TODO: Riktig subsection tittel?
-\subsection{Introduction}
+\subsection{General results} \label{sec:generalResults}
 
 Now consider the case where the population is finite, i.e, the population
-consists of \((x_1, y_1),
-(x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
+consists of \\
+\((x_1, y_1), (x_2, y_2), \dots , (x_N, y_N)\), where the \(x_i\)'s are the covariates we use to
 predict \(y_i\) and \(N\) is the size of the population.
 The goal of linear regression in this case is that we want to find the
 line, \(y = B_0 + B_1x\), that best describes the relationship between \(x_i\)
@@ -531,7 +568,6 @@ replacing quantities by estimated quantities in Equations \ref{eq:B0} and
  = \frac{\hat{t}_y}{\hat{N}} - \hat{B}_1\frac{\hat{t}_x}{\hat{N}}
 \end{equation*}
 
-\textbf{Fjerne dette avsnittet om varians og bare refere til seksjon 4?}\\
 Since \(\hat{B}_0\) and \(\hat{B}_1\) are non linear expressions of dependent
 statistics, deriving exact expressions for the variances is complicated. We, therefore,
 often have to settle with having estimates of the variances instead.
@@ -553,6 +589,9 @@ detail in Section \ref{sec:VarEst}.
 
 %TODO: Si noe sånt som: Vi må nå vite hvordan vi kan estimere totalene for
 %forskjellige samples.
+
+To calculate the estimated regression coefficients we need to know how to create
+estimates of the totals we need for different sampling designs.
 
 \subsection{Simple random sample} \label{sec:SRS}
 
@@ -643,21 +682,35 @@ we will have a deterministic model. This is because the data points lay around
 the line, so there will always be uncertainty when predicting.
 
 Using linearization we get this estimate for the variance of \(\hat{B}_1\) when
-the sample is from an SRS, see \cite[Chapter 11.2]{sampReg}  \begin{equation*}
+the sample is from an SRS, see \cite[Chapter 11.2]{sampReg}  \begin{equation} \label{eq:varB1}
 \widehat{\mathrm{Var}}(\hat{B}_1) = \left( 1 - \frac{n}{N} \right) \frac{n}{n - 1} \frac{\sum_{i \in S} \left( x_i - \bar{x} \right)^2 \left( y_i - \hat{B}_0 - \hat{B}_1 x_i \right)^2}
 {\left( \sum_{i \in S} \left( x_i - \bar{x} \right)^2 \right)^2}
-\end{equation*}
+\end{equation}
 
 which we can compare to the estimate of the variance for \(\hat{\beta}_1\) in
 the model based case
-\begin{equation*}
+\begin{equation} \label{eq:varBeta1}
  \widehat{\mathrm{Var}} \left( \hat{\beta}_1 \right) = \frac{\sum_{i = 1}^n\left( y_i - \hat{\beta}_0 -
  \hat{\beta}_1 x_i \right)^2}{
    \left( n - 2 \right)\sum_{i = 1}^n \left( x_i - \bar{x} \right)^2},
-\end{equation*}
+\end{equation}
 where \(\bar{x} = \frac{1}{n} \sum_{i \in S} x_i\).
 %TODO: Write some words to compare
 
+One important difference between the variance estimates is that in Equation~\ref{eq:varB1} we have the fpc,
+which comes from the fact that we sample from a finite population.
+
+%TODO: Se litt mer på avsnittet
+When doing surveys, SRSs are often not used. Instead one uses more complex survey
+techniques which can make the estimated quantities have smaller uncertainties
+and make the survey cheaper to perform. We will therefore now look at different
+sampling designs that are often used. Not taking the sampling designs used into
+account can lead to a bias in the results and too small or too large variances.
+We will focus on estimating totals of the population, as the regression
+coefficients are expressed as functions of totals in
+Equations~\ref{eq:B0} and~\ref{eq:B1}.
+
+\section{Accounting for survey design} \label{sec:surveyDesign}
 
 \subsection{Stratification} \label{sec:strat}
 
@@ -881,8 +934,6 @@ population, which will decrease the uncertainty and make cluster sampling more
 competitive with other sampling methods.
 
 \begin{example}
-  %TODO: Fikse feil plot, kan løses ved å se på SE til slope coeffisient
-  %istedenfor prediction intervall
   We again consider the API dataset and want to see if average class size for
   kindergarden through third grade
   impacts the API score for a school. Suppose that to collect the data, an
@@ -982,11 +1033,11 @@ many developing countries.
 Ideally, one would of course do a full census of the population, but that is not
 possible in practice as it would be extremely expensive. Each household that is
 surveyed, has to be visited by a trained interviewer. Visiting
-households spread through the whole country would need both much travel time and
+households that are spread through the whole country would need both much travel time and
 many interviewers who have to be trained. Instead one designs a
 complex survey combining the sampling methods introduced earlier in Section
 \ref{sec:RegFinPop}. This is cheaper, and if the survey is well designed
-one will get good data from as well.
+one will get good data as well.
 
 In the DHS in Kenya the researchers wanted data on both urban and rural
 populations in each county, so they first started with splitting the country into
