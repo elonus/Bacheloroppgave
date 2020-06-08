@@ -1,0 +1,177 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+
+\title{Linear Regression for Survey Data}
+\author{Andreas Matre \\
+Supervisor: Geir-Arne Fuglstad}
+\date{June 2020}
+
+\begin{document}
+
+\frame{\titlepage}
+
+% Motivation
+
+\begin{frame}
+  \frametitle{Motivation example}
+
+  % Plot med observasjoner og regresjonslinjer fra anthuneq datasett.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problems with classical regression}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Assumes an infinite population % Kan føre til for stor varians
+  \item Assumes that a stochastic distribution can describe the residuals % \
+  \item Does not take sampling probabilities into account                 %  Kan
+                                %  føre til bias
+  \item Assumes a deterministic part of the relationship between predictor and
+    respons which we try to estimate % To do that we minimize the RSS of the
+                                % sample, impossible to find exactly
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Survey statistics}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Acknowledges a finite population
+  \item Does not assume anything of the distribution of the residuals
+  \item Takes the sampling design into account, for example unequal sampling
+      probabilities
+  \item Gets it's ``randomness'' from the probability of each unit being
+      included in the sample
+  \item There is one regression line which minimizes the RSS for the whole
+    population % Can find it if we sample the whole population
+  \end{itemize}
+  
+\end{frame}
+
+% Method
+
+\begin{frame}
+  \frametitle{Regression}
+
+  Notation: Assume population \((x_1, y_1), (x_2, y_2), \dots , (x_N, y_N)\),
+  \(x_i, i = 1, \dots, N\) predictors, \(y_i, i = 1, \dots, N\) response. Sample
+  \(S\) is set of indices of elements chosen.
+
+  % Formler for regresjon med totaler
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Can use same formulas as for normal regression, but rewritten:
+  \item \(B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
+   {t_{x^2} - \frac{1}{N} t_x^2} \right) \)
+  \item \(B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
+   {t_{x^2} - \frac{1}{N} t_x^2} \)
+  \item \(t_x = \sum_{i = 1}^N x_i\), \(t_y = \sum_{i = 1}^N y_i, t_{x^2} =
+\sum_{i = 1}^N x_i^2\) and \(t_{xy} =
+\sum_{i = 1}^N x_i y_i\)
+  \item To estimate the coefficients we need to estimate the totals % We only do
+                                % t_y, others are similar
+  \end{itemize}
+  % For å estimere trenger vi totaler
+\end{frame}
+
+\begin{frame}
+  \frametitle{SRS}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Simple Random Sample
+  \item All subsets of given size have same probability of being chosen
+  \item \(\hat{t}_y = \frac{N}{n}\sum_{i \in S}y_i\) % Unbiased
+  \item \(\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^N (y_i - \bar{y})^2 \)
+  \end{itemize}
+  % Hva er SRS? Alle delmengder av valgt størrelse har lik sannsynlighet for å
+  % bli valgt
+  % Estimatorer for SRS, forventningsrette
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stratification}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Want separate estimates for subpopulations % Can risk not having enough
+                                % sampled units in the different subpopulations
+                                % to get good estimates
+  \item Sample from each subpopulation independently
+  \item \(\hat{t}_{y} = \sum_{h = 1}^H\hat{t}_{h, y}\) % Different sampling
+                                % methods inside strata gives different estimates
+  \item SRS: \(\hat{t}_{h, y} = \frac{N_h}{n_h} \sum_{i \in S_h}y_i\)
+  \item Homogenous strata reduces variance
+  \end{itemize}
+
+  % Ønsker estimater for forskjellige deler av populasjonen
+  % Kan risikere å ikke få med alle deler man vil
+  % Kan redusere varians hvis strata er like innad
+
+  % Estimatorer
+  % Vekter
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Weights}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Makes calculations easier
+  \item Number of elements a sampled unit represents
+  \item Inverse of sampling probability
+  \item \(\hat{t}_{y} = \sum_{i = S}w_iy_i\)
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clustering}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+  \item Can be expensive to sample people randomly
+  \item Split population into subpopulations, sample only inside some of these
+  \item One-stage, two-stage
+  \item \(\hat{t}_y = \frac{N}{n} \sum_{i \in S} \hat{t}_{y, i} = \sum_{i \in
+      S_1 \cup S_2 \cup \dots \cup S_n} w_i y_i\)
+  \item \(\widehat{\mathrm{Var}}\left(t_{y}\right) = \frac{N^2}{n} \left( 1 - \frac{n}{N}
+\right) \widehat{\mathrm{Var}}\left( t_{y, i} \right)\)
+  \item Variance increases
+  \item Can affort to sample more units
+  \end{itemize}
+  % Dyrt å reise rundt, vil spare penger ved å ikke reise helt tilfeldig rundt.
+  % Sampler clusters, og så sampler igjen innad
+  % Øker varians, siden hver sample har mindre informasjon siden enheter er avhengige
+  % Kan sample fler for samme pris
+  % Vil ha clusters som er forskjellige innad
+  % 
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linearization}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.5\baselineskip}
+
+\item Non-linear expression -> Hard to estimate variance % Very important to
+                                % estimate uncertainties, otherwise we know nothing
+  \item Can use linearization
+  \end{itemize}
+
+  % Vanskelig å estimare varians, siden koeffisientene er ikke-lineære uttrykk
+  % Bruker Taylor approksimasjon rundt den sanne verdien
+  % Bytter ut sann verdi med estimat
+  % Lettere å regne ut estimatet, siden istedenfor Var(B_1) har vi Var(t_q) som
+  % er lineær som funksjon av q
+\end{frame}
+
+% Resultater
+
+\end{document}
