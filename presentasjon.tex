@@ -15,42 +15,47 @@ Supervisor: Geir-Arne Fuglstad}
 \begin{frame}
   \frametitle{Motivation example}
 
+\begin{figure}
+  \centering
+  \includegraphics[scale = 0.7]{images/motivation.pdf}
+
+  \label{fig:ex1}
+\end{figure}
   % Plot med observasjoner og regresjonslinjer fra anthuneq datasett.
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Problems with classical regression}
+  \frametitle{Difference between classical model based regression and Survey Statistics}
 
   \begin{itemize}
   \addtolength{\itemsep}{0.5\baselineskip}
-  \item Assumes an infinite population % Kan føre til for stor varians
-  \item Assumes that a stochastic distribution can describe the residuals % \
-  \item Does not take sampling probabilities into account                 %  Kan
+  \item Infinite vs finite population % Kan føre til for stor varians
+  \item Residuals described by distribution % \
+  \item Sampling probabilities                 %  Kan
                                 %  føre til bias
-  \item Assumes a deterministic part of the relationship between predictor and
-    respons which we try to estimate % To do that we minimize the RSS of the
+  \item Relationship between predictor and response % To do that we minimize the RSS of the
                                 % sample, impossible to find exactly
   \end{itemize}
   
 \end{frame}
 
-\begin{frame}
-  \frametitle{Survey statistics}
-
-  \begin{itemize}
-  \addtolength{\itemsep}{0.5\baselineskip}
-  \item Acknowledges a finite population
-  \item Does not assume anything of the distribution of the residuals
-  \item Takes the sampling design into account, for example unequal sampling
-      probabilities
-  \item Gets it's ``randomness'' from the probability of each unit being
-      included in the sample
-  \item There is one regression line which minimizes the RSS for the whole
-    population % Can find it if we sample the whole population
-  \end{itemize}
-  
-\end{frame}
+%\begin{frame}
+%  \frametitle{Survey statistics}
+%
+%  \begin{itemize}
+%  \addtolength{\itemsep}{0.5\baselineskip}
+%  \item Acknowledges a finite population
+%  \item Does not assume anything of the distribution of the residuals
+%  \item Takes the sampling design into account, for example unequal sampling
+%      probabilities
+%  \item Gets its ``randomness'' from the probability of each unit being
+%      included in the sample
+%  \item There is one regression line which minimizes the \(\mathrm{RSS} = \sum_{i = 1}^N (y_i - B_0 - B_1 x_i)^2\) for the whole
+%    population % Can find it if we sample the whole population
+%  \end{itemize}
+%  
+%\end{frame}
 
 % Method
 
@@ -64,7 +69,7 @@ Supervisor: Geir-Arne Fuglstad}
   % Formler for regresjon med totaler
   \begin{itemize}
   \addtolength{\itemsep}{0.5\baselineskip}
-  \item Can use same formulas as for normal regression, but rewritten:
+  \item Rewrite formular from 'normal' regression:
   \item \(B_0 = \frac{1}{N} \left( t_y - \frac{t_{xy} t_x - \frac{1}{N} t_y t_x^2}
    {t_{x^2} - \frac{1}{N} t_x^2} \right) \)
   \item \(B_1 = \frac{t_{xy} - \frac{1}{N} t_y t_x}
@@ -86,7 +91,10 @@ Supervisor: Geir-Arne Fuglstad}
   \item Simple Random Sample
   \item All subsets of given size have same probability of being chosen
   \item \(\hat{t}_y = \frac{N}{n}\sum_{i \in S}y_i\) % Unbiased
-  \item \(\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1 \right)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^N (y_i - \bar{y})^2 \)
+  \item \(\mathrm{Var} \left( \hat{t}_y \right) = \frac{N^2}{n \left( N - 1
+      \right)} \left( 1 - \frac{n}{N} \right) \sum_{i = 1}^N (y_i - \bar{y})^2
+    \) % FPC, estimation variance goes to zero, however prediction variance does
+       % not, as there is variance around the line
   \end{itemize}
   % Hva er SRS? Alle delmengder av valgt størrelse har lik sannsynlighet for å
   % bli valgt
@@ -105,7 +113,9 @@ Supervisor: Geir-Arne Fuglstad}
   \item \(\hat{t}_{y} = \sum_{h = 1}^H\hat{t}_{h, y}\) % Different sampling
                                 % methods inside strata gives different estimates
   \item SRS: \(\hat{t}_{h, y} = \frac{N_h}{n_h} \sum_{i \in S_h}y_i\)
-  \item Homogenous strata reduces variance
+  \item \(\mathrm{Var}(\hat{t}_y) = \sum_{h =
+   1}^H\mathrm{Var}\left(\hat{t}_{y, h}\right)\)
+  %\item Homogenous strata reduces variance
   \end{itemize}
 
   % Ønsker estimater for forskjellige deler av populasjonen
@@ -117,18 +127,18 @@ Supervisor: Geir-Arne Fuglstad}
   
 \end{frame}
 
-\begin{frame}
-  \frametitle{Weights}
-
-  \begin{itemize}
-  \addtolength{\itemsep}{0.5\baselineskip}
-  \item Makes calculations easier
-  \item Number of elements a sampled unit represents
-  \item Inverse of sampling probability
-  \item \(\hat{t}_{y} = \sum_{i = S}w_iy_i\)
-  \end{itemize}
-  
-\end{frame}
+%\begin{frame}
+%  \frametitle{Weights}
+%
+%  \begin{itemize}
+%  \addtolength{\itemsep}{0.5\baselineskip}
+%  \item Makes calculations easier
+%  \item Number of elements a sampled unit represents
+%  \item Inverse of sampling probability
+%  \item \(\hat{t}_{y} = \sum_{i = S}w_iy_i\)
+%  \end{itemize}
+%  
+%\end{frame}
 
 \begin{frame}
   \frametitle{Clustering}
@@ -137,20 +147,16 @@ Supervisor: Geir-Arne Fuglstad}
   \addtolength{\itemsep}{0.5\baselineskip}
   \item Can be expensive to sample people randomly
   \item Split population into subpopulations, sample only inside some of these
-  \item One-stage, two-stage
-  \item \(\hat{t}_y = \frac{N}{n} \sum_{i \in S} \hat{t}_{y, i} = \sum_{i \in
-      S_1 \cup S_2 \cup \dots \cup S_n} w_i y_i\)
+  \item \(\hat{t}_y = \frac{N}{n} \sum_{i \in S} t_{y, i} \) %= \sum_{i \in
+      %S_1 \cup S_2 \cup \dots \cup S_n} w_i y_i\)
   \item \(\widehat{\mathrm{Var}}\left(t_{y}\right) = \frac{N^2}{n} \left( 1 - \frac{n}{N}
 \right) \widehat{\mathrm{Var}}\left( t_{y, i} \right)\)
   \item Variance increases
-  \item Can affort to sample more units
+  \item Can affort to sample more units % We want clusters that have different
+                                % types of units in them, to get more
+                                % information. Clusters of the same size reduces
+                                % variance, but can make clusters too big.
   \end{itemize}
-  % Dyrt å reise rundt, vil spare penger ved å ikke reise helt tilfeldig rundt.
-  % Sampler clusters, og så sampler igjen innad
-  % Øker varians, siden hver sample har mindre informasjon siden enheter er avhengige
-  % Kan sample fler for samme pris
-  % Vil ha clusters som er forskjellige innad
-  % 
   
 \end{frame}
 
@@ -160,9 +166,22 @@ Supervisor: Geir-Arne Fuglstad}
   \begin{itemize}
   \addtolength{\itemsep}{0.5\baselineskip}
 
-\item Non-linear expression -> Hard to estimate variance % Very important to
+\item Non-linear expression \(\rightarrow\) Hard to estimate variance % Very important to
                                 % estimate uncertainties, otherwise we know nothing
-  \item Can use linearization
+  \item Can use linearization, which uses Taylor approximation % Can use
+                                % 'standard' techniques to estimate variance of
+                                % linear expression
+  \item Want \(h(x) = B_1\), can calculate \(h(\hat{x}) = \hat{B_1}\), \(x =
+    (t_x, t_y, t_{x^2}, t_{xy})\)
+  \item \(\mathrm{Var} \left( \hat{B_1} \right)
+  \approx \mathrm{Var} \left( h(x) + \sum_{i = 1}^p \frac{\partial h}{\partial x_i} (x_i) \left( \hat{x}_i - x_i
+    \right) \right) \)
+  \item \(\approx \sum_{i = 1}^p \left( \frac{\partial h}{\partial x_i}
+      (\hat{x}_i)  \right)^2 \widehat{\mathrm{Var}} \left( \hat{x}_i \right) +
+    \sum_{i \neq j}  \frac{\partial h}{\partial x_i} (\hat{x}_i)  \frac{\partial
+      h}{\partial x_j} (\hat{x}_j) \widehat{\mathrm{Cov}} \left( \hat{x}_i,
+      \hat{x}_j \right)\) % x_i are constants, insert \hat{x_i} afterwards to
+                          % get estimate
   \end{itemize}
 
   % Vanskelig å estimare varians, siden koeffisientene er ikke-lineære uttrykk
@@ -172,6 +191,30 @@ Supervisor: Geir-Arne Fuglstad}
   % er lineær som funksjon av q
 \end{frame}
 
-% Resultater
+\begin{frame}
+ \frametitle{Linearization 2}
+
+ \begin{itemize}
+ \item \(\mathrm{Var}(\hat{B_1}) \approx \frac{\widehat{\mathrm{Var}}\left( \sum_{i \in S} w_i q_i \right)}
+   {\left( \sum_{i \in S} w_i x_i^2 - \frac{\left( \sum_{i \in S} w_i x_i \right)^2}{\sum_{i \in S} w_i} \right)^2}\)
+ \item \(q_i = (y_i - \hat{B}_0 - \hat{B}_1 x_i)(x_i - \hat{\bar{x}})\) % Variance of a total instead, this we can handle
+ 
+ \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusion}
+
+  \begin{itemize}
+  \item Ignoring sampling probabilities can cause bias
+  \item Ignoring other parts of sampling design gives wrong variance estimates
+    \begin{itemize}
+    \item Assuming independence causes too low variance estimate
+    \item Ignoring finite population can cause too large variance estimates
+    \end{itemize}
+  \end{itemize}
+  
+\end{frame}
 
 \end{document}
